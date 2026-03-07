@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { X, Wind } from "lucide-react";
+import { X, Wind, Heart } from "lucide-react";
 
 const tips = [
   "Beba um copo de água gelada agora.",
@@ -10,6 +10,8 @@ const tips = [
   "Pense no dinheiro que está economizando.",
   "Ligue para alguém que você ama.",
   "Mastigue uma bala ou chiclete.",
+  "Faça 10 agachamentos agora mesmo.",
+  "Olhe seu progresso no dashboard — vale a pena!",
 ];
 
 interface CravingModalProps {
@@ -20,7 +22,10 @@ interface CravingModalProps {
 const CravingModal = ({ open, onClose }: CravingModalProps) => {
   const [phase, setPhase] = useState<"breathe" | "tip">("breathe");
   const [timer, setTimer] = useState(60);
-  const randomTip = tips[Math.floor(Math.random() * tips.length)];
+  const [randomTip] = useState(() => tips[Math.floor(Math.random() * tips.length)]);
+
+  // Heartbeat speed: starts fast (120bpm), slows to 60bpm as breathing progresses
+  const heartbeatSpeed = timer > 40 ? 0.5 : timer > 20 ? 0.8 : 1.2; // seconds per beat
 
   useEffect(() => {
     if (!open) {
@@ -46,6 +51,13 @@ const CravingModal = ({ open, onClose }: CravingModalProps) => {
     if (cycle >= 8) return "Inspire...";
     if (cycle >= 4) return "Segure...";
     return "Expire...";
+  };
+
+  const breathePhase = () => {
+    const cycle = timer % 12;
+    if (cycle >= 8) return "inspire";
+    if (cycle >= 4) return "segure";
+    return "expire";
   };
 
   if (!open) return null;
@@ -75,9 +87,35 @@ const CravingModal = ({ open, onClose }: CravingModalProps) => {
 
           {phase === "breathe" ? (
             <div className="text-center py-8">
+              {/* Heartbeat indicator */}
+              <div className="flex justify-center mb-4">
+                <motion.div
+                  animate={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: heartbeatSpeed, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Heart className="w-6 h-6 text-destructive" />
+                </motion.div>
+                <span className="text-xs text-muted-foreground ml-2 self-center">
+                  {timer > 40 ? "❤️ rápido" : timer > 20 ? "❤️ normalizando" : "❤️ calmo"}
+                </span>
+              </div>
+
               <div className="relative w-40 h-40 mx-auto mb-6">
-                <div className="absolute inset-0 rounded-full bg-primary/20 animate-breathe" />
-                <div className="absolute inset-4 rounded-full bg-primary/30 animate-breathe" style={{ animationDelay: "0.5s" }} />
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-primary/20"
+                  animate={{
+                    scale: breathePhase() === "inspire" ? 1.3 : breathePhase() === "segure" ? 1.3 : 1,
+                    opacity: breathePhase() === "expire" ? 0.4 : 0.8,
+                  }}
+                  transition={{ duration: 2, ease: "easeInOut" }}
+                />
+                <motion.div
+                  className="absolute inset-4 rounded-full bg-primary/30"
+                  animate={{
+                    scale: breathePhase() === "inspire" ? 1.2 : breathePhase() === "segure" ? 1.2 : 1,
+                  }}
+                  transition={{ duration: 2, ease: "easeInOut", delay: 0.3 }}
+                />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Wind className="w-10 h-10 text-primary" />
                 </div>
@@ -93,7 +131,7 @@ const CravingModal = ({ open, onClose }: CravingModalProps) => {
               <p className="text-lg font-semibold mb-2 font-display">Dica para você</p>
               <p className="text-muted-foreground mb-6">{randomTip}</p>
               <Button variant="hero" onClick={onClose} className="w-full h-12">
-                Me sinto melhor!
+                Me sinto melhor! 🎉
               </Button>
             </div>
           )}
