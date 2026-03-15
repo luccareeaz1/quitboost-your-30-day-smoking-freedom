@@ -8,12 +8,12 @@ import { TopNavigation } from "./components/layout/TopNavigation";
 import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
-import Progress from "./pages/Progress";
-import Challenges from "./pages/Challenges";
-import Achievements from "./pages/Achievements";
+import Progresso from "./pages/Progresso";
+import Desafios from "./pages/Desafios";
+import Comunidade from "./pages/Comunidade";
+import Conquistas from "./pages/Conquistas";
+import Perfil from "./pages/Perfil";
 import AICoach from "./pages/AICoach";
-import Community from "./pages/Community";
-import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,17 +24,16 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <TopNavigation />
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/progress" element={<Progress />} />
-          <Route path="/challenges" element={<Challenges />} />
-          <Route path="/achievements" element={<Achievements />} />
-          <Route path="/community" element={<Community />} />
+          <Route path="/progresso" element={<Progresso />} />
+          <Route path="/desafios" element={<Desafios />} />
+          <Route path="/comunidade" element={<Comunidade />} />
+          <Route path="/conquistas" element={<Conquistas />} />
+          <Route path="/perfil" element={<Perfil />} />
           <Route path="/coach" element={<AICoach />} />
-          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -3,13 +3,13 @@ import { Home, TrendingUp, Target, Award, MessageCircle, User, Sparkles } from "
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { path: "/dashboard", icon: Home, label: "Dashboard" },
-  { path: "/progress", icon: TrendingUp, label: "Progress" },
-  { path: "/challenges", icon: Target, label: "Challenges" },
-  { path: "/achievements", icon: Award, label: "Achievements" },
-  { path: "/community", icon: MessageCircle, label: "Comunidade" },
+  { path: "/dashboard", icon: Home, label: "Início" },
+  { path: "/progresso", icon: TrendingUp, label: "Progresso" },
+  { path: "/desafios", icon: Target, label: "Desafios" },
+  { path: "/conquistas", icon: Award, label: "Conquistas" },
+  { path: "/comunidade", icon: MessageCircle, label: "Comunidade" },
   { path: "/coach", icon: Sparkles, label: "Coach IA" },
-  { path: "/profile", icon: User, label: "Perfil" },
+  { path: "/perfil", icon: User, label: "Perfil" },
 ];
 
 export function TopNavigation() {

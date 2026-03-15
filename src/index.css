@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,46 +7,55 @@
 @layer base {
   :root {
     --background: 0 0% 98%;
-    --foreground: 0 0% 9%;
+    --foreground: 0 0% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
+    --card-foreground: 0 0% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --popover-foreground: 0 0% 12%;
 
-    --primary: 0 0% 9%;
+    --primary: 0 0% 12%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary-foreground: 0 0% 20%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 50%;
 
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 0 0% 92%;
+    --accent-foreground: 0 0% 12%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 9%;
+    --border: 0 0% 92%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 12%;
 
     --radius: 1.5rem;
 
-    --success: 142 71% 45%; 
+    --success: 142 60% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
     --streak: 38 92% 50%;
 
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.04);
-    --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
-    --shadow-glow: 0 0 40px rgba(0, 0, 0, 0.05);
+    --apple-blue: 211 100% 50%;
+    --apple-green: 142 60% 45%;
 
+    --gradient-hero: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 25%));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --gradient-glass: linear-gradient(135deg, hsla(0, 0%, 100%, 0.7), hsla(0, 0%, 100%, 0.4));
+
+    --shadow-sm: 0 2px 8px -2px hsl(0 0% 0% / 0.06);
+    --shadow-md: 0 8px 24px -4px hsl(0 0% 0% / 0.08);
+    --shadow-lg: 0 16px 48px -8px hsl(0 0% 0% / 0.12);
+    --shadow-glass: 0 8px 32px 0 hsl(0 0% 0% / 0.08);
+
+    --font-display: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 
@@ -76,12 +87,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
   }
   h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
     font-weight: 600;
     letter-spacing: -0.02em;
   }
@@ -89,15 +99,46 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20;
+    background: hsla(0, 0%, 100%, 0.65);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsla(0, 0%, 100%, 0.3);
+    box-shadow: var(--shadow-glass);
   }
   .glass-dark {
-    @apply bg-black/70 backdrop-blur-xl border border-white/10;
+    background: hsla(0, 0%, 0%, 0.5);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
   }
   .shadow-soft {
     box-shadow: var(--shadow-md);
   }
   .shadow-elevated {
     box-shadow: var(--shadow-lg);
+  }
+  .shadow-glass {
+    box-shadow: var(--shadow-glass);
+  }
+  .shadow-glow {
+    box-shadow: 0 0 40px -10px hsl(0 0% 0% / 0.15);
+  }
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  .gradient-glass {
+    background: var(--gradient-glass);
+  }
+  .gradient-dark {
+    background: var(--gradient-hero);
+  }
+  .gradient-accent {
+    background: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 30%));
+  }
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 40%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
