@@ -1,384 +1,196 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import {
-  Timer, Wallet, Cigarette, Trophy, Heart, Flame, Wind,
-  Leaf, BookOpen, AlertTriangle,
-} from "lucide-react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import confetti from "canvas-confetti";
-import CravingModal from "@/components/dashboard/CravingModal";
-import StreakCard from "@/components/dashboard/StreakCard";
-import CuriousStats from "@/components/dashboard/CuriousStats";
+import { motion } from "framer-motion";
+import { AppleCard } from "@/components/ui/apple-card";
+import { Button } from "@/components/ui/button";
+import { 
+  Heart, Wind, Activity, Wallet, Cigarette, 
+  MessageCircle, Target, Trophy, Flame, CheckCircle2 
+} from "lucide-react";
 
-interface Profile {
-  cigarrosPorDia: number;
-  anosFumando: number;
-  custoPorCigarro: number;
-  gatilhos: string[];
-  quitDate: string;
-}
-
-const healthMilestones = [
-  { hours: 0.33, label: "Pressão arterial normaliza", icon: Heart },
-  { hours: 8, label: "Oxigênio no sangue normaliza", icon: Wind },
-  { hours: 24, label: "Risco de infarto diminui", icon: Heart },
-  { hours: 48, label: "Olfato e paladar melhoram", icon: Leaf },
-  { hours: 72, label: "Respiração melhora", icon: Wind },
-  { hours: 720, label: "Circulação melhora", icon: Heart },
-];
-
-const dayPhrases: Record<string, string> = {
-  "0": "A jornada começa agora. Cada segundo conta! 🌱",
-  "1": "Primeiro dia completo. Você é mais forte do que imagina! 💪",
-  "2": "Dois dias! Seu corpo já está se recuperando. 🌿",
-  "3": "Três dias! Sua respiração já está melhorando. 🌬️",
-  "7": "Uma semana inteira! Você é inspiração! 🔥",
-  "14": "Duas semanas! Metade do caminho. Imparável! 🚀",
-  "21": "21 dias — um novo hábito se formou! 🧠",
-  "30": "30 DIAS! Você é um campeão absoluto! 🏆👑",
-};
-
-function getMotivationalPhrase(days: number): string {
-  if (dayPhrases[String(days)]) return dayPhrases[String(days)];
-  if (days > 30) return `${days} dias livre! Você reescreveu sua história! ✨`;
-  if (days > 21) return "Reta final dos 30 dias. Você está quase lá! 🎯";
-  if (days > 14) return "Mais de duas semanas. Seu corpo agradece! 💚";
-  if (days > 7) return "Mais de uma semana! Continue assim! 🌟";
-  if (days > 3) return "Cada dia é uma vitória. Siga em frente! 🏅";
-  return "Os primeiros dias são os mais difíceis. Você consegue! 💪";
-}
-
-function getEmergencyButtonText(): { text: string; icon: string } {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 9) return { text: "Bom dia sem cigarro!", icon: "☀️" };
-  if (hour >= 9 && hour < 12) return { text: "Resista à vontade matinal", icon: "💪" };
-  if (hour >= 12 && hour < 14) return { text: "Depois do almoço é difícil, né?", icon: "🍽️" };
-  if (hour >= 14 && hour < 18) return { text: "Tarde sem cigarro = vitória", icon: "🏆" };
-  if (hour >= 18 && hour < 21) return { text: "Noite tranquila sem fumar", icon: "🌙" };
-  return { text: "Durma limpo, acorde livre", icon: "😴" };
-}
-
-const Dashboard = () => {
+export default function Dashboard() {
   const navigate = useNavigate();
+  // Mock data for now, will integrate Supabase hook next
   const [now, setNow] = useState(new Date());
-  const [showCraving, setShowCraving] = useState(false);
-  const [moneyEmoji, setMoneyEmoji] = useState<{ show: boolean; emoji: string; x: number; y: number }>({ show: false, emoji: "", x: 0, y: 0 });
-  const [prevCigarros, setPrevCigarros] = useState<number | null>(null);
-  const [cigarroPulse, setCigarroPulse] = useState(false);
-  const [unlockedBadges, setUnlockedBadges] = useState<Set<string>>(new Set());
-  const [badgeStory, setBadgeStory] = useState<string | null>(null);
-
-  const cravingCount = useMemo(() => {
-    return parseInt(localStorage.getItem("quitboost_craving_count") || "0", 10);
-  }, [showCraving]);
-
-  const profile: Profile | null = useMemo(() => {
-    const stored = localStorage.getItem("quitboost_profile");
-    if (!stored) return null;
-    return JSON.parse(stored);
-  }, []);
-
-  useEffect(() => {
-    if (!profile) {
-      navigate("/onboarding");
-      return;
-    }
-    const interval = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(interval);
-  }, [profile, navigate]);
-
-  if (!profile) return null;
-
-  const quitDate = new Date(profile.quitDate);
+  
+  // Fake quit date 5 days and 4 hours ago
+  const quitDate = new Date(Date.now() - (5 * 24 * 60 * 60 * 1000) - (4 * 60 * 60 * 1000) - (20 * 60 * 1000));
   const diffMs = now.getTime() - quitDate.getTime();
   const diffSeconds = Math.max(0, Math.floor(diffMs / 1000));
-  const diffHours = diffSeconds / 3600;
-  const diffDays = Math.floor(diffHours / 24);
-  const hours = Math.floor(diffHours % 24);
+  
+  const days = Math.floor(diffSeconds / (3600 * 24));
+  const hours = Math.floor((diffSeconds % (3600 * 24)) / 3600);
   const minutes = Math.floor((diffSeconds % 3600) / 60);
   const seconds = diffSeconds % 60;
 
-  const cigarrosEvitados = Math.floor((diffDays + (diffHours % 24) / 24) * profile.cigarrosPorDia);
-  const economia = cigarrosEvitados * profile.custoPorCigarro;
+  const cigarettesPerDay = 20;
+  const pricePerCigarette = 0.50; // $10 per pack
+  const avoided = Math.floor((diffSeconds / (3600 * 24)) * cigarettesPerDay);
+  const saved = avoided * pricePerCigarette;
 
-  // Pulse effect on cigarette counter change
-  if (prevCigarros !== null && cigarrosEvitados !== prevCigarros) {
-    if (!cigarroPulse) setCigarroPulse(true);
-    setTimeout(() => setCigarroPulse(false), 600);
-  }
-  if (prevCigarros !== cigarrosEvitados) setPrevCigarros(cigarrosEvitados);
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  // Badge definitions
-  const badges = [
-    { label: "Primeiro passo", unlocked: true, story: "Você tomou a decisão mais importante: começar. O primeiro passo é sempre o mais difícil." },
-    { label: "24h sem fumar", unlocked: diffDays >= 1, story: "Suas primeiras 24 horas! Seu corpo já começou a se recuperar. O monóxido de carbono caiu para zero." },
-    { label: "7 dias livre", unlocked: diffDays >= 7, story: "Uma semana inteira! As terminações nervosas começam a se regenerar. Olfato e paladar estão voltando." },
-    { label: "30 dias campeão", unlocked: diffDays >= 30, story: "30 dias! A circulação melhorou, a função pulmonar aumentou. Você é oficialmente um campeão!" },
+  const healthMilestones: { label: string; hours: number; icon: React.ElementType }[] = [
+    { label: "20 minutes: BP drops", hours: 0.33, icon: Heart },
+    { label: "8 hours: Oxygen normalizes", hours: 8, icon: Wind },
+    { label: "24 hours: Heart attack risk lowers", hours: 24, icon: Activity },
+    { label: "48 hours: Senses improve", hours: 48, icon: Flame },
+    { label: "1 week: Nicotine out of system", hours: 168, icon: Target },
   ];
 
-  // Confetti on new badge unlock
-  const currentUnlocked = new Set(badges.filter(b => b.unlocked).map(b => b.label));
-  if (currentUnlocked.size > unlockedBadges.size) {
-    const newBadges = [...currentUnlocked].filter(b => !unlockedBadges.has(b));
-    if (newBadges.length > 0) {
-      setTimeout(() => {
-        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ["#2a9d62", "#f5a623", "#ffffff"] });
-      }, 300);
-      setUnlockedBadges(currentUnlocked);
-    }
-  }
-
-  // Dynamic background based on days
-  const bgProgress = Math.min(diffDays / 30, 1);
-  const bgHue = 150; // green
-  const bgSat = Math.round(5 + bgProgress * 15);
-  const bgLight = Math.round(96 - bgProgress * 2);
-  const dynamicBg = `hsl(${bgHue}, ${bgSat}%, ${bgLight}%)`;
-
-  const handleMoneyClick = (e: React.MouseEvent) => {
-    const emojis = ["🎉", "💰", "🤑", "💸", "🥳", "✨", "🎊"];
-    setMoneyEmoji({
-      show: true,
-      emoji: emojis[Math.floor(Math.random() * emojis.length)],
-      x: e.clientX,
-      y: e.clientY,
-    });
-    setTimeout(() => setMoneyEmoji(prev => ({ ...prev, show: false })), 1200);
-  };
-
-  const handleCravingClick = () => {
-    const count = parseInt(localStorage.getItem("quitboost_craving_count") || "0", 10);
-    localStorage.setItem("quitboost_craving_count", String(count + 1));
-    setShowCraving(true);
-  };
-
-  const emergencyBtn = getEmergencyButtonText();
-
   return (
-    <div className="min-h-screen transition-colors duration-1000" style={{ backgroundColor: dynamicBg }}>
-      {/* Floating money emoji */}
-      <AnimatePresence>
-        {moneyEmoji.show && (
-          <motion.div
-            initial={{ opacity: 1, y: 0, scale: 1 }}
-            animate={{ opacity: 0, y: -80, scale: 2 }}
-            exit={{ opacity: 0 }}
-            className="fixed z-[100] pointer-events-none text-4xl"
-            style={{ left: moneyEmoji.x - 20, top: moneyEmoji.y - 20 }}
-          >
-            {moneyEmoji.emoji}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Badge story modal */}
-      <AnimatePresence>
-        {badgeStory && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm flex items-center justify-center p-6"
-            onClick={() => setBadgeStory(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="bg-card rounded-2xl border border-border p-8 max-w-sm w-full text-center shadow-2xl"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="text-5xl mb-4">🏆</div>
-              <p className="text-foreground font-medium">{badgeStory}</p>
-              <Button variant="ghost" className="mt-4" onClick={() => setBadgeStory(null)}>Fechar</Button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Header */}
-      <header className="gradient-dark py-6 px-6">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <Leaf className="w-6 h-6 text-primary" />
-            <span className="text-xl font-bold text-primary-foreground font-display">QuitBoost</span>
-          </div>
-          <div className="flex items-center gap-3">
-            {cravingCount > 0 && (
-              <span className="text-xs text-primary-foreground/70 font-medium">
-                Resistiu {cravingCount}x 💪
-              </span>
-            )}
-            <Button variant="craving" size="sm" onClick={handleCravingClick}>
-              <AlertTriangle className="w-4 h-4 mr-1" /> {emergencyBtn.text}
-            </Button>
-          </div>
-        </div>
+    <div className="min-h-screen pt-24 pb-20 px-4 max-w-5xl mx-auto space-y-12 animate-fade-in">
+      
+      {/* HEADER SECTION */}
+      <header className="text-center space-y-4 mb-16">
+        <motion.p 
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} 
+          className="text-muted-foreground uppercase tracking-widest text-sm font-semibold"
+        >
+          Your Journey
+        </motion.p>
+        <motion.h1 
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="text-5xl sm:text-7xl font-semibold tracking-tighter"
+        >
+          Breathe Again.
+        </motion.h1>
       </header>
 
-      <div className="container mx-auto px-6 py-8">
-        {/* Motivational phrase */}
-        <motion.p
-          key={diffDays}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center text-sm font-medium text-primary mb-6"
-        >
-          {getMotivationalPhrase(diffDays)}
-        </motion.p>
-
-        {/* Timer */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-10"
-        >
-          <p className="text-sm text-muted-foreground mb-2">Seu tempo sem fumar</p>
-          <div className="flex items-center justify-center gap-4">
-            {[
-              { val: diffDays, label: "dias" },
-              { val: hours, label: "horas" },
-              { val: minutes, label: "min" },
-              { val: seconds, label: "seg" },
-            ].map(t => (
-              <div key={t.label} className="text-center">
-                <div className="text-4xl md:text-6xl font-bold text-primary font-display animate-count-up">
-                  {String(t.val).padStart(2, "0")}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">{t.label}</p>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Stats cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-10">
-          {/* Cigarros evitados - with pulse */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`rounded-2xl gradient-card border border-border p-6 transition-transform ${cigarroPulse ? "scale-105" : ""}`}
-          >
-            <Cigarette className="w-8 h-8 text-primary mb-3" />
-            <p className="text-sm text-muted-foreground">Cigarros evitados</p>
-            <motion.p
-              key={cigarrosEvitados}
-              initial={{ scale: 1.2, color: "hsl(152, 60%, 40%)" }}
-              animate={{ scale: 1, color: "hsl(var(--foreground))" }}
-              className="text-3xl font-bold font-display mt-1"
-            >
-              {cigarrosEvitados.toLocaleString()}
-            </motion.p>
-          </motion.div>
-
-          {/* Dinheiro economizado - clickable */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="rounded-2xl gradient-card border border-border p-6 cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={handleMoneyClick}
-          >
-            <Wallet className="w-8 h-8 text-success mb-3" />
-            <p className="text-sm text-muted-foreground">Dinheiro economizado</p>
-            <p className="text-3xl font-bold font-display mt-1 text-success">R${economia.toFixed(2)}</p>
-            <p className="text-xs text-muted-foreground mt-1">Clique para comemorar! 🎉</p>
-          </motion.div>
-
-          {/* Conquistas */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="rounded-2xl gradient-card border border-border p-6"
-          >
-            <Trophy className="w-8 h-8 text-streak mb-3" />
-            <p className="text-sm text-muted-foreground">Conquistas</p>
-            <p className="text-3xl font-bold font-display mt-1">
-              {badges.filter(b => b.unlocked).length}/{badges.length}
-            </p>
-          </motion.div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Streak */}
-          <StreakCard days={diffDays} />
-
-          {/* Health milestones - with breathing hover */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="rounded-2xl gradient-card border border-border p-6"
-          >
-            <h3 className="text-lg font-semibold font-display mb-4 flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary" /> Progresso de saúde
-            </h3>
-            <div className="space-y-4">
-              {healthMilestones.map(m => {
-                const completed = diffHours >= m.hours;
-                const progress = Math.min(100, (diffHours / m.hours) * 100);
-                return (
-                  <div key={m.label} className="group">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="flex items-center gap-2">
-                        <m.icon className={`w-4 h-4 transition-transform duration-700 group-hover:scale-125 ${
-                          m.icon === Wind || m.icon === Heart
-                            ? "group-hover:animate-breathe"
-                            : ""
-                        } ${completed ? "text-primary" : "text-muted-foreground"}`} />
-                        <span className={`text-sm ${completed ? "text-foreground font-medium" : "text-muted-foreground"}`}>{m.label}</span>
-                      </span>
-                      {completed && <span className="text-xs text-primary font-semibold">✓</span>}
-                    </div>
-                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                      <div
-                        className="h-full gradient-hero rounded-full transition-all duration-1000"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+      {/* CORE TIMER (Priority 1) */}
+      <section className="flex flex-col items-center justify-center">
+        <AppleCard className="p-10 sm:p-14 text-center max-w-3xl w-full">
+          <p className="text-xl sm:text-2xl text-muted-foreground mb-8 font-medium">Smoke-free time</p>
+          <div className="grid grid-cols-4 gap-4 sm:gap-8 divide-x divide-border">
+            <div className="flex flex-col items-center">
+              <span className="text-5xl sm:text-7xl font-bold tracking-tighter">{days}</span>
+              <span className="text-sm sm:text-base text-muted-foreground mt-2 font-medium">Days</span>
             </div>
-          </motion.div>
-        </div>
-
-        {/* Curious stats */}
-        <CuriousStats diffHours={diffHours} cigarrosEvitados={cigarrosEvitados} />
-
-        {/* Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-6 rounded-2xl gradient-card border border-border p-6"
-        >
-          <h3 className="text-lg font-semibold font-display mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-streak" /> Conquistas
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {badges.map(b => (
-              <div
-                key={b.label}
-                onDoubleClick={() => b.unlocked && setBadgeStory(b.story)}
-                className={`p-4 rounded-xl text-center border cursor-pointer transition-transform hover:scale-105 ${
-                  b.unlocked ? "border-streak bg-streak/10" : "border-border bg-muted/30 opacity-50"
-                }`}
-              >
-                <div className="text-3xl mb-2">{b.unlocked ? "🏆" : "🔒"}</div>
-                <p className="text-xs font-medium">{b.label}</p>
-                {b.unlocked && <p className="text-[10px] text-muted-foreground mt-1">Duplo clique para ver</p>}
-              </div>
-            ))}
+            <div className="flex flex-col items-center pl-4 sm:pl-8">
+              <span className="text-5xl sm:text-7xl font-bold tracking-tighter">{String(hours).padStart(2, "0")}</span>
+              <span className="text-sm sm:text-base text-muted-foreground mt-2 font-medium">Hours</span>
+            </div>
+            <div className="flex flex-col items-center pl-4 sm:pl-8">
+              <span className="text-5xl sm:text-7xl font-bold tracking-tighter">{String(minutes).padStart(2, "0")}</span>
+              <span className="text-sm sm:text-base text-muted-foreground mt-2 font-medium">Mins</span>
+            </div>
+            <div className="flex flex-col items-center pl-4 sm:pl-8">
+              <span className="text-5xl sm:text-7xl font-bold tracking-tighter text-muted-foreground/40">{String(seconds).padStart(2, "0")}</span>
+              <span className="text-sm sm:text-base text-muted-foreground mt-2 font-medium">Secs</span>
+            </div>
           </div>
-        </motion.div>
+        </AppleCard>
+      </section>
+
+      {/* SECONDARY STATS (Priority 2 & 3) */}
+      <div className="grid sm:grid-cols-2 gap-6">
+        <AppleCard className="p-8 flex items-center justify-between">
+          <div>
+            <p className="text-muted-foreground font-medium mb-1">Money Saved</p>
+            <p className="text-4xl font-semibold tracking-tight">${saved.toFixed(2)}</p>
+          </div>
+          <Wallet className="h-10 w-10 text-muted-foreground/30" />
+        </AppleCard>
+        <AppleCard className="p-8 flex items-center justify-between">
+          <div>
+            <p className="text-muted-foreground font-medium mb-1">Cigarettes Avoided</p>
+            <p className="text-4xl font-semibold tracking-tight">{avoided}</p>
+          </div>
+          <Cigarette className="h-10 w-10 text-muted-foreground/30" />
+        </AppleCard>
       </div>
 
-      <CravingModal open={showCraving} onClose={() => setShowCraving(false)} />
-    </div>
-  );
-};
+      {/* CHALLENGES (Priority 4) */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <AppleCard className="p-8">
+          <h2 className="text-2xl font-semibold tracking-tight mb-6 flex items-center">
+            <Target className="mr-2 h-6 w-6" />
+            Active Challenge
+          </h2>
+          <div className="space-y-4">
+            <h3 className="text-xl font-medium">Delay first cigarette</h3>
+            <p className="text-muted-foreground">Wait an extra 30 minutes before your first cigarette today.</p>
+            <Button className="w-full rounded-full font-medium mt-6 bg-foreground text-background">
+              <CheckCircle2 className="mr-2 h-5 w-5" /> Mark as Completed
+            </Button>
+          </div>
+        </AppleCard>
 
-export default Dashboard;
+        <AppleCard className="p-8" onClick={() => navigate("/coach")}>
+          <h2 className="text-2xl font-semibold tracking-tight mb-6 flex items-center">
+            <MessageCircle className="mr-2 h-6 w-6" />
+            AI Support
+          </h2>
+          <div className="space-y-4">
+            <p className="text-muted-foreground font-medium italic">"Você está indo muito bem! Lembre-se que cada cigarro evitado é uma vitória para sua saúde."</p>
+            <Button variant="outline" className="w-full mt-4 rounded-full font-medium">Talk to Coach</Button>
+          </div>
+        </AppleCard>
+      </div>
+
+      {/* DAILY LOG (Moved down) */}
+      <AppleCard className="p-8">
+        <h2 className="text-2xl font-semibold tracking-tight mb-6">Daily Progress</h2>
+        <div className="space-y-4">
+          <div className="flex justify-between items-end mb-2">
+            <span className="text-5xl font-bold tracking-tighter">0</span>
+            <span className="text-muted-foreground font-medium mb-1">/ 5 allowed today</span>
+          </div>
+          <div className="h-3 w-full bg-secondary rounded-full overflow-hidden">
+            <div className="h-full bg-foreground w-0 rounded-full" />
+          </div>
+          <p className="text-sm text-muted-foreground mt-4">You have smoked 0 cigarettes today. Great job!</p>
+          <Button variant="outline" className="w-full mt-4 rounded-full font-medium">Log a cigarette</Button>
+        </div>
+      </AppleCard>
+
+      {/* HEALTH TIMELINE (Priority 5) */}
+      <AppleCard className="p-8 sm:p-10">
+        <h2 className="text-2xl font-semibold tracking-tight mb-8">Health Recovery</h2>
+        <div className="space-y-8">
+          {healthMilestones.map((milestone, idx) => {
+            const completed = (diffSeconds / 3600) >= milestone.hours;
+            return (
+              <div key={idx} className="flex items-center gap-6">
+                <div className={`p-4 rounded-full flex-shrink-0 ${completed ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+                  <milestone.icon className="h-6 w-6" />
+                </div>
+                <div className="flex-1">
+                  <p className={`text-lg font-medium tracking-tight ${completed ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {milestone.label}
+                  </p>
+                </div>
+                {completed && <CheckCircle2 className="h-6 w-6 text-foreground" />}
+              </div>
+            )
+          })}
+        </div>
+      </AppleCard>
+
+      {/* RECENT ACHIEVEMENTS */}
+      <AppleCard className="p-8 sm:p-10">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-semibold tracking-tight">Recent Achievements</h2>
+          <Button variant="link" onClick={() => navigate("/achievements")} className="text-muted-foreground hover:text-foreground">
+            View All
+          </Button>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            { title: "First Step", days: 1, icon: Trophy },
+            { title: "3 Days Strong", days: 3, icon: Trophy },
+          ].map((ach, idx) => (
+             <div key={idx} className="flex flex-col items-center justify-center p-6 border border-border rounded-[1.5rem] bg-secondary/50">
+               <ach.icon className="h-8 w-8 text-foreground mb-4" />
+               <p className="font-medium text-center">{ach.title}</p>
+             </div>
+          ))}
+        </div>
+      </AppleCard>
+    </div>
+
+  );
+}

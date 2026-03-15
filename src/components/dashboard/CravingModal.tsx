@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { X, Wind, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { X, Wind, Heart, Sparkles } from "lucide-react";
 
 const tips = [
   "Beba um copo de água gelada agora.",
@@ -20,6 +21,7 @@ interface CravingModalProps {
 }
 
 const CravingModal = ({ open, onClose }: CravingModalProps) => {
+  const navigate = useNavigate();
   const [phase, setPhase] = useState<"breathe" | "tip">("breathe");
   const [timer, setTimer] = useState(60);
   const [randomTip] = useState(() => tips[Math.floor(Math.random() * tips.length)]);
@@ -130,9 +132,19 @@ const CravingModal = ({ open, onClose }: CravingModalProps) => {
               </div>
               <p className="text-lg font-semibold mb-2 font-display">Dica para você</p>
               <p className="text-muted-foreground mb-6">{randomTip}</p>
-              <Button variant="hero" onClick={onClose} className="w-full h-12">
-                Me sinto melhor! 🎉
-              </Button>
+              <div className="space-y-3">
+                <Button variant="hero" onClick={onClose} className="w-full h-12">
+                  Me sinto melhor! 🎉
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => { onClose(); navigate("/coach"); }}
+                  className="w-full h-12 rounded-full border-2 border-primary/20 hover:bg-primary/5 text-primary"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Preciso de ajuda do Coach IA
+                </Button>
+              </div>
             </div>
           )}
         </motion.div>
