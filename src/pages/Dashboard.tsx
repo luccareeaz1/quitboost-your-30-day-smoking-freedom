@@ -136,7 +136,7 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="text-5xl sm:text-6xl font-semibold tracking-tighter"
           >
-            Breathe Again.
+            QuitBoost.
           </motion.h1>
         </header>
 

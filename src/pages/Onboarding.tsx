@@ -118,7 +118,7 @@ const Onboarding = () => {
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center gap-2.5 mb-12">
           <Wind className="w-6 h-6 text-foreground" />
-          <span className="text-lg font-semibold text-foreground tracking-tight">Breathe Again</span>
+          <span className="text-lg font-semibold text-foreground tracking-tight">QuitBoost</span>
         </div>
 
         {/* Progress */}

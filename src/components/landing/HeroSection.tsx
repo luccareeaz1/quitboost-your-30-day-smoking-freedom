@@ -22,7 +22,7 @@ const HeroSection = () => {
             transition={{ duration: 0.8 }}
           >
             <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase mb-6">
-              Breathe Again AI
+              QuitBoost AI
             </p>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8 tracking-tight">
