@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import AppLayout from "@/components/app/AppLayout";
 import { 
-  BarChart, Bar, ResponsiveContainer, Tooltip 
+  BarChart, Bar, ResponsiveContainer, Tooltip, XAxis, YAxis 
 } from 'recharts';
 
 function CountUp({ value, prefix = "" }: { value: number, prefix?: string }) {
@@ -104,18 +104,48 @@ const Progresso = () => {
             </div>
           </AppleCard>
 
-          {/* SEÇÃO 4 – GRÁFICO DE REDUÇÃO (Simplified) */}
+          {/* SEÇÃO 4 – GRÁFICO DE REDUÇÃO (Claro e detalhado) */}
           <AppleCard className="p-8 shadow-soft">
-            <h2 className="text-2xl font-semibold tracking-tight mb-6">Redução Diária</h2>
-            <div className="h-[150px] w-full">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold tracking-tight">Redução Diária</h2>
+              <span className="text-xs font-bold text-apple-green bg-apple-green/10 px-2 py-1 rounded-full uppercase">Melhoria de 12%</span>
+            </div>
+            <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={weeklyData}>
-                  <Bar dataKey="count" fill="hsl(var(--foreground))" radius={[4, 4, 4, 4]} />
-                  <Tooltip cursor={{fill: 'transparent'}} contentStyle={{display: 'none'}} />
+                <BarChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <XAxis 
+                    dataKey="day" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} 
+                  />
+                  <Tooltip 
+                    cursor={{ fill: 'rgba(0,0,0,0.03)' }} 
+                    contentStyle={{ 
+                      borderRadius: '16px', 
+                      border: 'none', 
+                      boxShadow: 'var(--shadow-md)',
+                      fontSize: '12px'
+                    }} 
+                  />
+                  <Bar 
+                    dataKey="count" 
+                    fill="hsl(var(--primary))" 
+                    radius={[6, 6, 6, 6]} 
+                    barSize={32}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-sm text-muted-foreground mt-4">Sua evolução semanal em tempo real.</p>
+            <div className="flex justify-between items-center mt-6">
+              <p className="text-sm text-muted-foreground font-medium">Sua evolução semanal.</p>
+              <p className="text-xs font-bold text-primary">Cigarros/dia</p>
+            </div>
           </AppleCard>
         </div>
 
