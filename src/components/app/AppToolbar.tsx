@@ -1,11 +1,12 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, TrendingUp, Target, Users, Trophy, User } from "lucide-react";
+import { LayoutDashboard, TrendingUp, Target, Users, Trophy, User, Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
   { label: "Progresso", path: "/progresso", icon: TrendingUp },
   { label: "Desafios", path: "/desafios", icon: Target },
+  { label: "Coach IA", path: "/coach", icon: Bot },
   { label: "Comunidade", path: "/comunidade", icon: Users },
   { label: "Conquistas", path: "/conquistas", icon: Trophy },
   { label: "Perfil", path: "/perfil", icon: User },
