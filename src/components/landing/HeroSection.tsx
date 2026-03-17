@@ -1,91 +1,73 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { BackgroundLines } from "@/components/ui/BackgroundLines";
-import { Zap, ShieldCheck, HeartPulse, Wallet, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center pt-32 pb-20 overflow-hidden bg-white">
-      <BackgroundLines />
-      
-      <div className="container mx-auto px-6 relative z-10 w-full max-w-6xl">
-        <div className="text-center">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-background">
+      {/* Subtle gradient orbs */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] rounded-full bg-muted/50 blur-3xl" />
+        <div className="absolute bottom-1/4 -right-20 w-[600px] h-[600px] rounded-full bg-muted/30 blur-3xl" />
+      </div>
+
+      <div className="container relative z-10 mx-auto px-6 py-32">
+        <div className="max-w-4xl mx-auto text-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 border border-green-100 text-green-600 text-[10px] font-bold mb-10 uppercase tracking-[0.2em] shadow-sm"
-          >
-            <Zap size={14} fill="currentColor" /> Tecnologia + Ciência Comportamental
-          </motion.div>
-          
-          <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-6xl md:text-8xl font-black text-gray-900 leading-[1.05] tracking-tight mb-8"
+            transition={{ duration: 0.8 }}
           >
-            O fim do vício <br />
-            <span className="text-primary italic">começa agora.</span>
-          </motion.h1>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-500 font-medium leading-relaxed max-w-2xl mx-auto mb-12"
-          >
-            Recupere seu fôlego, sua saúde e seu dinheiro com o protocolo de 30 dias mais avançado já criado.
-          </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-5"
-          >
-            <Button 
-              size="lg" 
-              className="h-16 px-10 rounded-full text-lg font-bold bg-primary hover:bg-green-600 text-white shadow-xl shadow-green-500/20 hover:scale-105 active:scale-95 transition-all group"
-              onClick={() => navigate("/onboarding")}
-            >
-              Iniciar Minha Jornada <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="h-16 px-10 rounded-full text-lg font-bold border-gray-200 text-gray-600 hover:bg-gray-50 hover:scale-105 active:scale-95 transition-all"
-              onClick={() => {
-                const calc = document.getElementById('calculator');
-                calc?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Cálculo de Impacto
-            </Button>
-          </motion.div>
+            <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase mb-6">
+              QuitBoost AI
+            </p>
 
-          {/* Minimal Stats */}
-          <motion.div
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1 }}
-             transition={{ duration: 1, delay: 0.6 }}
-             className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t border-gray-100"
-          >
-            {[
-              { label: "Vidas Salvas", val: "5.4k+", icon: ShieldCheck },
-              { label: "Economizados", val: "R$ 1.2M", icon: Wallet },
-              { label: "Saúde Restabelecida", val: "100%", icon: HeartPulse },
-              { label: "Suporte Ativo", val: "24/7", icon: Zap },
-            ].map((stat, i) => (
-              <div key={i} className="flex flex-col items-center">
-                <stat.icon className="w-5 h-5 text-primary mb-3" />
-                <span className="text-xl font-bold text-gray-900">{stat.val}</span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{stat.label}</span>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.95] mb-8 tracking-tight">
+              Respire.
+              <br />
+              <span className="text-muted-foreground">Viva livre.</span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed">
+              Pare de fumar em 30 dias com tecnologia, psicologia comportamental
+              e uma comunidade que te apoia a cada passo.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                onClick={() => navigate("/onboarding")}
+                className="h-14 px-10 text-base rounded-full"
+              >
+                Começar grátis <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth" })}
+                className="h-14 px-10 text-base rounded-full"
+              >
+                Calcular economia
+              </Button>
+            </div>
+
+            {/* Social proof */}
+            <div className="mt-16 flex items-center justify-center gap-6">
+              <div className="flex -space-x-3">
+                {[1,2,3,4,5].map(i => (
+                  <div key={i} className="w-10 h-10 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs font-medium text-muted-foreground">
+                    {String.fromCharCode(64 + i)}
+                  </div>
+                ))}
               </div>
-            ))}
+              <div className="text-left">
+                <p className="text-foreground font-semibold text-sm">+12.000 pessoas</p>
+                <p className="text-muted-foreground text-xs">já respiram melhor</p>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>

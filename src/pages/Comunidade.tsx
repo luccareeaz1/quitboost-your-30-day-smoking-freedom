@@ -1,84 +1,98 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Users, Heart, MessageCircle, Send, AlertTriangle, Sparkles, MoreHorizontal } from "lucide-react";
+import { Users, Heart, MessageCircle, Send, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AppleCard } from "@/components/ui/apple-card";
 import AppLayout from "@/components/app/AppLayout";
-import { cn } from "@/lib/utils";
-
-interface Comment {
-  id: string;
-  author: string;
-  text: string;
-  timestamp: string;
-}
 
 interface Post {
   id: string;
   author: string;
   avatar: string;
-  level: number;
+  daysFree: number;
   text: string;
   likes: number;
-  commentCount: number;
+  comments: string[];
+  needsSupport: boolean;
   timestamp: string;
-  isEmergency?: boolean;
 }
 
 const mockPosts: Post[] = [
   {
     id: "1",
-    author: "Ricardo Mendes",
-    avatar: "RM",
-    level: 12,
-    text: "Acabei de completar minha primeira semana! A disposição física é outra. Persistam, vale cada segundo de esforço. 🚀",
-    likes: 42,
-    commentCount: 5,
-    timestamp: "15 min",
+    author: "Maria S.",
+    avatar: "M",
+    daysFree: 14,
+    text: "Duas semanas sem fumar! A vontade diminuiu muito depois do dia 10. Quem está no começo, não desista!",
+    likes: 24,
+    comments: ["Parabéns! Estou no dia 5, sua mensagem me deu forças.", "Incrível progresso!"],
+    needsSupport: false,
+    timestamp: "2h atrás",
   },
   {
     id: "2",
-    author: "Juliana Silva",
-    avatar: "JS",
-    level: 5,
-    isEmergency: true,
-    text: "Alguém online? A fissura pós-almoço está batendo forte agora. Dicas?",
-    likes: 12,
-    commentCount: 8,
-    timestamp: "2 min",
+    author: "João P.",
+    avatar: "J",
+    daysFree: 3,
+    text: "Hoje estou com muita vontade de fumar. Alguém tem alguma dica para passar essa hora?",
+    likes: 18,
+    comments: ["Beba água gelada e respire fundo por 3 minutos. Funciona comigo!", "Você consegue! Cada minuto conta."],
+    needsSupport: true,
+    timestamp: "4h atrás",
   },
   {
     id: "3",
-    author: "Carlos Oliveira",
-    avatar: "CO",
-    level: 28,
-    text: "Quase um mês! O segredo é substituir o hábito. Troquei o cigarro pela caminhada e minha ansiedade despencou.",
-    likes: 89,
-    commentCount: 12,
-    timestamp: "1h",
-  }
+    author: "Ana R.",
+    avatar: "A",
+    daysFree: 30,
+    text: "30 DIAS! Não acredito que consegui. Economizei R$450 e minha respiração melhorou muito.",
+    likes: 67,
+    comments: ["Que conquista!", "Você é uma inspiração!"],
+    needsSupport: false,
+    timestamp: "6h atrás",
+  },
+  {
+    id: "4",
+    author: "Carlos M.",
+    avatar: "C",
+    daysFree: 7,
+    text: "Uma semana! O exercício de respiração do app salvou meu dia pelo menos 3 vezes.",
+    likes: 31,
+    comments: ["O exercício de respiração é ótimo mesmo!"],
+    needsSupport: false,
+    timestamp: "8h atrás",
+  },
 ];
 
-const relevantUsers = [
-  { name: "Ana Paula", level: 12, avatar: "AP" },
-  { name: "Marcos Vinícius", level: 11, avatar: "MV" },
-  { name: "Sofia Luz", level: 13, avatar: "SL" },
-];
-
-export default function Comunidade() {
+const Comunidade = () => {
   const [posts, setPosts] = useState(mockPosts);
   const [newPost, setNewPost] = useState("");
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
 
-  const handleCreatePost = () => {
+  const handleLike = (id: string) => {
+    setLikedPosts(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+        setPosts(p => p.map(post => post.id === id ? { ...post, likes: post.likes - 1 } : post));
+      } else {
+        next.add(id);
+        setPosts(p => p.map(post => post.id === id ? { ...post, likes: post.likes + 1 } : post));
+      }
+      return next;
+    });
+  };
+
+  const handlePost = () => {
     if (!newPost.trim()) return;
     const post: Post = {
       id: Date.now().toString(),
       author: "Você",
       avatar: "V",
-      level: 1,
+      daysFree: 0,
       text: newPost,
       likes: 0,
-      commentCount: 0,
+      comments: [],
+      needsSupport: false,
       timestamp: "agora",
     };
     setPosts([post, ...posts]);
@@ -87,140 +101,90 @@ export default function Comunidade() {
 
   return (
     <AppLayout>
-      <div className="container max-w-6xl mx-auto px-6 py-10">
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          
-          {/* LEFT/MAIN: THE FEED */}
-          <div className="lg:col-span-2 space-y-8">
-            <header className="mb-10">
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight">Feed da <span className="text-primary italic">Comunidade.</span></h1>
-              <p className="text-gray-400 font-medium">Conecte-se com quem compartilha sua missão.</p>
-            </header>
+      <div className="container mx-auto px-6 max-w-2xl">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Comunidade</h1>
+          <p className="text-muted-foreground mb-8">Apoie e seja apoiado na sua jornada.</p>
+        </motion.div>
 
-            {/* CREATE POST CARD */}
-            <AppleCard className="p-6 bg-white border-gray-100 shadow-sm">
-               <div className="flex gap-4">
-                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">V</div>
-                 <div className="flex-1">
-                   <textarea 
-                     value={newPost}
-                     onChange={(e) => setNewPost(e.target.value)}
-                     placeholder="No que você está pensando?"
-                     className="w-full bg-transparent border-none focus:ring-0 text-gray-700 placeholder:text-gray-300 resize-none min-h-[80px] font-medium"
-                   />
-                   <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-50">
-                     <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" className="rounded-full text-gray-400 font-bold text-[10px] uppercase tracking-widest hover:text-primary">
-                          <Sparkles size={14} className="mr-2" /> Dica
-                        </Button>
-                        <Button variant="ghost" size="sm" className="rounded-full text-gray-400 font-bold text-[10px] uppercase tracking-widest hover:text-red-500">
-                          <AlertTriangle size={14} className="mr-2" /> Emergência
-                        </Button>
-                     </div>
-                     <Button 
-                       onClick={handleCreatePost}
-                       disabled={!newPost.trim()}
-                       className="rounded-full px-8 bg-primary text-white font-bold h-10 shadow-lg shadow-green-500/20 hover:scale-105 active:scale-95 transition-all"
-                     >
-                       Publicar
-                     </Button>
-                   </div>
-                 </div>
-               </div>
-            </AppleCard>
+        {/* New post */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="rounded-2xl bg-card border border-border p-5 mb-6"
+        >
+          <textarea
+            value={newPost}
+            onChange={e => setNewPost(e.target.value)}
+            placeholder="Compartilhe como você está se sentindo..."
+            className="w-full bg-transparent text-sm text-foreground placeholder:text-muted-foreground resize-none outline-none min-h-[80px]"
+          />
+          <div className="flex justify-end mt-3">
+            <Button size="sm" className="rounded-full" onClick={handlePost} disabled={!newPost.trim()}>
+              <Send className="w-4 h-4 mr-1" /> Publicar
+            </Button>
+          </div>
+        </motion.div>
 
-            {/* POSTS LIST */}
-            <div className="space-y-6">
-              {posts.map((post, i) => (
-                <motion.div
-                  key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
+        {/* Feed */}
+        <div className="space-y-4">
+          {posts.map((post, i) => (
+            <motion.div
+              key={post.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.05 }}
+              className={`rounded-2xl bg-card border p-5 ${
+                post.needsSupport ? "border-destructive/20" : "border-border"
+              }`}
+            >
+              {post.needsSupport && (
+                <div className="flex items-center gap-1.5 text-destructive text-[10px] font-medium uppercase tracking-wider mb-3">
+                  <AlertTriangle className="w-3 h-3" /> Precisa de apoio
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-sm font-medium text-foreground">
+                  {post.avatar}
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{post.author}</p>
+                  <p className="text-[10px] text-muted-foreground">{post.daysFree} dias sem fumar · {post.timestamp}</p>
+                </div>
+              </div>
+
+              <p className="text-sm text-foreground leading-relaxed mb-4">{post.text}</p>
+
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => handleLike(post.id)}
+                  className={`flex items-center gap-1.5 text-xs transition-colors ${
+                    likedPosts.has(post.id) ? "text-destructive" : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
-                  <AppleCard className={cn(
-                    "p-7 bg-white shadow-sm border-gray-100 hover:shadow-xl transition-all group",
-                    post.isEmergency && "border-red-100 bg-red-50/30"
-                  )}>
-                    <div className="flex justify-between items-start mb-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-400 group-hover:bg-primary group-hover:text-white transition-colors">
-                          {post.avatar}
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-gray-900">{post.author}</h4>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Nível {post.level}</span>
-                            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">· {post.timestamp} atrás</span>
-                          </div>
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="icon" className="rounded-full text-gray-300"><MoreHorizontal size={20} /></Button>
-                    </div>
+                  <Heart className={`w-4 h-4 ${likedPosts.has(post.id) ? "fill-current" : ""}`} />
+                  {post.likes}
+                </button>
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <MessageCircle className="w-4 h-4" /> {post.comments.length}
+                </span>
+              </div>
 
-                    <p className="text-gray-600 font-medium leading-relaxed mb-8">
-                      {post.text}
-                    </p>
-
-                    <div className="flex items-center gap-6 pt-6 border-t border-gray-50">
-                      <button className="flex items-center gap-2 text-gray-400 hover:text-red-500 transition-colors font-bold text-xs">
-                        <Heart size={18} /> {post.likes}
-                      </button>
-                      <button className="flex items-center gap-2 text-gray-400 hover:text-primary transition-colors font-bold text-xs">
-                        <MessageCircle size={18} /> {post.commentCount}
-                      </button>
-                    </div>
-                  </AppleCard>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* RIGHT: SIDEBAR */}
-          <div className="hidden lg:block space-y-8">
-            {/* USERS AT SAME LEVEL */}
-            <AppleCard className="p-8 bg-gray-50 border-gray-100">
-               <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400 mb-6 flex items-center gap-2">
-                 <Users size={14} className="text-primary" /> No mesmo nível
-               </h3>
-               <div className="space-y-6">
-                 {relevantUsers.map((user, i) => (
-                   <div key={i} className="flex items-center justify-between group cursor-pointer">
-                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-white border border-gray-100 flex items-center justify-center font-bold text-gray-400 text-xs group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all">
-                          {user.avatar}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-gray-900">{user.name}</p>
-                          <p className="text-[9px] font-black uppercase tracking-widest text-primary">Nível {user.level}</p>
-                        </div>
-                     </div>
-                     <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full p-0 text-gray-300 hover:text-primary"><Send size={14} /></Button>
-                   </div>
-                 ))}
-               </div>
-               <Button variant="ghost" className="w-full mt-8 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-white">Ver todos</Button>
-            </AppleCard>
-
-            {/* STATS CARD */}
-            <AppleCard className="p-8 bg-primary text-white border-transparent overflow-hidden relative">
-               <div className="absolute top-0 right-0 p-4 opacity-20"><Zap size={40} fill="currentColor" /></div>
-               <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/60 mb-6">Impacto Coletivo</h3>
-               <div className="space-y-4">
-                 <div>
-                   <p className="text-3xl font-black italic tracking-tighter">15.2k</p>
-                   <p className="text-[9px] font-bold uppercase tracking-widest text-white/60">Vidas em Transformação</p>
-                 </div>
-                 <div className="h-1 bg-white/20 rounded-full w-full overflow-hidden">
-                    <div className="h-full bg-white w-2/3" />
-                 </div>
-               </div>
-            </AppleCard>
-          </div>
-
+              {post.comments.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-border space-y-3">
+                  {post.comments.map((c, ci) => (
+                    <p key={ci} className="text-xs text-muted-foreground pl-4 border-l-2 border-border">{c}</p>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          ))}
         </div>
       </div>
     </AppLayout>
   );
-}
+};
+
+export default Comunidade;

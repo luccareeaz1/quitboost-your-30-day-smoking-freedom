@@ -2,9 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 
 import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
@@ -16,37 +15,8 @@ import Conquistas from "./pages/Conquistas";
 import Perfil from "./pages/Perfil";
 import AICoach from "./pages/AICoach";
 import NotFound from "./pages/NotFound";
-import PageTransition from "./components/app/PageTransition";
 
 const queryClient = new QueryClient();
-
-const ScrollToTop = () => {
-  const { pathname } = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-  return null;
-};
-
-const AnimatedRoutes = () => {
-  const location = useLocation();
-  return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
-        <Route path="/onboarding" element={<PageTransition><Onboarding /></PageTransition>} />
-        <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
-        <Route path="/progresso" element={<PageTransition><Progresso /></PageTransition>} />
-        <Route path="/desafios" element={<PageTransition><Desafios /></PageTransition>} />
-        <Route path="/comunidade" element={<PageTransition><Comunidade /></PageTransition>} />
-        <Route path="/conquistas" element={<PageTransition><Conquistas /></PageTransition>} />
-        <Route path="/perfil" element={<PageTransition><Perfil /></PageTransition>} />
-        <Route path="/coach" element={<PageTransition><AICoach /></PageTransition>} />
-        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-      </Routes>
-    </AnimatePresence>
-  );
-};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -54,8 +24,18 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <ScrollToTop />
-        <AnimatedRoutes />
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/progresso" element={<Progresso />} />
+          <Route path="/desafios" element={<Desafios />} />
+          <Route path="/comunidade" element={<Comunidade />} />
+          <Route path="/conquistas" element={<Conquistas />} />
+          <Route path="/perfil" element={<Perfil />} />
+          <Route path="/coach" element={<AICoach />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
