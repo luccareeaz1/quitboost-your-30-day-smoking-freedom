@@ -28,25 +28,92 @@ export default function AICoach() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
+  const getCoachResponse = (userText: string): string => {
+    const lowerText = userText.toLowerCase();
+    
+    // Categorias expandidas e lógica de "contexto"
+    const responsePool = {
+      craving: {
+        keywords: ["vontade", "fumar", "cigarro", "fissura", "desejo", "querendo", "pito", "maço"],
+        responses: [
+          "Essa onda de fissura é intensa, mas lembre-se: ela dura no máximo 10 minutos. Vamos focar na sua respiração? Inspire por 4 segundos, segure por 7, solte por 8.",
+          "O desejo é apenas um sinal químico do seu cérebro se reequilibrando. Não dê o comando de 'sim' para ele. Beba um copo de água bem gelada agora, isso ajuda a quebrar o padrão metal.",
+          "Imagine a fissura como uma nuvem passageira. Ela escurece o céu agora, mas logo o sol volta. O que você pode fazer com as mãos nos próximos 5 minutos para se distrair?",
+          "Você decidiu parar por um motivo sagrado: sua liberdade. Esse desejo de 5 minutos não é mais forte que sua promessa de uma vida inteira.",
+          "Sinta o ar entrando. Seus pulmões já estão começando a se limpar. Fumar agora resetaria todo esse esforço. Você é mais forte que um bastão de papel e nicotina.",
+          "Tente mastigar algo crocante, como uma cenoura ou uma maçã. A distração mecânica é uma aliada poderosa contra o hábito automático."
+        ]
+      },
+      anxiety: {
+        keywords: ["ansiedade", "nervoso", "estresse", "irritado", "impaciente", "bravo", "surtando", "tenso"],
+        responses: [
+          "A ansiedade é a nicotina tentando te convencer a voltar. Ela é uma mentirosa. O cigarro não relaxa, ele apenas alivia a abstinência que ele mesmo criou.",
+          "Feche os olhos por um momento. Sinta seus pés firmes no chão. Você está no controle, não seus nervos. Respire fundo e conte até dez lentamente.",
+          "É normal se sentir irritado. Seu corpo está 'reclamando' da falta de um veneno. Tente canalizar isso: faça 10 polichinelos ou uma caminhada rápida pelo corredor.",
+          "Sua mente está acelerada agora, mas isso vai passar. A irritabilidade é sinal de cura, não de fracasso. Aguenta firme, o pior já está ficando para trás.",
+          "Vamos tentar um exercício: nomeie 5 coisas que você vê, 4 que você pode tocar e 3 que você ouve. Isso vai te ancorar no presente."
+        ]
+      },
+      motivation: {
+        keywords: ["motivação", "desistir", "difícil", "ajuda", "consegue", "triste", "desanimado", "por que"],
+        responses: [
+          "Olhe para o quanto você já economizou e o fôlego que está ganhando. Cada dia sem fumar é uma vitória épica sobre uma das drogas mais viciantes do mundo.",
+          "Você não está 'perdendo' nada ao não fumar. Você está GANHANDO vida, tempo com quem ama e orgulho próprio. Você é um guerreiro(a)!",
+          "O 'eu' do futuro vai olhar para trás hoje e te agradecer imensamente por não ter desistido. Você está construindo uma nova versão de si mesmo.",
+          "Lembre-se: o sofrimento da disciplina é temporário, mas o arrependimento do fracasso dura muito mais. Escolha a disciplina hoje!",
+          "Sua determinação me inspira. Milhares de pessoas já conseguiram, e você tem todas as ferramentas necessárias para ser a próxima história de sucesso."
+        ]
+      },
+      relapse: {
+        keywords: ["falhei", "fumei", "recaída", "escorreguei", "perdi", "deslize", "fumei um", "voltei"],
+        responses: [
+          "Um deslize não é o fim da estrada, é apenas um buraco no caminho. Não use isso como desculpa para desistir. O que importa é o que você faz agora: recomece o cronômetro.",
+          "Respire fundo. A culpa é pior que a nicotina agora. Jogue fora o que sobrou, limpe o cinzeiro e vamos voltar ao plano. Eu ainda acredito 100% em você.",
+          "Analise o que aconteceu: foi estresse? Álcool? Um amigo? Aprenda com esse gatilho para blindar sua próxima tentativa. Você já sabe que consegue ficar sem.",
+          "Muitos ex-fumantes precisaram de várias tentativas. O sucesso não é linear. Levante a cabeça, perdoe-se e vamos vencer as próximas 24 horas juntos."
+        ]
+      },
+      greeting: {
+        keywords: ["oi", "olá", "bom dia", "boa tarde", "boa noite", "e aí", "tudo bem"],
+        responses: [
+          "Olá! Estou aqui firme e forte com você. Como está o nível da sua determinação hoje de 0 a 10?",
+          "Oi, guerreiro(a). É sempre bom falar com você. O que está passando pela sua mente agora?",
+          "Olá! Pronto para mais um dia de liberdade e pulmões limpos? Como posso te apoiar hoje?"
+        ]
+      }
+    };
+
+    const pick = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
+
+    // Lógica de "Logic & Relevance"
+    for (const category of Object.values(responsePool)) {
+      if (category.keywords.some(k => lowerText.includes(k))) {
+        return pick(category.responses);
+      }
+    }
+    
+    // Respostas contextuais para perguntas específicas
+    if (userText.includes("?")) {
+      return "Essa é uma ótima pergunta. O mais importante é entender que sua jornada é única. O que exatamente está te preocupando mais sobre esse ponto?";
+    }
+
+    if (userText.length < 10) {
+      return "Estou te ouvindo. Pode me contar mais sobre isso? Falar sobre os sentimentos ajuda a desarmar a vontade de fumar.";
+    }
+
+    return "Entendo o que você está dizendo. Manter o foco no presente e no seu propósito é a chave. Como você planejou lidar com os próximos gatilhos de hoje?";
+  };
+
   const simulateResponse = async (userText: string) => {
     setIsLoading(true);
     
-    // Simulate thinking/streaming delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Simular um "processamento neural" mais realista
+    const words = userText.split(' ').length;
+    const thinkingTime = Math.min(Math.max(words * 100, 1000), 3000);
+    await new Promise(resolve => setTimeout(resolve, thinkingTime));
     
-    let response = "Estou aqui para apoiar você. Lembre-se que cada desejo de fumar dura apenas alguns minutos. Tente respirar fundo dez vezes ou beber um copo de água gelada. Você é mais forte que esse vício!";
+    const response = getCoachResponse(userText);
     
-    const lowerText = userText.toLowerCase();
-    if (lowerText.includes("vontade") || lowerText.includes("fumar") || lowerText.includes("cigarro")) {
-      response = "Entendo perfeitamente essa sensação. É a fissura tentando te enganar. Ela vai passar em 5 a 10 minutos. Que tal fazer uma caminhada rápida ou praticar 2 minutos de respiração agora? Posso te guiar.";
-    } else if (lowerText.includes("ansiedade") || lowerText.includes("nervoso")) {
-      response = "A ansiedade é comum nesse período. Seu corpo está se reajustando. Tente a técnica do 4-7-8: inspire por 4 segundos, segure por 7 e expire por 8. Vamos tentar juntos?";
-    } else if (lowerText.includes("motivação") || lowerText.includes("desistir")) {
-      response = "Não desista agora! Pense nos benefícios: em apenas 24 horas seu risco de ataque cardíaco já diminuiu. Você economizou dinheiro e ganhou fôlego. O pior já passou, continue firme!";
-    } else if (lowerText.includes("obrigado") || lowerText.includes("vlw")) {
-      response = "De nada! Estou sempre aqui. Quando a vontade bater de novo, é só me chamar. Você está indo muito bem!";
-    }
-
     const newMessage: Message = {
       id: Date.now().toString(),
       role: 'assistant',
@@ -73,9 +140,10 @@ export default function AICoach() {
   };
 
   const quickPrompts = [
-    { label: "Estou com vontade de fumar", value: "Estou com muita vontade de fumar agora, me ajude!" },
-    { label: "Preciso de motivação", value: "Pode me dar uma frase de motivação para continuar?" },
-    { label: "Me ajude com a ansiedade", value: "Estou me sentindo ansioso, o que posso fazer?" }
+    { label: "Estou com vontade 🚬", value: "Estou com muita vontade de fumar agora, me ajude!" },
+    { label: "Preciso de motivação 🔥", value: "Pode me dar uma frase de motivação para continuar?" },
+    { label: "Tive uma recaída 😔", value: "Eu acabei fumando um cigarro, o que eu faço agora?" },
+    { label: "Dicas de ansiedade 🧘", value: "Estou muito ansioso, quais técnicas de respiração você recomenda?" }
   ];
 
   return (
