@@ -1,73 +1,38 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { AppleCard } from "@/components/ui/apple-card";
-import { Button } from "@/components/ui/button";
 import { 
-  Heart, Wind, Activity, Wallet, Cigarette, 
-  MessageCircle, Target, Trophy, Flame, CheckCircle2,
-  AlertTriangle, Sparkles
+  Heart, Activity, Wallet, Cigarette, 
+  Target, Trophy, Flame, CheckCircle2,
+  AlertTriangle, Sparkles, TrendingUp, Calendar
 } from "lucide-react";
+import { 
+  LineChart, Line, XAxis, YAxis, CartesianGrid, 
+  Tooltip, ResponsiveContainer, AreaChart, Area 
+} from 'recharts';
 import AppLayout from "@/components/app/AppLayout";
-import CravingModal from "@/components/dashboard/CravingModal";
-import StreakCard from "@/components/dashboard/StreakCard";
-import HealthTimeline from "@/components/dashboard/HealthTimeline";
-import DailyChallenge from "@/components/dashboard/DailyChallenge";
+import { Button } from "@/components/ui/button";
+import { AppleCard } from "@/components/ui/apple-card";
 
-interface Profile {
-  cigarrosPorDia: number;
-  anosFumando: number;
-  custoPorCigarro: number;
-  gatilhos: string[];
-  quitDate: string;
-}
-
-const dayPhrases: Record<string, string> = {
-  "0": "A jornada começa agora. Cada segundo conta.",
-  "1": "Primeiro dia completo. Você é mais forte do que imagina.",
-  "2": "Dois dias! Seu corpo já está se recuperando.",
-  "3": "Três dias! Sua respiração já está melhorando.",
-  "7": "Uma semana inteira! Você é inspiração.",
-  "14": "Duas semanas! Imparável.",
-  "21": "21 dias — um novo hábito se formou.",
-  "30": "30 dias! Você é um campeão absoluto.",
-};
-
-function getMotivationalPhrase(days: number): string {
-  if (dayPhrases[String(days)]) return dayPhrases[String(days)];
-  if (days > 30) return `${days} dias livre. Você reescreveu sua história.`;
-  if (days > 21) return "Reta final dos 30 dias. Quase lá.";
-  if (days > 14) return "Mais de duas semanas. Seu corpo agradece.";
-  if (days > 7) return "Mais de uma semana! Continue assim.";
-  if (days > 3) return "Cada dia é uma vitória. Siga em frente.";
-  return "Os primeiros dias são os mais difíceis. Você consegue.";
-}
-
-function getEmergencyButtonText(): string {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 9) return "Bom dia sem cigarro";
-  if (hour >= 9 && hour < 12) return "Resista à vontade matinal";
-  if (hour >= 12 && hour < 14) return "Pós-almoço: respire fundo";
-  if (hour >= 14 && hour < 18) return "Tarde livre de cigarro";
-  if (hour >= 18 && hour < 21) return "Noite tranquila";
-  return "Durma bem, acorde livre";
-}
+const chartData = [
+  { name: 'Seg', saude: 40, economia: 20 },
+  { name: 'Ter', saude: 50, economia: 40 },
+  { name: 'Qua', saude: 45, economia: 60 },
+  { name: 'Qui', saude: 60, economia: 80 },
+  { name: 'Sex', saude: 75, economia: 100 },
+  { name: 'Sab', saude: 85, economia: 120 },
+  { name: 'Dom', saude: 95, economia: 140 },
+];
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [now, setNow] = useState(new Date());
-  const [showCraving, setShowCraving] = useState(false);
-  const [moneyEmoji, setMoneyEmoji] = useState<{ show: boolean; emoji: string; x: number; y: number }>({ show: false, emoji: "", x: 0, y: 0 });
+  const [missionCompleted, setMissionCompleted] = useState(false);
 
-  const profile: Profile | null = useMemo(() => {
+  const profile = useMemo(() => {
     const stored = localStorage.getItem("quitboost_profile");
-    if (!stored) return null;
-    return JSON.parse(stored);
+    return stored ? JSON.parse(stored) : null;
   }, []);
-
-  const cravingCount = useMemo(() => {
-    return parseInt(localStorage.getItem("quitboost_craving_count") || "0", 10);
-  }, [showCraving]);
 
   useEffect(() => {
     if (!profile) {
@@ -83,169 +48,165 @@ export default function Dashboard() {
   const quitDate = new Date(profile.quitDate);
   const diffMs = now.getTime() - quitDate.getTime();
   const diffSeconds = Math.max(0, Math.floor(diffMs / 1000));
-  
-  const daysFormatted = Math.floor(diffSeconds / (3600 * 24));
-  const hoursFormatted = Math.floor((diffSeconds % (3600 * 24)) / 3600);
-  const minutesFormatted = Math.floor((diffSeconds % 3600) / 60);
-  const secondsFormatted = diffSeconds % 60;
-  const diffHours = diffSeconds / 3600;
-
-  const avoidedCount = Math.floor((diffSeconds / (3600 * 24)) * profile.cigarrosPorDia);
+  const days = Math.floor(diffSeconds / (3600 * 24));
+  const avoidedCount = Math.floor(days * profile.cigarrosPorDia);
   const moneySaved = avoidedCount * profile.custoPorCigarro;
-
-  const handleMoneyClick = (e: React.MouseEvent) => {
-    const emojis = ["🎉", "💰", "🤑", "💸", "✨"];
-    setMoneyEmoji({ show: true, emoji: emojis[Math.floor(Math.random() * emojis.length)], x: e.clientX, y: e.clientY });
-    setTimeout(() => setMoneyEmoji(prev => ({ ...prev, show: false })), 1200);
-  };
-
-  const handleCravingClick = () => {
-    const count = parseInt(localStorage.getItem("quitboost_craving_count") || "0", 10);
-    localStorage.setItem("quitboost_craving_count", String(count + 1));
-    setShowCraving(true);
-  };
 
   return (
     <AppLayout>
-      <div className="container mx-auto px-6 space-y-12 animate-fade-in pb-20">
+      <div className="container max-w-6xl mx-auto px-6 py-10 space-y-10">
         
-        {/* Floating money emoji */}
-        <AnimatePresence>
-          {moneyEmoji.show && (
-            <motion.div
-              initial={{ opacity: 1, y: 0, scale: 1 }}
-              animate={{ opacity: 0, y: -80, scale: 2 }}
-              exit={{ opacity: 0 }}
-              className="fixed z-[100] pointer-events-none text-4xl"
-              style={{ left: moneyEmoji.x - 20, top: moneyEmoji.y - 20 }}
-            >
-              {moneyEmoji.emoji}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* A) HEADER - HIGH IMPACT STATS */}
+        <header className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="md:col-span-3 mb-4"
+          >
+            <h1 className="text-3xl font-black text-gray-900 tracking-tight">Bom dia, <span className="text-primary italic">Vencedor.</span></h1>
+            <p className="text-gray-400 font-medium">Sua jornada pela liberdade continua.</p>
+          </motion.div>
 
-        {/* HEADER SECTION */}
-        <header className="text-center space-y-4 pt-10">
-          <motion.p 
-            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} 
-            className="text-muted-foreground uppercase tracking-widest text-xs font-semibold"
-          >
-            {getMotivationalPhrase(daysFormatted)}
-          </motion.p>
-          <motion.h1 
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="text-5xl sm:text-6xl font-semibold tracking-tighter"
-          >
-            QuitBoost.
-          </motion.h1>
+          {[
+            { label: "Dias sem fumar", value: days, icon: Calendar, color: "text-primary", bg: "bg-green-50" },
+            { label: "Economizados", value: `R$ ${moneySaved.toFixed(0)}`, icon: Wallet, color: "text-blue-600", bg: "bg-blue-50" },
+            { label: "Saúde Recuperada", value: "85%", icon: Activity, color: "text-orange-500", bg: "bg-orange-50" },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl transition-all group"
+            >
+              <div className={`w-12 h-12 ${stat.bg} rounded-2xl flex items-center justify-center mb-6 border border-transparent group-hover:border-current transition-all ${stat.color}`}>
+                <stat.icon size={24} />
+              </div>
+              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
+              <p className={`text-4xl font-black tracking-tight ${stat.color}`}>{stat.value}</p>
+            </motion.div>
+          ))}
         </header>
 
-        {/* CORE TIMER (Priority 1) */}
-        <section className="flex flex-col items-center justify-center">
-          <AppleCard className="p-10 sm:p-14 text-center max-w-3xl w-full shadow-elevated">
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-8 font-medium">Tempo sem fumar</p>
-            <div className="grid grid-cols-4 gap-4 sm:gap-8 divide-x divide-border">
-              <div className="flex flex-col items-center">
-                <span className="text-5xl sm:text-7xl font-bold tracking-tighter">{daysFormatted}</span>
-                <span className="text-xs text-muted-foreground mt-2 font-medium uppercase">Dias</span>
-              </div>
-              <div className="flex flex-col items-center pl-4 sm:pl-8">
-                <span className="text-5xl sm:text-7xl font-bold tracking-tighter">{String(hoursFormatted).padStart(2, "0")}</span>
-                <span className="text-xs text-muted-foreground mt-2 font-medium uppercase">Horas</span>
-              </div>
-              <div className="flex flex-col items-center pl-4 sm:pl-8">
-                <span className="text-5xl sm:text-7xl font-bold tracking-tighter">{String(minutesFormatted).padStart(2, "0")}</span>
-                <span className="text-xs text-muted-foreground mt-2 font-medium uppercase">Minutos</span>
-              </div>
-              <div className="flex flex-col items-center pl-4 sm:pl-8">
-                <span className="text-5xl sm:text-7xl font-bold tracking-tighter text-muted-foreground/40">{String(secondsFormatted).padStart(2, "0")}</span>
-                <span className="text-xs text-muted-foreground mt-2 font-medium uppercase">Segundos</span>
-              </div>
-            </div>
-          </AppleCard>
-        </section>
-
-        {/* EMERGENCY BUTTON */}
-        <div className="flex justify-center -mt-6">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={handleCravingClick}
-            className="rounded-full h-12 px-8 border-destructive/30 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-all shadow-sm"
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          
+          {/* B) MISSÃO DO DIA */}
+          <motion.div 
+             initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+             className="lg:col-span-1"
           >
-            <AlertTriangle className="w-4 h-4 mr-2" />
-            {getEmergencyButtonText()}
-            {cravingCount > 0 && (
-              <span className="ml-2 text-xs opacity-60">· Resistiu {cravingCount}x</span>
-            )}
-          </Button>
-        </div>
-
-        {/* SECONDARY STATS (Priority 2 & 3) */}
-        <div className="grid sm:grid-cols-2 gap-6">
-          <AppleCard 
-            className="p-8 flex items-center justify-between cursor-pointer hover:shadow-md transition-shadow" 
-            onClick={handleMoneyClick}
-          >
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Economia Total</p>
-              <p className="text-4xl font-semibold tracking-tight text-apple-green">R${moneySaved.toFixed(2)}</p>
-              <p className="text-[10px] text-muted-foreground mt-1">Toque para comemorar</p>
-            </div>
-            <Wallet className="h-8 w-8 text-muted-foreground/30" />
-          </AppleCard>
-          <AppleCard className="p-8 flex items-center justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Cigarros Evitados</p>
-              <p className="text-4xl font-semibold tracking-tight">{avoidedCount.toLocaleString()}</p>
-            </div>
-            <Cigarette className="h-8 w-8 text-muted-foreground/30" />
-          </AppleCard>
-        </div>
-
-        {/* STREAK & ACHIEVEMENTS */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <StreakCard days={daysFormatted} />
-          <AppleCard className="p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold tracking-tight">Conquistas Recentes</h2>
-              <Button variant="link" onClick={() => navigate("/conquistas")} className="text-xs text-muted-foreground">Ver Todas</Button>
-            </div>
-            <div className="flex gap-4">
-              {[
-                { title: "Início", icon: Trophy, color: "text-orange-500" },
-                { title: "3 Dias", icon: Trophy, color: "text-blue-500" },
-              ].map((ach, idx) => (
-                <div key={idx} className="flex-1 flex flex-col items-center justify-center p-4 border border-border/50 rounded-2xl bg-secondary/20">
-                  <ach.icon className={`h-8 w-8 ${ach.color} mb-2`} />
-                  <p className="text-xs font-semibold">{ach.title}</p>
+            <AppleCard className="p-8 h-full flex flex-col justify-between bg-primary text-white border-transparent overflow-hidden relative group">
+              <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-white/20 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-1000" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-6 text-white/80 font-bold uppercase tracking-widest text-[10px]">
+                  <Target size={14} /> Missão Prioritária
                 </div>
-              ))}
-            </div>
-          </AppleCard>
+                <h3 className="text-2xl font-black mb-4 leading-tight">Troque o café por um chá de hortelã hoje.</h3>
+                <p className="text-white/70 text-sm font-medium leading-relaxed mb-8">
+                  Estimulantes como o café podem despertar o gatilho neural do cigarro. Experimente algo refrescante.
+                </p>
+              </div>
+              
+              <Button 
+                onClick={() => setMissionCompleted(true)}
+                disabled={missionCompleted}
+                className={`w-full h-14 rounded-full font-black uppercase tracking-widest transition-all ${
+                  missionCompleted ? 'bg-white/20 text-white/50 cursor-not-allowed' : 'bg-white text-primary hover:scale-105 shadow-xl'
+                }`}
+              >
+                {missionCompleted ? 'Missão Concluída' : 'Marcar como Concluída'}
+              </Button>
+            </AppleCard>
+          </motion.div>
+
+          {/* C) PROGRESSO - CHARTS */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
+            className="lg:col-span-2"
+          >
+            <AppleCard className="p-8 h-full bg-white border-gray-100">
+              <div className="flex justify-between items-center mb-10">
+                <div>
+                  <h3 className="text-xl font-bold tracking-tight mb-1">Tendência de Evolução</h3>
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Saúde vs Economia</p>
+                </div>
+                <TrendingUp size={20} className="text-primary" />
+              </div>
+              
+              <div className="h-[280px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="colorSaude" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#22C55E" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#9CA3AF', fontSize: 12, fontWeight: 600}} 
+                      dy={10}
+                    />
+                    <Tooltip 
+                      contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.1)' }}
+                      labelStyle={{ fontWeight: 800, color: '#111827' }}
+                    />
+                    <Area type="monotone" dataKey="saude" stroke="#22C55E" strokeWidth={3} fillOpacity={1} fill="url(#colorSaude)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </AppleCard>
+          </motion.div>
         </div>
 
-        {/* CHALLENGES & AI COACH (Priority 4) */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <DailyChallenge />
-          <AppleCard className="p-8 cursor-pointer group" onClick={() => navigate("/coach")}>
-            <h2 className="text-xl font-semibold tracking-tight mb-6 flex items-center">
-              <Sparkles className="mr-2 h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
-              Coach IA
-            </h2>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground font-medium italic">"Você está indo muito bem! Lembre-se que cada cigarro evitado é uma vitória para sua saúde."</p>
-              <Button variant="outline" className="w-full mt-4 rounded-full font-medium h-11 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">Conversar com o Coach</Button>
-            </div>
-          </AppleCard>
-        </div>
+        {/* EXTRA SECTIONS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+           {/* IA COACH CARD */}
+           <motion.div 
+            whileHover={{ y: -5 }}
+            className="md:col-span-2 lg:col-span-2 pointer-events-auto"
+           >
+             <AppleCard className="p-8 bg-gray-50 border-gray-100 flex flex-col justify-between h-full group hover:bg-white hover:border-primary/20 transition-all cursor-pointer" onClick={() => navigate("/coach")}>
+                <div>
+                  <div className="flex items-center gap-2 mb-6 text-primary font-bold uppercase tracking-widest text-[10px]">
+                    <Sparkles size={14} /> Suporte Instantâneo
+                  </div>
+                  <h4 className="text-2xl font-black mb-3">Coach Neural IA</h4>
+                  <p className="text-gray-500 text-sm font-medium mb-6">"Você já evitou {avoidedCount} cigarros. Sua circulação está melhorando a cada minuto."</p>
+                </div>
+                <Button variant="outline" className="w-full h-12 rounded-full border-gray-200 group-hover:border-primary group-hover:text-primary transition-all">
+                  Conversar agora
+                </Button>
+             </AppleCard>
+           </motion.div>
 
-        {/* HEALTH TIMELINE (Priority 5) */}
-        <HealthTimeline diffHours={diffHours} />
+           {/* COMMUNITY & ACHIEVEMENTS */}
+           <motion.div 
+            whileHover={{ y: -5 }}
+            className="md:col-span-1 lg:col-span-1"
+           >
+             <AppleCard className="p-8 bg-white border-gray-100 flex flex-col items-center text-center justify-center h-full hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate("/comunidade")}>
+                <Flame size={32} className="text-orange-500 mb-4" />
+                <h4 className="text-lg font-bold">Comunidade</h4>
+                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">12 pessoas subiram de nível</p>
+             </AppleCard>
+           </motion.div>
+
+           <motion.div 
+            whileHover={{ y: -5 }}
+            className="md:col-span-1 lg:col-span-1"
+           >
+             <AppleCard className="p-8 bg-white border-gray-100 flex flex-col items-center text-center justify-center h-full hover:shadow-lg transition-all cursor-pointer" onClick={() => navigate("/conquistas")}>
+                <Trophy size={32} className="text-primary mb-4" />
+                <h4 className="text-lg font-bold">Conquistas</h4>
+                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">{days}/30 dias concluídos</p>
+             </AppleCard>
+           </motion.div>
+        </div>
 
       </div>
-
-      <CravingModal open={showCraving} onClose={() => setShowCraving(false)} />
     </AppLayout>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Wallet, TrendingUp, AlertCircle } from "lucide-react";
+import { Wallet, TrendingUp, AlertCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -14,72 +14,77 @@ const CalculatorSection = () => {
   const anual = diario * 365;
 
   return (
-    <section id="calculator" className="py-32 bg-[#0a0a0a] text-white relative overflow-hidden">
-      <div className="container mx-auto px-6 relative z-10">
+    <section id="calculator" className="py-32 bg-gray-50/50 text-gray-900 relative overflow-hidden">
+      <div className="container mx-auto px-6 relative z-10 max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mb-24"
         >
-          <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter text-white">
-            O PREÇO DA SUA <span className="text-primary">LIBERDADE</span>.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-bold mb-6 uppercase tracking-[0.2em] border border-green-100">
+            <Sparkles size={12} /> Cálculo de Prosperidade
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">
+            Veja o impacto da sua <span className="text-primary italic">liberdade.</span>
           </h2>
-          <p className="text-white/40 text-xl font-medium max-w-2xl mx-auto italic">
-            "Não é apenas fumaça. É o seu futuro sendo queimado."
+          <p className="text-gray-500 text-xl font-medium max-w-2xl mx-auto">
+            Não é só sobre quanto você gasta, mas sobre o que você poderia estar conquistando.
           </p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.98 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           className="max-w-4xl mx-auto"
         >
-          <div className="rounded-[3rem] border border-white/10 p-10 md:p-16 bg-white/5 backdrop-blur-xl shadow-2xl">
-            <div className="grid lg:grid-cols-2 gap-16">
-              <div className="space-y-12">
+          <div className="rounded-[2.5rem] border border-gray-100 p-8 md:p-12 bg-white shadow-2xl shadow-gray-200/50">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-10">
                 <div>
-                  <label className="block text-sm font-black uppercase tracking-widest text-white/60 mb-6">
-                    Hábito Diário: <span className="text-primary text-3xl italic ml-2">{cigarros} un.</span>
-                  </label>
+                  <div className="flex justify-between items-end mb-4">
+                    <label className="text-sm font-bold uppercase tracking-widest text-gray-400">Cigarros por Dia</label>
+                    <span className="text-primary text-3xl font-black italic">{cigarros} <small className="text-xs">un.</small></span>
+                  </div>
                   <input
                     type="range" min={1} max={60} value={cigarros}
                     onChange={e => setCigarros(+e.target.value)}
-                    className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
+                    className="w-full h-2 bg-gray-100 rounded-full appearance-none cursor-pointer accent-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-black uppercase tracking-widest text-white/60 mb-6">
-                    Custo Unitário: <span className="text-primary text-3xl italic ml-2">R${preco.toFixed(2)}</span>
-                  </label>
+                  <div className="flex justify-between items-end mb-4">
+                    <label className="text-sm font-bold uppercase tracking-widest text-gray-400">Preço do Cigarro</label>
+                    <span className="text-primary text-3xl font-black italic">R${preco.toFixed(2)}</span>
+                  </div>
                   <input
                     type="range" min={0.5} max={5} step={0.1} value={preco}
                     onChange={e => setPreco(+e.target.value)}
-                    className="w-full h-2 bg-white/10 rounded-full appearance-none cursor-pointer accent-primary"
+                    className="w-full h-2 bg-gray-100 rounded-full appearance-none cursor-pointer accent-primary"
                   />
                 </div>
 
-                <div className="flex items-center gap-4 p-5 rounded-3xl bg-primary/10 border border-primary/20">
-                  <AlertCircle className="w-6 h-6 text-primary flex-shrink-0" />
-                  <p className="text-xs font-bold text-primary/80 leading-relaxed uppercase tracking-wider">
-                    Em 5 anos, você terá queimado mais de <span className="text-white">R${(anual * 5).toLocaleString('pt-BR')}</span>. 
-                    Daria para comprar um carro zero.
+                <div className="flex items-center gap-4 p-5 rounded-3xl bg-green-50 border border-green-100">
+                  <AlertCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+                  <p className="text-xs font-bold text-green-700/80 leading-relaxed uppercase tracking-wider">
+                    Em 5 anos, você terá economizado mais de <span className="text-green-900">R${(anual * 5).toLocaleString('pt-BR')}</span>. 
+                    O equivalente a um carro ou a sua casa própria.
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-col justify-between space-y-8 bg-white/5 p-8 rounded-[2rem] border border-white/5">
+              <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 space-y-8">
                 <div className="space-y-6">
                   {[
-                    { label: "Dreno Diário", value: diario, color: "text-white/40" },
-                    { label: "Prejuízo Mensal", value: mensal, color: "text-white/60" },
-                    { label: "CRIME ANUAL", value: anual, color: "text-primary" },
+                    { label: "Economia Diária", value: diario, color: "text-gray-400" },
+                    { label: "Economia Mensal", value: mensal, color: "text-gray-600" },
+                    { label: "LUCRO ANUAL", value: anual, color: "text-primary" },
                   ].map(item => (
-                    <div key={item.label} className="flex justify-between items-end border-b border-white/5 pb-4">
-                      <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${item.color}`}>{item.label}</p>
-                      <p className={`text-3xl font-black italic tracking-tighter ${item.color === 'text-primary' ? 'text-primary scale-110' : 'text-white'}`}>
+                    <div key={item.label} className="flex justify-between items-end border-b border-gray-200 pb-4">
+                      <p className={`text-[10px] font-bold uppercase tracking-[0.2em] ${item.color}`}>{item.label}</p>
+                      <p className={`text-3xl font-black italic tracking-tighter ${item.color === 'text-primary' ? 'text-primary scale-110' : 'text-gray-900'}`}>
                         R${item.value.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </p>
                     </div>
@@ -88,10 +93,10 @@ const CalculatorSection = () => {
 
                 <Button 
                   size="lg" 
-                  className="w-full h-16 text-lg font-black uppercase tracking-widest rounded-full bg-primary text-black hover:scale-105 transition-all shadow-[0_0_30px_rgba(var(--primary),0.3)]"
+                  className="w-full h-16 text-md font-bold uppercase tracking-widest rounded-full bg-primary text-white hover:bg-green-600 transition-all shadow-xl shadow-green-500/20"
                   onClick={() => navigate("/onboarding")}
                 >
-                  ESTANCAR O PREJUÍZO AGORA
+                  Estancar Gastos Agora
                 </Button>
               </div>
             </div>
