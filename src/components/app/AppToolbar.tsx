@@ -37,6 +37,15 @@ const AppToolbar = () => {
             </button>
           );
         })}
+
+        <div className="w-[1px] h-6 bg-gray-100 mx-1" />
+
+        <button 
+          onClick={() => navigate("/perfil")}
+          className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-primary hover:bg-green-50 transition-all"
+        >
+          <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold">V</div>
+        </button>
       </nav>
     </div>
   );

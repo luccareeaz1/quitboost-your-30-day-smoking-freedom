@@ -39,7 +39,7 @@ const Onboarding = () => {
       ...data,
       quitDate: new Date().toISOString(),
     }));
-    navigate("/dashboard");
+    navigate("/checkout");
   };
 
   const steps = [
