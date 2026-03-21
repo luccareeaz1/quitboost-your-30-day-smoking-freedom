@@ -6,7 +6,7 @@ import { Check, ShieldCheck, Zap, ArrowLeft, Loader2, Sparkles, CreditCard, Land
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Checkout() {
   const navigate = useNavigate();
