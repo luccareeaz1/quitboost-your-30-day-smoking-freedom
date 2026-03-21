@@ -122,7 +122,7 @@ export default function AICoachInterface() {
       const response = getCoachResponse(text, profile);
       
       // 3. Save Assistant Message
-      const assistantMsg = await coachService.sendMessage(activeConversationId, "assistant", response);
+      const assistantMsg = await coachService.addMessage(activeConversationId, "assistant", response);
       setMessages(prev => [...prev, assistantMsg as any]);
       
     } catch (error) {

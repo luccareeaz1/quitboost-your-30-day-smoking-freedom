@@ -1040,7 +1040,7 @@ export type TablesUpdate<
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
-      ? I
+      ? U
       : never
     : never
 
