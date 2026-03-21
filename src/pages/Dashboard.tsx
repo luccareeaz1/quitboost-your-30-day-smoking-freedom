@@ -5,7 +5,7 @@ import {
   Activity, Wallet, Cigarette, Target, Trophy, Flame,
   Sparkles, TrendingUp, Calendar, Heart, Wind, Timer,
   Zap, Users, Bot, ChevronRight, Shield, Clock,
-  Lungs, Droplets, Brain, Eye
+  Droplets, Brain, Eye
 } from "lucide-react";
 import {
   CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -111,11 +111,9 @@ export default function Dashboard() {
 
   if (!profile || !stats) {
     return (
-       <AppLayout>
-          <div className="flex items-center justify-center min-h-[60vh]">
-             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full" />
-          </div>
-       </AppLayout>
+       <div className="flex items-center justify-center min-h-[60vh]">
+          <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full" />
+       </div>
     );
   }
 
@@ -143,7 +141,7 @@ export default function Dashboard() {
   const comparisonPercent = stats.days > 12 ? 110 : Math.round((stats.days / 12) * 100);
 
   return (
-    <AppLayout>
+    <>
       <div className="container max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8 pb-24">
 
         {/* UPGRADE BANNER */}
@@ -392,6 +390,6 @@ export default function Dashboard() {
           </p>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }

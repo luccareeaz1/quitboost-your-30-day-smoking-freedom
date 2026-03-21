@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import {
   User, Trophy, Flame, Calendar, Cigarette, Wallet, Settings,
@@ -42,9 +43,9 @@ const Perfil = () => {
       setEditData({
         nome: profile.display_name || user?.email?.split("@")[0] || "Usuário",
         bio: profile.bio || "",
-        cigarrosPorDia: profile.daily_cigarettes || 0,
+        cigarrosPorDia: profile.cigarettes_per_day || 0,
         anosFumando: profile.years_smoking || 0,
-        custoPorCigarro: profile.cigarette_cost || 0,
+        custoPorCigarro: Number(profile.price_per_cigarette) || 0,
         gatilhos: profile.triggers || [],
       });
       
@@ -59,8 +60,8 @@ const Perfil = () => {
     if (!profile) return null;
     const quitDate = new Date(profile.quit_date || new Date().toISOString());
     const diffDays = Math.max(0, Math.floor((Date.now() - quitDate.getTime()) / (1000 * 60 * 60 * 24)));
-    const cigarrosEvitados = diffDays * (profile.daily_cigarettes || 0);
-    const economia = cigarrosEvitados * (profile.cigarette_cost || 0);
+    const cigarrosEvitados = diffDays * (profile.cigarettes_per_day || 0);
+    const economia = cigarrosEvitados * (Number(profile.price_per_cigarette) || 0);
     const lifeRecoveredHours = Math.floor((cigarrosEvitados * 11) / 60);
 
     return { diffDays, cigarrosEvitados, economia, lifeRecoveredHours, quitDate };
@@ -70,12 +71,12 @@ const Perfil = () => {
     if (!user) return;
     try {
       setSaving(true);
-      await profileService.updateProfile(user.id, {
+      await profileService.update(user.id, {
         display_name: editData.nome,
         bio: editData.bio,
-        daily_cigarettes: editData.cigarrosPorDia,
+        cigarettes_per_day: editData.cigarrosPorDia,
         years_smoking: editData.anosFumando,
-        cigarette_cost: editData.custoPorCigarro,
+        price_per_cigarette: editData.custoPorCigarro,
         triggers: editData.gatilhos,
       });
       toast.success("Perfil atualizado com sucesso!");

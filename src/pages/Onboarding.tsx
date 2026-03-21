@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, Wind, Cigarette, Clock, DollarSign, Brain, Sparkles, Loader2, CheckCircle2, ShieldCheck, FileText } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { profileService, supabase } from "@/lib/services";
+import { profileService } from "@/lib/services";
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface OnboardingData {
@@ -62,15 +63,13 @@ const Onboarding = () => {
       setIsSubmitting(true);
       
       // 1. Update Profile
-      await profileService.updateProfile(user.id, {
-        daily_cigarettes: data.cigarrosPorDia,
+      await profileService.saveOnboarding(user.id, {
+        cigarettes_per_day: data.cigarrosPorDia,
         years_smoking: data.anosFumando,
-        cigarette_cost: data.custoPorCigarro,
+        price_per_cigarette: data.custoPorCigarro,
         triggers: data.gatilhos,
         quit_date: new Date().toISOString(),
-        onboarding_completed: true, // column name in DB is onboarding_completed
-        lgpd_consent: true,
-        lgpd_consent_date: new Date().toISOString()
+        display_name: user.email?.split("@")[0],
       });
 
       // 2. Save Consent Log (LGPD Requirement)

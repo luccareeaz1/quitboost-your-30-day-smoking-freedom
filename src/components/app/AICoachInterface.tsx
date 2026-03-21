@@ -86,15 +86,8 @@ export default function AICoachInterface() {
       if (!user) return;
       try {
         setInitLoading(true);
-        const conversations = await coachService.getConversations(user.id);
-        let convId;
-        
-        if (conversations.length > 0) {
-          convId = conversations[0].id; // Get latest
-        } else {
-          const newConv = await coachService.createConversation(user.id, "Health Support");
-          convId = newConv.id;
-        }
+        const conv = await coachService.getOrCreateConversation(user.id);
+        const convId = conv.id;
         
         setActiveConversationId(convId);
         const msgs = await coachService.getMessages(convId);
@@ -121,7 +114,7 @@ export default function AICoachInterface() {
       setInput("");
       
       // 1. Save User Message
-      const userMsg = await coachService.sendMessage(activeConversationId, "user", text);
+      const userMsg = await coachService.addMessage(activeConversationId, "user", text);
       setMessages(prev => [...prev, userMsg as any]);
 
       // 2. Simulate AI Brain (Medical Engine)
@@ -129,7 +122,7 @@ export default function AICoachInterface() {
       const response = getCoachResponse(text, profile);
       
       // 3. Save Assistant Message
-      const assistantMsg = await coachService.sendMessage(activeConversationId, "assistant", response);
+      const assistantMsg = await coachService.addMessage(activeConversationId, "assistant", response);
       setMessages(prev => [...prev, assistantMsg as any]);
       
     } catch (error) {

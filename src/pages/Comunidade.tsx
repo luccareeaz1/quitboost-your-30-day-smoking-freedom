@@ -532,7 +532,7 @@ const PostCard = ({ post, currentUser, isBookmarked, onLike, onBookmark, refresh
               {currentUser && (
                 <div className="flex gap-3 mb-8 bg-muted/30 p-4 rounded-2xl border border-muted">
                    <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 font-bold text-white shadow-md">
-                    {profile?.display_name ? profile.display_name[0].toUpperCase() : "U"}
+                    {currentUser?.email ? currentUser.email[0].toUpperCase() : "U"}
                   </div>
                   <div className="flex-1 relative">
                     <input 

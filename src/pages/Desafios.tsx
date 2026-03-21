@@ -56,7 +56,7 @@ const Desafios = () => {
       const [allChallenges, userCompletions, lbData] = await Promise.all([
         challengeService.getAll(),
         user ? challengeService.getUserChallenges(user.id) : Promise.resolve([]),
-        leaderboardService.getTopUsers()
+        leaderboardService.getTop()
       ]);
       
       setChallenges(allChallenges as any);
@@ -355,7 +355,7 @@ const Desafios = () => {
 
         {/* MEDICAL DISCLAIMER */}
         <div className="mt-12 p-6 rounded-[32px] bg-muted/50 border border-border text-center">
-           <AlertCircle className="w-6 h-6 text-primary mx-auto mb-2" />
+           <Info className="w-6 h-6 text-primary mx-auto mb-2" />
            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
              Protocolo de Desafios Baseado em Evidências<br />
              OMS • CDC • INCA • TCC

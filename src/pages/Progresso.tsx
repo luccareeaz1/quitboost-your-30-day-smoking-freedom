@@ -137,7 +137,7 @@ const Progresso = () => {
               <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shadow-inner"><Sparkles size={24} /></div>
               <h3 className="text-2xl font-black tracking-tighter leading-tight">Você é 30% mais rico hoje.</h3>
               <p className="text-xs font-medium opacity-80 leading-relaxed">Em 1 ano, você terá R${Math.round((profile.cigarettes_per_day || 0) * (Number(profile.price_per_cigarette) || 0) * 365)} extras na sua conta.</p>
-              <Button variant="outline" className="w-full h-12 rounded-xl bg-white/10 border-white/20 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/20">Ver Projeção</Button>
+              <button className="w-full h-12 rounded-xl bg-white/10 border border-white/20 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/20 transition-colors">Ver Projeção</button>
 
            </div>
         </div>
