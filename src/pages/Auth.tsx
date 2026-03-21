@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { AppleCard } from "@/components/ui/apple-card";
 import { Wind, Mail, Lock, ArrowRight, Loader2, Github } from "lucide-react";
@@ -108,13 +109,10 @@ export default function Auth() {
             variant="outline"
             className="w-full h-14 rounded-full border-gray-100 text-gray-600 font-bold hover:bg-gray-50 flex items-center justify-center gap-3 transition-all hover:scale-[1.01]"
             onClick={async () => {
-              const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                  redirectTo: window.location.origin + '/dashboard'
-                }
+              const { error } = await lovable.auth.signInWithOAuth("google", {
+                redirect_uri: window.location.origin,
               });
-              if (error) toast.error(error.message);
+              if (error) toast.error(error.message || "Erro ao entrar com Google");
             }}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">

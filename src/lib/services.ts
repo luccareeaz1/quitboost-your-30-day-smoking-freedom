@@ -2,7 +2,7 @@
 // QUITBOOST SUPABASE SERVICE LAYER
 // All database operations centralized here
 // ================================================================
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/types/database';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];

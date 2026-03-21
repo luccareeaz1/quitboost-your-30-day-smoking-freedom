@@ -5,7 +5,7 @@ import { ArrowRight, ArrowLeft, Wind, Cigarette, Clock, DollarSign, Brain, Spark
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService } from "@/lib/services";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface OnboardingData {
