@@ -5,7 +5,7 @@ import {
   Activity, Wallet, Cigarette, Target, Trophy, Flame,
   Sparkles, TrendingUp, Calendar, Heart, Wind, Timer,
   Zap, Users, Bot, ChevronRight, Shield, Clock,
-  Lungs, Droplets, Brain, Eye
+  Droplets, Brain, Eye
 } from "lucide-react";
 import {
   CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
