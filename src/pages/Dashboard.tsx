@@ -11,7 +11,8 @@ import {
   CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
   AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar
 } from "recharts";
-import AppLayout from "@/components/app/AppLayout";
+import { calculateQuitStats, calculateHealthProgress } from "@/lib/calculations";
+
 import { Button } from "@/components/ui/button";
 import { AppleCard } from "@/components/ui/apple-card";
 import { useAuth } from "@/hooks/useAuth";
@@ -83,42 +84,30 @@ export default function Dashboard() {
   const stats = useMemo(() => {
     if (!profile) return null;
     
-    const quitDateStr = profile.quit_date || new Date().toISOString();
-    const quitDate = new Date(quitDateStr);
-    const diffMs = now.getTime() - quitDate.getTime();
-    const diffSeconds = Math.max(0, Math.floor(diffMs / 1000));
-    const diffMinutes = Math.floor(diffSeconds / 60);
-    
-    const days = Math.floor(diffSeconds / (3600 * 24));
-    const hours = Math.floor((diffSeconds % (3600 * 24)) / 3600);
-    const minutes = Math.floor((diffSeconds % 3600) / 60);
-    const seconds = diffSeconds % 60;
+    // Use the central calculation engine
+    const quitStats = calculateQuitStats({
+      quit_date: profile.quit_date || new Date().toISOString(),
+      cigarettes_per_day: profile.cigarettes_per_day || 0,
+      price_per_cigarette: Number(profile.price_per_cigarette) || 0,
+    }, now);
 
-    const cigarettesPerDay = profile.cigarettes_per_day || 20;
-    const pricePerCigarette = Number(profile.price_per_cigarette) || 1.25;
-
-    const avoidedCount = Math.floor((diffSeconds / 86400) * cigarettesPerDay);
-    const moneySaved = avoidedCount * pricePerCigarette;
-
-    // Time of life recovered: ~11 min per cigarette
-    const minutesRecovered = avoidedCount * 11;
-    const hoursRecovered = Math.floor(minutesRecovered / 60);
-
-    // Health milestones with progress
-    const milestonesWithProgress = HEALTH_MILESTONES.map((m) => ({
+    const milestonesWithProgress = calculateHealthProgress(quitStats.totalSeconds).map(m => ({
       ...m,
-      progress: Math.min(100, (diffMinutes / m.minutes) * 100),
-      achieved: diffMinutes >= m.minutes,
+      icon: HEALTH_MILESTONES.find(hm => hm.label === m.label)?.icon || Heart,
+      color: HEALTH_MILESTONES.find(hm => hm.label === m.label)?.color || "#ccc"
     }));
 
     const healthPercentage = Math.min(100, Math.round(
-      milestonesWithProgress.filter((m) => m.achieved).length / HEALTH_MILESTONES.length * 100
+      milestonesWithProgress.filter((m) => m.achieved).length / milestonesWithProgress.length * 100
     ));
 
     return {
-      days, hours, minutes, seconds, avoidedCount, moneySaved, hoursRecovered, healthPercentage, milestonesWithProgress
+      ...quitStats,
+      healthPercentage,
+      milestonesWithProgress
     };
   }, [profile, now]);
+
 
   if (!profile || !stats) {
     return (

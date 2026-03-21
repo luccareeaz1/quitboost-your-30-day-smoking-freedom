@@ -13,6 +13,9 @@ import {
   BarChart, Bar, ResponsiveContainer, Tooltip, XAxis, YAxis,
   LineChart, Line, CartesianGrid, PieChart, Pie, Cell, AreaChart, Area
 } from "recharts";
+import { calculateQuitStats, calculateHealthProgress } from "@/lib/calculations";
+import { cn } from "@/lib/utils";
+
 
 // ========== ANIMATED COUNTER ==========
 function CountUp({ value, prefix = "", suffix = "", decimals = 2 }: { value: number; prefix?: string; suffix?: string; decimals?: number }) {
@@ -51,29 +54,24 @@ const Progresso = () => {
 
   const stats = useMemo(() => {
     if (!profile) return null;
-    const quitDate = new Date(profile.quit_date || new Date().toISOString());
-    const diffMs = now.getTime() - quitDate.getTime();
-    const diffMinutes = Math.max(0, Math.floor(diffMs / 60000));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    const dailyCigs = profile.daily_cigarettes || 0;
-    const cigCost = profile.cigarette_cost || 0;
-    
-    const avoidedCount = diffDays * dailyCigs;
-    const totalSaved = avoidedCount * cigCost;
-    const minutesRecovered = avoidedCount * 11;
-    const hoursRecovered = Math.floor(minutesRecovered / 60);
+    const quitStats = calculateQuitStats({
+      quit_date: profile.quit_date || new Date().toISOString(),
+      cigarettes_per_day: profile.cigarettes_per_day || 0,
+      price_per_cigarette: Number(profile.price_per_cigarette) || 0,
+    }, now);
 
-    const achievedMilestones = healthMilestones.filter(m => diffMinutes >= m.minutes);
-    const nextMilestone = healthMilestones.find(m => diffMinutes < m.minutes);
+    const achievedMilestones = calculateHealthProgress(quitStats.totalSeconds).filter(m => m.achieved);
+    const nextMilestone = calculateHealthProgress(quitStats.totalSeconds).find(m => !m.achieved);
 
     const chartData = Array.from({ length: 7 }, (_, i) => ({
       name: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"][i],
-      valor: Math.round(dailyCigs * cigCost * (i + 1))
+      valor: Math.round((profile.cigarettes_per_day || 0) * (Number(profile.price_per_cigarette) || 0) * (i + 1))
     }));
 
-    return { diffDays, avoidedCount, totalSaved, hoursRecovered, achievedMilestones, nextMilestone, diffMinutes, chartData };
+    return { ...quitStats, achievedMilestones, nextMilestone, chartData };
   }, [profile, now]);
+
 
   if (loading || !profile || !stats) {
     return (
@@ -100,14 +98,15 @@ const Progresso = () => {
               <div className="absolute top-0 right-0 p-10 opacity-10"><Wallet size={120} /></div>
               <div className="relative z-10 text-center space-y-4">
                  <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-40">Capital de Saúde Recuperado</p>
-                 <div className="text-6xl sm:text-8xl font-black tracking-tighter italic">
-                    <CountUp value={stats.totalSaved} prefix="R$" />
-                 </div>
-                 <div className="flex items-center justify-center gap-4 text-xs font-bold opacity-60">
+                  <div className="text-6xl sm:text-8xl font-black tracking-tighter italic">
+                    <CountUp value={stats.moneySaved} prefix="R$" />
+                  </div>
+                  <div className="flex items-center justify-center gap-4 text-xs font-bold opacity-60">
                     <div className="flex items-center gap-2"><TrendingDown className="w-4 h-4" /> <span>-{stats.avoidedCount} cigarros</span></div>
                     <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                     <div className="flex items-center gap-2"><Clock className="w-4 h-4" /> <span>+{stats.hoursRecovered}h de vida</span></div>
-                 </div>
+                  </div>
+
               </div>
            </AppleCard>
         </section>
@@ -137,8 +136,9 @@ const Progresso = () => {
            <div className="p-8 rounded-[40px] bg-primary text-white shadow-lg space-y-6 flex flex-col justify-center">
               <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shadow-inner"><Sparkles size={24} /></div>
               <h3 className="text-2xl font-black tracking-tighter leading-tight">Você é 30% mais rico hoje.</h3>
-              <p className="text-xs font-medium opacity-80 leading-relaxed">Em 1 ano, você terá R${Math.round((profile.daily_cigarettes! * profile.cigarette_cost! * 365))} extras na sua conta.</p>
+              <p className="text-xs font-medium opacity-80 leading-relaxed">Em 1 ano, você terá R${Math.round((profile.cigarettes_per_day || 0) * (Number(profile.price_per_cigarette) || 0) * 365)} extras na sua conta.</p>
               <Button variant="outline" className="w-full h-12 rounded-xl bg-white/10 border-white/20 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/20">Ver Projeção</Button>
+
            </div>
         </div>
 
@@ -155,8 +155,9 @@ const Progresso = () => {
            <div className="space-y-12 relative">
               <div className="absolute left-[21px] top-4 bottom-4 w-1 bg-muted rounded-full" />
               {healthMilestones.map((m, i) => {
-                const achieved = stats.diffMinutes >= m.minutes;
-                const progress = Math.min(100, (stats.diffMinutes / m.minutes) * 100);
+                const achieved = stats.totalSeconds / 60 >= m.minutes;
+                const progress = Math.min(100, (stats.totalSeconds / 60 / m.minutes) * 100);
+
                 
                 return (
                   <motion.div
