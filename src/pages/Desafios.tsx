@@ -56,7 +56,7 @@ const Desafios = () => {
       const [allChallenges, userCompletions, lbData] = await Promise.all([
         challengeService.getAll(),
         user ? challengeService.getUserChallenges(user.id) : Promise.resolve([]),
-        leaderboardService.getTopUsers()
+        leaderboardService.getTop()
       ]);
       
       setChallenges(allChallenges as any);
