@@ -114,7 +114,7 @@ export default function AICoachInterface() {
       setInput("");
       
       // 1. Save User Message
-      const userMsg = await coachService.sendMessage(activeConversationId, "user", text);
+      const userMsg = await coachService.addMessage(activeConversationId, "user", text);
       setMessages(prev => [...prev, userMsg as any]);
 
       // 2. Simulate AI Brain (Medical Engine)
