@@ -42,9 +42,9 @@ const Perfil = () => {
       setEditData({
         nome: profile.display_name || user?.email?.split("@")[0] || "Usuário",
         bio: profile.bio || "",
-        cigarrosPorDia: profile.daily_cigarettes || 0,
+        cigarrosPorDia: profile.cigarettes_per_day || 0,
         anosFumando: profile.years_smoking || 0,
-        custoPorCigarro: profile.cigarette_cost || 0,
+        custoPorCigarro: Number(profile.price_per_cigarette) || 0,
         gatilhos: profile.triggers || [],
       });
       
