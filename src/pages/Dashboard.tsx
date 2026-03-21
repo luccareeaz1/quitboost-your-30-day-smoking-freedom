@@ -141,7 +141,7 @@ export default function Dashboard() {
   const comparisonPercent = stats.days > 12 ? 110 : Math.round((stats.days / 12) * 100);
 
   return (
-    <AppLayout>
+    <>
       <div className="container max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8 pb-24">
 
         {/* UPGRADE BANNER */}
