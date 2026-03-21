@@ -70,12 +70,12 @@ const Perfil = () => {
     if (!user) return;
     try {
       setSaving(true);
-      await profileService.updateProfile(user.id, {
+      await profileService.update(user.id, {
         display_name: editData.nome,
         bio: editData.bio,
-        daily_cigarettes: editData.cigarrosPorDia,
+        cigarettes_per_day: editData.cigarrosPorDia,
         years_smoking: editData.anosFumando,
-        cigarette_cost: editData.custoPorCigarro,
+        price_per_cigarette: editData.custoPorCigarro,
         triggers: editData.gatilhos,
       });
       toast.success("Perfil atualizado com sucesso!");
