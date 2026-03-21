@@ -183,7 +183,7 @@ export type Database = {
           {
             foreignKeyName: "coach_conversations_user_id_fkey"
             columns: ["user_id"]
-            isOneToOne: false0
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
