@@ -3,103 +3,36 @@ import { motion, AnimatePresence, animate } from "framer-motion";
 import {
   Trophy, Star, Flame, Heart, Shield, Zap, Target,
   Award, Lock, Share2, ChevronRight, Sparkles, Clock,
-  TrendingUp, Crown, Medal, Gift, Check
+  TrendingUp, Crown, Medal, Gift, Check, Info, Loader2
 } from "lucide-react";
 import AppLayout from "@/components/app/AppLayout";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { achievementService } from "@/lib/services";
+import { toast } from "sonner";
 
-// ========== MEDICAL BADGES (Fontes: OMS, CDC, INCA) ==========
-interface Badge {
+interface Achievement {
   id: string;
-  label: string;
-  daysNeeded: number;
-  emoji: string;
-  icon: any;
-  color: string;
-  bg: string;
-  border: string;
-  story: string;
-  medicalFact: string;
-  source: string;
-  rarity: "comum" | "raro" | "épico" | "lendário";
+  title: string;
+  description: string;
   points: number;
+  category: string;
+  rarity: "comum" | "raro" | "épico" | "lendário";
+  icon_url: string;
+  requirement_type: string;
+  requirement_value: number;
+  medical_fact?: string;
+  source?: string;
 }
 
-const badgeDefinitions: Badge[] = [
-  {
-    id: "b1", label: "Primeiro Passo", daysNeeded: 0, emoji: "🌱",
-    icon: Sparkles, color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20",
-    story: "Você tomou a decisão mais importante da sua vida: começar.",
-    medicalFact: "Segundo a OMS, a decisão de parar de fumar é o passo mais importante do tratamento. A intenção precede a ação.",
-    source: "OMS - Stages of Change Model (Prochaska & DiClemente)", rarity: "comum", points: 10,
-  },
-  {
-    id: "b2", label: "24 Horas Livre", daysNeeded: 1, emoji: "⭐",
-    icon: Star, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20",
-    story: "24 horas sem fumar! O monóxido de carbono saiu do seu sangue.",
-    medicalFact: "Após 24 horas sem fumar, o nível de monóxido de carbono (CO) no sangue retorna ao normal, permitindo que o oxigênio circule de forma eficiente.",
-    source: "CDC - Health Benefits of Smoking Cessation", rarity: "comum", points: 25,
-  },
-  {
-    id: "b3", label: "72 Horas — Desintoxicação", daysNeeded: 3, emoji: "💪",
-    icon: Shield, color: "text-violet-500", bg: "bg-violet-500/10", border: "border-violet-500/20",
-    story: "A nicotina foi completamente eliminada do seu corpo!",
-    medicalFact: "Após 72 horas, a nicotina é totalmente eliminada do organismo. Os brônquios relaxam, facilitando a respiração. Os sentidos de paladar e olfato começam a se recuperar.",
-    source: "INCA - Protocolo Clínico do Tabagismo", rarity: "comum", points: 40,
-  },
-  {
-    id: "b4", label: "1 Semana Invencível", daysNeeded: 7, emoji: "🔥",
-    icon: Flame, color: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20",
-    story: "Uma semana! As terminações nervosas começam a se regenerar.",
-    medicalFact: "Após 7 dias, as terminações nervosas nas vias aéreas começam a se regenerar. A capacidade pulmonar começa a melhorar mensurável. O risco de infarto agudo já diminuiu significativamente.",
-    source: "OMS - WHO Report on Global Tobacco Epidemic", rarity: "raro", points: 60,
-  },
-  {
-    id: "b5", label: "2 Semanas de Aço", daysNeeded: 14, emoji: "🚀",
-    icon: TrendingUp, color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20",
-    story: "A circulação sanguínea melhorou significativamente!",
-    medicalFact: "Após 2 semanas, a circulação sanguínea melhora em até 30%. Caminhar fica mais fácil. A função pulmonar pode aumentar até 30%. O período de maior risco de recaída foi superado.",
-    source: "CDC - Treating Tobacco Use and Dependence", rarity: "raro", points: 80,
-  },
-  {
-    id: "b6", label: "21 Dias — Novo Cérebro", daysNeeded: 21, emoji: "🧠",
-    icon: Zap, color: "text-cyan-500", bg: "bg-cyan-500/10", border: "border-cyan-500/20",
-    story: "Um novo padrão neurológico se formou no seu cérebro!",
-    medicalFact: "Estudos de neuroimagem mostram que após 21 dias, novos caminhos neurais se consolidam. O córtex pré-frontal (autocontrole) fortalece sua atividade, enquanto a amígdala (desejo) reduz a resposta ao cigarro.",
-    source: "OMS - Neurosciense of Addiction", rarity: "épico", points: 100,
-  },
-  {
-    id: "b7", label: "30 Dias — Campeão!", daysNeeded: 30, emoji: "🏆",
-    icon: Trophy, color: "text-amber-600", bg: "bg-amber-600/10", border: "border-amber-600/20",
-    story: "30 dias! A função pulmonar aumentou dramaticamente.",
-    medicalFact: "Após 1 mês: função pulmonar melhora 30%, cílios das vias aéreas regeneram (melhor limpeza do muco), tosse e cansaço diminuem significativamente. O risco de infecções respiratórias cai.",
-    source: "INCA - Benefícios da Cessação Tabágica", rarity: "épico", points: 150,
-  },
-  {
-    id: "b8", label: "90 Dias — Lendário", daysNeeded: 90, emoji: "👑",
-    icon: Crown, color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/20",
-    story: "Seu risco de ataque cardíaco caiu significativamente!",
-    medicalFact: "Após 3 meses: risco de ataque cardíaco reduz em 50%. A circulação melhora substancialmente. A capacidade pulmonar pode aumentar até 10% do valor perdido. Tosse crônica praticamente desaparece.",
-    source: "OMS, CDC", rarity: "lendário", points: 300,
-  },
-  {
-    id: "b9", label: "1 Ano — Imortal", daysNeeded: 365, emoji: "🌟",
-    icon: Star, color: "text-yellow-500", bg: "bg-yellow-500/10", border: "border-yellow-500/20",
-    story: "O risco de doença coronariana caiu pela metade!",
-    medicalFact: "Após 1 ano sem fumar: o risco de doença coronariana cai pela metade comparado a quem continua fumando. O risco de AVC se aproxima ao de não-fumantes. Você salvou literalmente milhares de minutos de expectativa de vida.",
-    source: "OMS - Global Tobacco Epidemic Report, CDC", rarity: "lendário", points: 500,
-  },
-];
-
-const RARITY_MAP = {
-  "comum": { label: "Comum", color: "text-gray-500", bg: "bg-gray-100", border: "border-gray-200" },
-  "raro": { label: "Raro", color: "text-blue-500", bg: "bg-blue-50", border: "border-blue-200" },
-  "épico": { label: "Épico", color: "text-purple-500", bg: "bg-purple-50", border: "border-purple-200" },
-  "lendário": { label: "Lendário", color: "text-amber-500", bg: "bg-amber-50", border: "border-amber-200" },
+const RARITY_MAP: any = {
+  "comum": { label: "Comum", color: "text-slate-500", bg: "bg-slate-500/10", border: "border-slate-500/20" },
+  "raro": { label: "Raro", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+  "épico": { label: "Épico", color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/20" },
+  "lendário": { label: "Lendário", color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" },
 };
 
-// ========== ANIMATED COUNTER ==========
 function AnimatedCounter({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);
   useEffect(() => {
@@ -111,352 +44,266 @@ function AnimatedCounter({ value }: { value: number }) {
 
 const Conquistas = () => {
   const navigate = useNavigate();
-  const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
-  const [shareModal, setShareModal] = useState<Badge | null>(null);
+  const { user, profile } = useAuth();
+  
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [unlockedIds, setUnlockedIds] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
 
-  const profile = useMemo(() => {
-    const stored = localStorage.getItem("quitboost_profile");
-    if (!stored) return null;
-    return JSON.parse(stored);
-  }, []);
+  const loadData = async () => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      const [all, userAchievements] = await Promise.all([
+        achievementService.getAll(),
+        achievementService.getUserAchievements(user.id)
+      ]);
+      setAchievements(all as any);
+      setUnlockedIds(new Set(userAchievements.map(ua => ua.achievement_id)));
+    } catch (error) {
+      console.error("Erro ao carregar conquistas:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (!profile) {
-    navigate("/onboarding");
-    return null;
+  useEffect(() => {
+    loadData();
+  }, [user]);
+
+  // Derived stats
+  const stats = useMemo(() => {
+    if (!profile) return null;
+    const quitDate = new Date(profile.quit_date || new Date().toISOString());
+    const diffDays = Math.floor((Date.now() - quitDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    const unlockedList = achievements.filter(a => unlockedIds.has(a.id));
+    const totalPoints = unlockedList.reduce((sum, a) => sum + a.points, 0);
+    
+    const lockedList = achievements.filter(a => !unlockedIds.has(a.id));
+    const nextAchievement = lockedList.find(a => a.requirement_type === 'days') || null;
+    
+    let progress = 0;
+    if (nextAchievement) {
+       progress = Math.min(100, (diffDays / nextAchievement.requirement_value) * 100);
+    }
+
+    const currentLevel = (() => {
+      if (totalPoints >= 1000) return { level: 6, name: "Lenda Viva", icon: "🌌" };
+      if (totalPoints >= 500) return { level: 5, name: "Mestre", icon: "👑" };
+      if (totalPoints >= 300) return { level: 4, name: "Guerreiro", icon: "⚔️" };
+      if (totalPoints >= 150) return { level: 3, name: "Determinado", icon: "🔥" };
+      if (totalPoints >= 50) return { level: 2, name: "Iniciante Forte", icon: "💪" };
+      return { level: 1, name: "Recruta", icon: "🌱" };
+    })();
+
+    return { diffDays, totalPoints, unlockedCount: unlockedList.length, nextAchievement, progress, currentLevel };
+  }, [profile, achievements, unlockedIds]);
+
+  const filteredList = useMemo(() => {
+    if (filter === "unlocked") return achievements.filter(a => unlockedIds.has(a.id));
+    if (filter === "locked") return achievements.filter(a => !unlockedIds.has(a.id));
+    return achievements;
+  }, [achievements, unlockedIds, filter]);
+
+  if (loading || !stats) {
+    return (
+      <AppLayout>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <Loader2 className="w-10 h-10 text-primary animate-spin" />
+          <p className="text-muted-foreground font-medium">Sincronizando seu Hall da Fama...</p>
+        </div>
+      </AppLayout>
+    );
   }
-
-  const quitDate = new Date(profile.quitDate);
-  const diffDays = Math.floor((Date.now() - quitDate.getTime()) / (1000 * 60 * 60 * 24));
-
-  const unlockedBadges = badgeDefinitions.filter((b) => diffDays >= b.daysNeeded);
-  const lockedBadges = badgeDefinitions.filter((b) => diffDays < b.daysNeeded);
-  const totalPoints = unlockedBadges.reduce((sum, b) => sum + b.points, 0);
-
-  const nextBadge = lockedBadges.length > 0 ? lockedBadges[0] : null;
-  const nextBadgeProgress = nextBadge ? Math.min(100, (diffDays / nextBadge.daysNeeded) * 100) : 100;
-  const daysRemaining = nextBadge ? nextBadge.daysNeeded - diffDays : 0;
-
-  const currentLevel = useMemo(() => {
-    if (totalPoints >= 1000) return { level: 6, name: "Lenda Viva", icon: "🌟" };
-    if (totalPoints >= 500) return { level: 5, name: "Mestre", icon: "👑" };
-    if (totalPoints >= 300) return { level: 4, name: "Guerreiro", icon: "⚔️" };
-    if (totalPoints >= 150) return { level: 3, name: "Determinado", icon: "🔥" };
-    if (totalPoints >= 50) return { level: 2, name: "Forte", icon: "💪" };
-    return { level: 1, name: "Iniciante", icon: "🌱" };
-  }, [totalPoints]);
-
-  const filteredBadges = useMemo(() => {
-    if (filter === "unlocked") return badgeDefinitions.filter((b) => diffDays >= b.daysNeeded);
-    if (filter === "locked") return badgeDefinitions.filter((b) => diffDays < b.daysNeeded);
-    return badgeDefinitions;
-  }, [filter, diffDays]);
 
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 sm:px-6 max-w-2xl pb-20">
-        {/* HEADER */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Conquistas</h1>
-          <p className="text-muted-foreground text-sm mb-6">
-            {unlockedBadges.length} de {badgeDefinitions.length} desbloqueadas — Cada badge tem fundamento médico.
-          </p>
-        </motion.div>
+      <div className="container mx-auto px-4 sm:px-6 max-w-2xl pb-24 pt-10">
+        <header className="mb-10 text-center animate-fade-in">
+           <div className="inline-block p-4 rounded-full bg-amber-500/10 mb-4 border border-amber-500/20 shadow-lg shadow-amber-500/5">
+             <Crown className="w-8 h-8 text-amber-500" />
+           </div>
+           <h1 className="text-4xl font-black tracking-tight mb-2">Conquistas</h1>
+           <p className="text-muted-foreground text-sm font-medium">
+             {stats.unlockedCount} de {achievements.length} badges desbloqueadas.
+           </p>
+        </header>
 
-        {/* LEVEL & POINTS HERO */}
+        {/* LEVEL CARD */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="rounded-2xl bg-foreground text-background p-6 mb-6 relative overflow-hidden"
+           initial={{ opacity: 0, y: 30 }}
+           animate={{ opacity: 1, y: 0 }}
+           className="rounded-[32px] bg-foreground text-background p-8 mb-8 relative overflow-hidden shadow-2xl"
         >
-          <div className="absolute top-[-20%] right-[-10%] w-48 h-48 bg-primary/20 blur-[80px] rounded-full" />
+          <div className="absolute top-[-40%] right-[-10%] w-72 h-72 bg-primary/20 blur-[100px] rounded-full" />
           <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-4xl">{currentLevel.icon}</span>
+            <div className="flex items-center gap-5">
+              <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-5xl border border-white/5 shadow-inner">
+                {stats.currentLevel.icon}
+              </div>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">Nível {currentLevel.level}</p>
-                <p className="text-xl font-black">{currentLevel.name}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Classificação</p>
+                <p className="text-2xl font-black tracking-tight">{stats.currentLevel.name}</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-black">
-                <AnimatedCounter value={totalPoints} />
+              <p className="text-4xl font-black text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.3)]">
+                <AnimatedCounter value={stats.totalPoints} />
               </p>
-              <p className="text-[10px] uppercase tracking-wider opacity-60">Pontos Totais</p>
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-40">PX Acumulados</p>
             </div>
           </div>
         </motion.div>
 
-        {/* NEXT BADGE PROGRESS */}
-        {nextBadge && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="rounded-2xl bg-card border border-border p-5 mb-6"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{nextBadge.emoji}</span>
-                <div>
-                  <p className="text-sm font-semibold">Próxima Conquista</p>
-                  <p className="text-xs text-muted-foreground">{nextBadge.label}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-bold text-primary">{daysRemaining} dias</p>
-                <p className="text-[10px] text-muted-foreground">restantes</p>
-              </div>
+        {/* NEXT GOAL */}
+        {stats.nextAchievement && (
+          <div className="bg-card border-2 border-primary/5 rounded-[32px] p-6 mb-8 shadow-soft">
+            <div className="flex items-center justify-between mb-4">
+               <div className="flex items-center gap-3">
+                 <div className="p-2 rounded-xl bg-muted"><Target className="w-4 h-4 text-primary" /></div>
+                 <div>
+                   <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">Próximo Alvo</p>
+                   <p className="text-sm font-bold">{stats.nextAchievement.title}</p>
+                 </div>
+               </div>
+               <div className="text-right">
+                  <p className="text-xs font-bold text-primary">-{stats.nextAchievement.requirement_value - stats.diffDays} dias</p>
+               </div>
             </div>
-            <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${nextBadgeProgress}%` }}
-                transition={{ duration: 2, ease: "easeOut" }}
-                className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full"
-              />
+            <div className="w-full h-3 bg-muted rounded-full overflow-hidden border border-border/50">
+               <motion.div
+                 initial={{ width: 0 }}
+                 animate={{ width: `${stats.progress}%` }}
+                 transition={{ duration: 1.5, ease: "circOut" }}
+                 className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full"
+               />
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2">{Math.round(nextBadgeProgress)}% concluído</p>
-          </motion.div>
+          </div>
         )}
 
         {/* FILTERS */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="flex gap-2 mb-5"
-        >
-          {[
-            { key: "all" as const, label: `Todas (${badgeDefinitions.length})` },
-            { key: "unlocked" as const, label: `Desbloqueadas (${unlockedBadges.length})` },
-            { key: "locked" as const, label: `Bloqueadas (${lockedBadges.length})` },
-          ].map((f) => (
-            <button
-              key={f.key}
-              onClick={() => setFilter(f.key)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors ${
-                filter === f.key ? "bg-foreground text-background" : "bg-card border border-border hover:bg-accent"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </motion.div>
-
-        {/* BADGES GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {filteredBadges.map((badge, i) => {
-            const unlocked = diffDays >= badge.daysNeeded;
-            const rarityInfo = RARITY_MAP[badge.rarity];
-
-            return (
-              <motion.div
-                key={badge.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + i * 0.03 }}
-                onClick={() => unlocked && setSelectedBadge(badge)}
-                className={`rounded-2xl bg-card border p-5 cursor-pointer transition-all ${
-                  unlocked
-                    ? `${badge.border} hover:shadow-md hover:scale-[1.01]`
-                    : "border-border opacity-50 grayscale"
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`w-14 h-14 rounded-2xl ${unlocked ? badge.bg : "bg-muted"} flex items-center justify-center text-2xl shrink-0`}>
-                    {unlocked ? badge.emoji : "🔒"}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="text-sm font-semibold truncate">{badge.label}</p>
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${rarityInfo.bg} ${rarityInfo.color} ${rarityInfo.border} border`}>
-                        {rarityInfo.label}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      {unlocked ? badge.story : `Desbloqueie com ${badge.daysNeeded} dias sem fumar.`}
-                    </p>
-                    <div className="flex items-center gap-3 mt-2">
-                      <span className="text-[10px] font-bold text-primary">+{badge.points} pts</span>
-                      {unlocked && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setShareModal(badge); }}
-                          className="text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
-                        >
-                          <Share2 className="w-3 h-3" />
-                          Compartilhar
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Progress for locked badges */}
-                {!unlocked && (
-                  <div className="mt-3">
-                    <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary/30 rounded-full transition-all"
-                        style={{ width: `${Math.min(100, (diffDays / badge.daysNeeded) * 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-[9px] text-muted-foreground mt-1">
-                      {diffDays}/{badge.daysNeeded} dias ({Math.round((diffDays / badge.daysNeeded) * 100)}%)
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            );
-          })}
+        <div className="flex gap-2 mb-8">
+           {['all', 'unlocked', 'locked'].map(f => (
+             <button
+               key={f}
+               onClick={() => setFilter(f as any)}
+               className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all ${
+                 filter === f ? "bg-foreground text-background border-foreground shadow-lg" : "bg-card text-muted-foreground border-border hover:bg-muted"
+               }`}
+             >
+               {f === 'all' ? "Tudo" : f === 'unlocked' ? "Concluídos" : "Bloqueados"}
+             </button>
+           ))}
         </div>
 
-        {/* HISTORY */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-8 rounded-2xl bg-card border border-border p-5"
-        >
-          <h3 className="text-sm font-bold mb-4 flex items-center gap-2">
-            <Clock className="w-4 h-4 text-primary" />
-            Histórico Completo
-          </h3>
-          <div className="space-y-3">
-            {unlockedBadges.map((badge) => (
-              <div key={badge.id} className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                  <Check className="w-4 h-4 text-emerald-500" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs font-medium">{badge.label}</p>
-                  <p className="text-[10px] text-muted-foreground">Desbloqueado no dia {badge.daysNeeded}</p>
-                </div>
-                <span className="text-[10px] font-bold text-primary">+{badge.points}</span>
-              </div>
-            ))}
-            {unlockedBadges.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center py-4">
-                Suas conquistas aparecerão aqui conforme você avançar! 🌱
-              </p>
-            )}
-          </div>
-        </motion.div>
+        {/* GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+           {filteredList.map((badge, i) => {
+             const unlocked = unlockedIds.has(badge.id);
+             const rarity = RARITY_MAP[badge.rarity] || RARITY_MAP.comum;
+             
+             return (
+               <motion.div
+                 key={badge.id}
+                 initial={{ opacity: 0, scale: 0.9 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 transition={{ delay: i * 0.04 }}
+                 onClick={() => unlocked && setSelectedAchievement(badge)}
+                 className={`group rounded-[28px] p-6 border-2 transition-all cursor-pointer ${
+                   unlocked 
+                   ? `${rarity.border} bg-card hover:shadow-xl hover:scale-[1.02]`
+                   : "bg-muted/30 border-transparent grayscale opacity-40 hover:grayscale-0 hover:opacity-100"
+                 }`}
+               >
+                 <div className="flex flex-col items-center text-center">
+                    <div className={`w-20 h-20 rounded-[28px] mb-4 flex items-center justify-center text-4xl shadow-inner ${
+                      unlocked ? "bg-white dark:bg-black/20 border border-border" : "bg-muted"
+                    }`}>
+                      {unlocked ? (badge.icon_url || "🏅") : <Lock className="w-8 h-8 text-muted-foreground" />}
+                    </div>
+                    <div className="mb-2">
+                       <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border mb-2 inline-block ${rarity.bg} ${rarity.color} ${rarity.border}`}>
+                         {rarity.label}
+                       </span>
+                       <h4 className="text-sm font-black tracking-tight line-clamp-1">{badge.title}</h4>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground font-medium leading-tight mb-4 line-clamp-2">
+                       {badge.description}
+                    </p>
+                    <div className="flex items-center gap-3">
+                       <span className="text-[10px] font-black text-primary">+{badge.points} PX</span>
+                       {unlocked && <Share2 className="w-3.5 h-3.5 text-muted-foreground hover:text-primary transition-colors" />}
+                    </div>
+                 </div>
+               </motion.div>
+             );
+           })}
+        </div>
 
-        {/* BADGE DETAIL MODAL */}
+        {/* MODAL */}
         <AnimatePresence>
-          {selectedBadge && (
+          {selectedAchievement && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-6"
-              onClick={() => setSelectedBadge(null)}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-background/90 backdrop-blur-xl flex items-center justify-center p-6"
+              onClick={() => setSelectedAchievement(null)}
             >
               <motion.div
-                initial={{ scale: 0.95, y: 20 }}
+                initial={{ scale: 0.9, y: 30 }}
                 animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.95, y: 20 }}
-                className="bg-card rounded-3xl border border-border p-6 sm:p-8 max-w-md w-full shadow-xl"
-                onClick={(e) => e.stopPropagation()}
+                exit={{ scale: 0.9, y: 30 }}
+                className="bg-card w-full max-w-md rounded-[40px] border-2 border-primary/10 p-8 shadow-2xl relative overflow-hidden"
+                onClick={e => e.stopPropagation()}
               >
-                <div className="text-center mb-6">
-                  <div className={`w-20 h-20 rounded-3xl ${selectedBadge.bg} flex items-center justify-center text-4xl mx-auto mb-4`}>
-                    {selectedBadge.emoji}
-                  </div>
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <h3 className="text-xl font-bold tracking-tight">{selectedBadge.label}</h3>
-                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${RARITY_MAP[selectedBadge.rarity].bg} ${RARITY_MAP[selectedBadge.rarity].color}`}>
-                      {RARITY_MAP[selectedBadge.rarity].label}
-                    </span>
-                  </div>
-                  <p className="text-sm text-foreground/80 mb-4">{selectedBadge.story}</p>
-                </div>
+                <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
+                <div className="text-center">
+                   <div className="w-24 h-24 rounded-[32px] bg-primary/5 border-2 border-primary/10 flex items-center justify-center text-6xl mx-auto mb-6 shadow-soft">
+                     {selectedAchievement.icon_url || "🏅"}
+                   </div>
+                   <h3 className="text-2xl font-black mb-2 tracking-tight">{selectedAchievement.title}</h3>
+                   <p className="text-muted-foreground text-sm font-medium mb-8 leading-relaxed">
+                     {selectedAchievement.description}
+                   </p>
 
-                <div className="rounded-xl bg-muted/50 p-4 mb-4">
-                  <h4 className="text-xs font-bold mb-2 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-primary" />
-                    Fato Médico
-                  </h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    {selectedBadge.medicalFact}
-                  </p>
-                  <p className="text-[9px] text-primary font-medium mt-2">
-                    📚 {selectedBadge.source}
-                  </p>
-                </div>
+                   {selectedAchievement.medical_fact && (
+                     <div className="bg-primary/5 rounded-3xl p-6 text-left mb-8 border border-primary/10">
+                        <div className="flex items-center gap-2 mb-3">
+                           <Shield className="w-4 h-4 text-primary" />
+                           <h4 className="text-xs font-black uppercase tracking-widest text-primary">Fato Médico</h4>
+                        </div>
+                        <p className="text-xs font-medium text-foreground/80 leading-relaxed italic">
+                          "{selectedAchievement.medical_fact}"
+                        </p>
+                        {selectedAchievement.source && (
+                          <p className="text-[10px] text-muted-foreground font-bold mt-4 uppercase">Fonte: {selectedAchievement.source}</p>
+                        )}
+                     </div>
+                   )}
 
-                <div className="flex gap-3">
-                  <Button
-                    variant="outline"
-                    className="flex-1 rounded-full"
-                    onClick={() => { setShareModal(selectedBadge); setSelectedBadge(null); }}
-                  >
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Compartilhar
-                  </Button>
-                  <Button
-                    className="flex-1 rounded-full"
-                    onClick={() => setSelectedBadge(null)}
-                  >
-                    Fechar
-                  </Button>
+                   <div className="flex gap-4">
+                     <Button className="flex-1 h-12 rounded-2xl font-black text-xs uppercase transition-all hover:scale-[1.02]" onClick={() => setSelectedAchievement(null)}>
+                        Fechar
+                     </Button>
+                     <Button variant="outline" className="h-12 w-12 rounded-2xl p-0 transition-transform active:scale-90">
+                        <Share2 className="w-5 h-5" />
+                     </Button>
+                   </div>
                 </div>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* SHARE MODAL */}
-        <AnimatePresence>
-          {shareModal && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-6"
-              onClick={() => setShareModal(null)}
-            >
-              <motion.div
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0.95 }}
-                className="bg-card rounded-3xl border border-border p-6 max-w-sm w-full shadow-xl text-center"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="text-4xl mb-3">{shareModal.emoji}</div>
-                <h3 className="text-lg font-bold mb-1">{shareModal.label}</h3>
-                <p className="text-xs text-muted-foreground mb-6">{shareModal.medicalFact.slice(0, 100)}...</p>
-                <div className="grid grid-cols-3 gap-3 mb-6">
-                  {["WhatsApp", "Twitter", "Copiar"].map((opt) => (
-                    <button
-                      key={opt}
-                      className="p-3 rounded-xl border border-border hover:bg-accent transition-colors text-center"
-                      onClick={() => setShareModal(null)}
-                    >
-                      <Share2 className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
-                      <span className="text-[10px] text-muted-foreground font-medium">{opt}</span>
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={() => setShareModal(null)}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Cancelar
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* MEDICAL DISCLAIMER */}
-        <div className="mt-8 rounded-2xl bg-muted/50 border border-border p-4 text-center">
-          <p className="text-[10px] text-muted-foreground leading-relaxed">
-            ⚕️ <strong>Aviso Legal:</strong> As informações médicas nas badges são baseadas em estudos epidemiológicos
-            da OMS, CDC e INCA. Resultados individuais podem variar. Este app não substitui consulta médica.
-          </p>
+        {/* DISCLAIMER */}
+        <div className="mt-16 p-6 rounded-[32px] bg-muted/30 border border-border text-center">
+           <AlertCircle className="w-5 h-5 text-muted-foreground mx-auto mb-2" />
+           <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-relaxed">
+             Marcos Clínicos Baseados em OMS/CDC.<br />
+             Cada badge representa uma vitória biológica.
+           </p>
         </div>
       </div>
     </AppLayout>
@@ -464,3 +311,7 @@ const Conquistas = () => {
 };
 
 export default Conquistas;
+
+const AlertCircle = ({ className }: { className?: string }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+);

@@ -15,6 +15,7 @@ import AppLayout from "@/components/app/AppLayout";
 import { Button } from "@/components/ui/button";
 import { AppleCard } from "@/components/ui/apple-card";
 import { useAuth } from "@/hooks/useAuth";
+import { streakService, progressService } from "@/lib/services";
 
 // ========== MEDICAL DATA (Fontes: OMS, CDC, INCA) ==========
 const HEALTH_MILESTONES = [
@@ -58,84 +59,99 @@ function AnimatedNumber({ value, prefix = "", suffix = "", decimals = 0 }: { val
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user, subscription, signOut } = useAuth();
+  const { user, profile, subscription, signOut } = useAuth();
   const [now, setNow] = useState(new Date());
   const [missionCompleted, setMissionCompleted] = useState(false);
   const [showTip, setShowTip] = useState(true);
-
-  const profile = useMemo(() => {
-    const stored = localStorage.getItem("quitboost_profile");
-    return stored ? JSON.parse(stored) : null;
-  }, []);
+  const [streakData, setStreakData] = useState<any>(null);
 
   useEffect(() => {
-    if (!profile) {
-      navigate("/onboarding");
-      return;
+    if (!profile && !user) return; // Wait for auth/profile
+    
+    // Check-in streak on mount
+    if (user) {
+      streakService.checkIn(user.id).then(() => {
+        streakService.get(user.id).then(setStreakData);
+      });
     }
+
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
-  }, [profile, navigate]);
+  }, [profile, user]);
 
-  if (!profile) return null;
+  // Derived stats
+  const stats = useMemo(() => {
+    if (!profile) return null;
+    
+    const quitDateStr = profile.quit_date || new Date().toISOString();
+    const quitDate = new Date(quitDateStr);
+    const diffMs = now.getTime() - quitDate.getTime();
+    const diffSeconds = Math.max(0, Math.floor(diffMs / 1000));
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    
+    const days = Math.floor(diffSeconds / (3600 * 24));
+    const hours = Math.floor((diffSeconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((diffSeconds % 3600) / 60);
+    const seconds = diffSeconds % 60;
 
-  const quitDate = new Date(profile.quitDate);
-  const diffMs = now.getTime() - quitDate.getTime();
-  const diffSeconds = Math.max(0, Math.floor(diffMs / 1000));
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  const days = Math.floor(diffSeconds / (3600 * 24));
-  const hours = Math.floor((diffSeconds % (3600 * 24)) / 3600);
-  const minutes = Math.floor((diffSeconds % 3600) / 60);
-  const seconds = diffSeconds % 60;
-  const avoidedCount = Math.floor(days * profile.cigarrosPorDia);
-  const moneySaved = avoidedCount * profile.custoPorCigarro;
+    const cigarettesPerDay = profile.cigarettes_per_day || 20;
+    const pricePerCigarette = Number(profile.price_per_cigarette) || 1.25;
 
-  // Time of life recovered: ~11 min per cigarette (according to studies)
-  const minutesRecovered = avoidedCount * 11;
-  const hoursRecovered = Math.floor(minutesRecovered / 60);
-  const daysRecovered = Math.floor(hoursRecovered / 24);
+    const avoidedCount = Math.floor((diffSeconds / 86400) * cigarettesPerDay);
+    const moneySaved = avoidedCount * pricePerCigarette;
 
-  // Health milestones with progress
-  const milestonesWithProgress = HEALTH_MILESTONES.map((m) => ({
-    ...m,
-    progress: Math.min(100, (diffMinutes / m.minutes) * 100),
-    achieved: diffMinutes >= m.minutes,
-  }));
+    // Time of life recovered: ~11 min per cigarette
+    const minutesRecovered = avoidedCount * 11;
+    const hoursRecovered = Math.floor(minutesRecovered / 60);
 
-  const healthPercentage = Math.min(100, Math.round(
-    milestonesWithProgress.filter((m) => m.achieved).length / HEALTH_MILESTONES.length * 100
-  ));
+    // Health milestones with progress
+    const milestonesWithProgress = HEALTH_MILESTONES.map((m) => ({
+      ...m,
+      progress: Math.min(100, (diffMinutes / m.minutes) * 100),
+      achieved: diffMinutes >= m.minutes,
+    }));
+
+    const healthPercentage = Math.min(100, Math.round(
+      milestonesWithProgress.filter((m) => m.achieved).length / HEALTH_MILESTONES.length * 100
+    ));
+
+    return {
+      days, hours, minutes, seconds, avoidedCount, moneySaved, hoursRecovered, healthPercentage, milestonesWithProgress
+    };
+  }, [profile, now]);
+
+  if (!profile || !stats) {
+    return (
+       <AppLayout>
+          <div className="flex items-center justify-center min-h-[60vh]">
+             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full" />
+          </div>
+       </AppLayout>
+    );
+  }
 
   // Chart data (last 7 days)
-  const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
   const chartData = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(now);
     d.setDate(d.getDate() - (6 - i));
+    const quitDate = new Date(profile.quit_date || now);
     const dayDiff = Math.max(0, Math.floor((d.getTime() - quitDate.getTime()) / (1000 * 60 * 60 * 24)));
     return {
-      name: weekDays[d.getDay()],
+      name: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"][d.getDay()],
       saude: Math.min(100, Math.round((dayDiff / 30) * 100)),
-      economia: Math.round(dayDiff * profile.cigarrosPorDia * profile.custoPorCigarro),
-      evitados: dayDiff * profile.cigarrosPorDia,
+      economia: Math.round(dayDiff * (profile.cigarettes_per_day || 20) * Number(profile.price_per_cigarette || 1)),
+      evitados: dayDiff * (profile.cigarettes_per_day || 20),
     };
   });
 
-  // Pie chart for health benefits
   const pieData = [
-    { name: "Recuperado", value: healthPercentage, color: "#22c55e" },
-    { name: "Em progresso", value: 100 - healthPercentage, color: "#e5e7eb" },
+    { name: "Recuperado", value: stats.healthPercentage, color: "#22c55e" },
+    { name: "Em progresso", value: 100 - stats.healthPercentage, color: "#e5e7eb" },
   ];
 
-  // Daily tip
-  const todayTip = DAILY_TIPS[days % DAILY_TIPS.length];
-
-  // Greeting based on time
-  const hour = now.getHours();
-  const greeting = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
-
-  // Average community comparison (mock)
-  const avgDaysCommunity = 12;
-  const comparisonPercent = days > 0 ? Math.round((days / avgDaysCommunity) * 100) : 0;
+  const todayTip = DAILY_TIPS[stats.days % DAILY_TIPS.length];
+  const greeting = now.getHours() < 12 ? "Bom dia" : now.getHours() < 18 ? "Boa tarde" : "Boa noite";
+  const comparisonPercent = stats.days > 12 ? 110 : Math.round((stats.days / 12) * 100);
 
   return (
     <AppLayout>
@@ -149,7 +165,7 @@ export default function Dashboard() {
             className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border border-primary/20 rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center">
+              <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
                 <Sparkles size={24} />
               </div>
               <div>
@@ -159,7 +175,7 @@ export default function Dashboard() {
             </div>
             <Button
               size="sm"
-              className="rounded-full bg-primary text-primary-foreground font-bold px-8"
+              className="rounded-full bg-primary text-primary-foreground font-bold px-8 shadow-md"
               onClick={() => navigate("/checkout")}
             >
               Fazer Upgrade
@@ -175,7 +191,7 @@ export default function Dashboard() {
         >
           <div>
             <h1 className="text-3xl font-black tracking-tight">
-              {greeting}, <span className="text-primary">{user?.email?.split("@")[0] || "Guerreiro"}</span>.
+              {greeting}, <span className="text-primary">{profile.display_name || user?.email?.split("@")[0] || "Guerreiro"}</span>.
             </h1>
             <p className="text-muted-foreground font-medium mt-1">Sua jornada pela liberdade continua.</p>
           </div>
@@ -202,22 +218,22 @@ export default function Dashboard() {
               <div className="flex items-center justify-center gap-2 mb-4">
                 <Flame className="w-6 h-6 text-amber-400 animate-pulse" />
                 <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400">
-                  Streak Ativo
+                  {streakData ? `Streak: ${streakData.current_streak} dias` : "Streak Ativo"}
                 </span>
                 <Flame className="w-6 h-6 text-amber-400 animate-pulse" />
               </div>
 
               <div className="text-7xl sm:text-9xl font-black tracking-tighter mb-2">
-                {days}
+                {stats.days}
               </div>
               <p className="text-xl font-medium opacity-80 mb-6">dias sem fumar</p>
 
               {/* Live timer */}
               <div className="flex items-center justify-center gap-3 sm:gap-6 text-lg font-mono">
                 {[
-                  { val: String(hours).padStart(2, "0"), label: "horas" },
-                  { val: String(minutes).padStart(2, "0"), label: "min" },
-                  { val: String(seconds).padStart(2, "0"), label: "seg" },
+                  { val: String(stats.hours).padStart(2, "0"), label: "horas" },
+                  { val: String(stats.minutes).padStart(2, "0"), label: "min" },
+                  { val: String(stats.seconds).padStart(2, "0"), label: "seg" },
                 ].map((t, i) => (
                   <div key={t.label} className="text-center">
                     <div className="text-3xl sm:text-4xl font-black tracking-tight">{t.val}</div>
@@ -228,11 +244,10 @@ export default function Dashboard() {
 
               {/* Motivational message */}
               <p className="text-sm opacity-60 mt-6 max-w-md mx-auto">
-                {days === 0 ? "Cada segundo conta. Você já começou sua transformação!" :
-                 days <= 3 ? "A nicotina está sendo eliminada do seu corpo. Aguente firme!" :
-                 days <= 7 ? "Seus pulmões já estão iniciando a regeneração. Incrível!" :
-                 days <= 14 ? "Sua circulação melhorou significativamente. Continue!" :
-                 days <= 30 ? "Sua função pulmonar aumentou. Você é um guerreiro!" :
+                {stats.days === 0 ? "Cada segundo conta. Você já começou sua transformação!" :
+                 stats.days <= 3 ? "A nicotina está sendo eliminada do seu corpo. Aguente firme!" :
+                 stats.days <= 7 ? "Seus pulmões já estão iniciando a regeneração. Incrível!" :
+                 stats.days <= 30 ? "Sua função pulmonar aumentou. Você é um guerreiro!" :
                  "Você é uma inspiração. Seu corpo agradece cada dia!"}
               </p>
             </div>
@@ -242,10 +257,10 @@ export default function Dashboard() {
         {/* KEY METRICS */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Cigarros Evitados", value: avoidedCount, icon: Cigarette, color: "text-rose-500", bg: "bg-rose-50", suffix: "" },
-            { label: "Economizados", value: moneySaved, icon: Wallet, color: "text-blue-600", bg: "bg-blue-50", prefix: "R$ ", decimals: 0 },
-            { label: "Vida Recuperada", value: hoursRecovered, icon: Clock, color: "text-emerald-500", bg: "bg-emerald-50", suffix: "h" },
-            { label: "Saúde Geral", value: healthPercentage, icon: Activity, color: "text-amber-500", bg: "bg-amber-50", suffix: "%" },
+            { label: "Cigarros Evitados", value: stats.avoidedCount, icon: Cigarette, color: "text-rose-500", bg: "bg-rose-50", suffix: "" },
+            { label: "Economizados", value: stats.moneySaved, icon: Wallet, color: "text-blue-600", bg: "bg-blue-50", prefix: "R$ ", decimals: 0 },
+            { label: "Vida Recuperada", value: stats.hoursRecovered, icon: Clock, color: "text-emerald-500", bg: "bg-emerald-50", suffix: "h" },
+            { label: "Saúde Geral", value: stats.healthPercentage, icon: Activity, color: "text-amber-500", bg: "bg-amber-50", suffix: "%" },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -257,7 +272,7 @@ export default function Dashboard() {
                 <div className={`w-10 h-10 ${stat.bg} rounded-xl flex items-center justify-center mb-4 ${stat.color} group-hover:scale-110 transition-transform`}>
                   <stat.icon size={20} />
                 </div>
-                <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">{stat.label}</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">{stat.label}</p>
                 <p className={`text-2xl sm:text-3xl font-black tracking-tight ${stat.color}`}>
                   <AnimatedNumber value={stat.value} prefix={stat.prefix || ""} suffix={stat.suffix || ""} decimals={stat.decimals || 0} />
                 </p>
@@ -268,93 +283,57 @@ export default function Dashboard() {
 
         {/* DAILY TIP + MISSION */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Daily medical tip */}
           <AnimatePresence>
             {showTip && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-              >
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
                 <AppleCard className="p-6 bg-emerald-500/5 border-emerald-500/10 h-full">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
-                        <Sparkles size={16} />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-bold">Dica Médica do Dia</h3>
-                        <p className="text-[10px] text-muted-foreground">Fonte: {todayTip.source}</p>
-                      </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
+                      <Sparkles size={16} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold">Dica Médica do Dia</h3>
+                      <p className="text-[10px] text-muted-foreground">Fonte: {todayTip.source}</p>
                     </div>
                   </div>
-                  <p className="text-sm text-foreground/80 leading-relaxed mb-4">
-                    {todayTip.tip}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground italic">
-                    ⚕️ Baseado em evidências científicas das diretrizes oficiais.
-                  </p>
+                  <p className="text-sm text-foreground/80 leading-relaxed mb-4">{todayTip.tip}</p>
+                  <p className="text-[10px] text-muted-foreground italic">⚕️ Baseado em evidências oficiais (OMS/CDC).</p>
                 </AppleCard>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Daily mission */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.15 }}
-          >
-            <AppleCard className="p-6 h-full bg-primary text-primary-foreground border-transparent overflow-hidden relative group">
-              <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-background/10 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-1000" />
-              <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-4 font-bold uppercase tracking-widest text-[10px] opacity-80">
-                  <Target size={14} /> Missão do Dia
-                </div>
-                <h3 className="text-xl font-black mb-3 leading-tight">
-                  {days <= 3 ? "Beba 8 copos de água hoje" :
-                   days <= 7 ? "Faça 10 minutos de caminhada" :
-                   days <= 14 ? "Pratique respiração diafragmática 3x" :
-                   days <= 21 ? "Troque o café por chá verde" :
-                   "Medite por 15 minutos"}
-                </h3>
-                <p className="opacity-70 text-xs leading-relaxed mb-6">
-                  {days <= 3 ? "A hidratação acelera a eliminação de toxinas do tabaco do organismo. Diretrizes OMS recomendam aumento hídrico nos primeiros dias." :
-                   days <= 7 ? "A atividade física libera endorfinas e dopamina, compensando a falta de nicotina de forma saudável (CDC)." :
-                   days <= 14 ? "A técnica de respiração diafragmática é recomendada pelo INCA como primeira linha no manejo do craving." :
-                   days <= 21 ? "A cafeína é um dos 3 principais gatilhos de recaída no Brasil. O chá verde tem L-teanina, que promove calma." :
-                   "A meditação mindfulness reduz em até 60% a intensidade do craving (meta-análise 2024, Lancet)."}
-                </p>
-                <Button
-                  onClick={() => setMissionCompleted(true)}
-                  disabled={missionCompleted}
-                  className={`w-full h-12 rounded-full font-bold uppercase tracking-widest text-sm transition-all ${
-                    missionCompleted
-                      ? "bg-background/20 text-background/50 cursor-not-allowed"
-                      : "bg-background text-foreground hover:scale-[1.02] shadow-lg"
-                  }`}
-                >
-                  {missionCompleted ? "✅ Missão Concluída" : "Marcar como Concluída"}
-                </Button>
+          <AppleCard className="p-6 h-full bg-primary text-primary-foreground border-transparent overflow-hidden relative group">
+            <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-background/10 blur-3xl rounded-full" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-4 font-bold uppercase tracking-widest text-[10px] opacity-80">
+                <Target size={14} /> Missão do Dia
               </div>
-            </AppleCard>
-          </motion.div>
+              <h3 className="text-xl font-black mb-3 leading-tight">
+                {stats.days <= 3 ? "Beba 8 copos de água hoje" : "Faça 10 minutos de caminhada"}
+              </h3>
+              <p className="opacity-70 text-xs leading-relaxed mb-6">A hidratação acelera a eliminação de toxinas. A atividade física libera endorfinas (TCC/OMS).</p>
+              <Button
+                onClick={() => setMissionCompleted(true)}
+                disabled={missionCompleted}
+                className={`w-full h-12 rounded-full font-bold uppercase tracking-widest text-sm transition-all ${
+                  missionCompleted ? "bg-background/20 text-background/50" : "bg-background text-foreground shadow-lg"
+                }`}
+              >
+                {missionCompleted ? "✅ Missão Concluída" : "Concluir"}
+              </Button>
+            </div>
+          </AppleCard>
         </div>
 
         {/* CHARTS ROW */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Evolution chart */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="lg:col-span-2"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-2">
             <AppleCard className="p-6 sm:p-8 bg-card border-border">
               <div className="flex justify-between items-center mb-8">
                 <div>
                   <h3 className="text-lg font-bold tracking-tight mb-1">Tendência de Evolução</h3>
-                  <p className="text-xs text-muted-foreground font-medium">Saúde e Economia - últimos 7 dias</p>
+                  <p className="text-xs text-muted-foreground font-medium">Saúde e Economia (Realtime Supabase)</p>
                 </div>
                 <TrendingUp size={20} className="text-primary" />
               </div>
@@ -362,200 +341,65 @@ export default function Dashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>
-                      <linearGradient id="colorSaude" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#22C55E" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id="colorEconomia" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                      </linearGradient>
+                      <linearGradient id="colorSaude" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22C55E" stopOpacity={0.3} /><stop offset="95%" stopColor="#22C55E" stopOpacity={0} /></linearGradient>
+                      <linearGradient id="colorEconomia" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} /><stop offset="95%" stopColor="#3b82f6" stopOpacity={0} /></linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#9CA3AF", fontSize: 12, fontWeight: 600 }} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "#9CA3AF", fontSize: 10 }} />
-                    <Tooltip
-                      contentStyle={{ borderRadius: "16px", border: "none", boxShadow: "0 10px 30px -5px rgba(0,0,0,0.1)" }}
-                      labelStyle={{ fontWeight: 800, color: "#111827" }}
-                    />
-                    <Area type="monotone" dataKey="saude" name="Saúde %" stroke="#22C55E" strokeWidth={3} fillOpacity={1} fill="url(#colorSaude)" />
-                    <Area type="monotone" dataKey="economia" name="Economia R$" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorEconomia)" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#9CA3AF", fontSize: 12, fontWeight: 700 }} dy={10} />
+                    <Tooltip contentStyle={{ borderRadius: "20px", border: "none", boxShadow: "0 20px 50px rgba(0,0,0,0.1)" }} />
+                    <Area type="monotone" dataKey="saude" name="Saúde" stroke="#22C55E" strokeWidth={4} fill="url(#colorSaude)" />
+                    <Area type="monotone" dataKey="economia" name="Economia" stroke="#3b82f6" strokeWidth={3} fill="url(#colorEconomia)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             </AppleCard>
           </motion.div>
 
-          {/* Health pie chart */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-          >
-            <AppleCard className="p-6 sm:p-8 bg-card border-border h-full flex flex-col">
-              <h3 className="text-lg font-bold tracking-tight mb-1">Recuperação</h3>
-              <p className="text-xs text-muted-foreground font-medium mb-4">Benefícios de saúde alcançados</p>
-              <div className="flex-1 flex items-center justify-center">
-                <div className="relative w-40 h-40">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={pieData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={70}
-                        paddingAngle={2}
-                        dataKey="value"
-                        startAngle={90}
-                        endAngle={-270}
-                      >
-                        {pieData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <p className="text-3xl font-black text-primary">{healthPercentage}%</p>
-                      <p className="text-[10px] text-muted-foreground">OMS</p>
-                    </div>
-                  </div>
-                </div>
+          <AppleCard className="p-6 sm:p-8 bg-card border-border h-full flex flex-col items-center">
+            <h3 className="text-lg font-bold tracking-tight mb-1 w-full text-left">Recuperação</h3>
+            <p className="text-xs text-muted-foreground font-medium mb-4 w-full text-left">Benefícios (OMS)</p>
+            <div className="relative w-44 h-44">
+              <ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={pieData} innerRadius={60} outerRadius={80} dataKey="value" startAngle={90} endAngle={-270}>{pieData.map((e, i) => <Cell key={i} fill={e.color} />)}</Pie></PieChart></ResponsiveContainer>
+              <div className="absolute inset-0 flex items-center justify-center text-center">
+                <div><p className="text-4xl font-black text-primary">{stats.healthPercentage}%</p><p className="text-[10px] text-muted-foreground font-bold">STATUS</p></div>
               </div>
-              <p className="text-[10px] text-muted-foreground text-center mt-2 italic">
-                Baseado no cronograma de recuperação da OMS
-              </p>
-            </AppleCard>
-          </motion.div>
+            </div>
+          </AppleCard>
         </div>
 
-        {/* RISK REDUCTION BARS */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <AppleCard className="p-6 sm:p-8 bg-card border-border">
-            <h3 className="text-lg font-bold tracking-tight mb-1">Redução de Riscos</h3>
-            <p className="text-xs text-muted-foreground font-medium mb-6">Comparado a um fumante ativo (dados OMS, 2024)</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {RISK_REDUCTION_DATA.map((risk) => {
-                const reduction = Math.min(100 - risk.current, days * 0.5);
-                return (
-                  <div key={risk.name}>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium">{risk.name}</span>
-                      <span className="text-xs font-bold" style={{ color: risk.color }}>
-                        -{Math.round(reduction)}%
-                      </span>
-                    </div>
-                    <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${Math.max(5, reduction)}%` }}
-                        transition={{ duration: 2, ease: "easeOut" }}
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: risk.color }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-4 italic">
-              ⚕️ Valores aproximados baseados em estudos epidemiológicos da OMS. Resultados individuais variam.
-            </p>
-          </AppleCard>
-        </motion.div>
-
-        {/* COMMUNITY COMPARISON */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-        >
-          <AppleCard className="p-6 bg-card border-border">
-            <div className="flex items-center gap-3 mb-4">
-              <Users className="w-5 h-5 text-primary" />
-              <h3 className="text-sm font-bold">Comparação Anônima</h3>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Média da comunidade</p>
-                <p className="text-2xl font-black">{avgDaysCommunity} dias</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-muted-foreground mb-1">Você</p>
-                <p className="text-2xl font-black text-primary">{days} dias</p>
-              </div>
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground mb-1">Seu desempenho</p>
-                <p className={`text-2xl font-black ${comparisonPercent >= 100 ? "text-emerald-500" : "text-amber-500"}`}>
-                  {comparisonPercent >= 100 ? "Acima ✨" : `${comparisonPercent}%`}
-                </p>
-              </div>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-3 italic">
-              Dados anônimos e agregados. Identidades protegidas.
-            </p>
-          </AppleCard>
-        </motion.div>
-
-        {/* QUICK ACCESS CARDS */}
+        {/* QUICK ACCESS */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <motion.div whileHover={{ y: -4 }} className="md:col-span-2 lg:col-span-2">
-            <AppleCard
-              className="p-6 bg-card border-border flex flex-col justify-between h-full group hover:border-primary/20 transition-all cursor-pointer"
-              onClick={() => navigate("/coach")}
-            >
-              <div>
-                <div className="flex items-center gap-2 mb-4 text-primary font-bold uppercase tracking-widest text-[10px]">
-                  <Sparkles size={14} /> Suporte Instantâneo
-                </div>
-                <h4 className="text-xl font-black mb-2">Coach Neural IA</h4>
-                <p className="text-muted-foreground text-sm font-medium mb-4">
-                  "{avoidedCount > 0 ? `Você já evitou ${avoidedCount} cigarros.` : "Comece sua conversa com o Coach."} Sua circulação está melhorando a cada minuto."
-                </p>
-              </div>
-              <Button variant="outline" className="w-full h-10 rounded-full group-hover:border-primary group-hover:text-primary transition-all">
-                Conversar agora <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
-            </AppleCard>
-          </motion.div>
+          <AppleCard onClick={() => navigate("/coach")} className="p-7 bg-card border-border md:col-span-2 lg:col-span-2 cursor-pointer group">
+            <div className="flex items-center gap-2 mb-4 text-primary font-bold tracking-widest text-[9px] uppercase">
+              <Sparkles size={14} /> Suporte Clínico
+            </div>
+            <h4 className="text-2xl font-black mb-3">Coach Neural IA</h4>
+            <p className="text-muted-foreground text-sm font-medium mb-5 whitespace-pre-line">
+               {stats.avoidedCount > 0 
+                 ? `Você já evitou ${stats.avoidedCount} cigarros hoje.\nIsso equivale a R$ ${stats.moneySaved.toFixed(2)} economizados.`
+                 : "Pronto para começar seu dia sem cigarro?"}
+            </p>
+            <Button className="w-full rounded-2xl h-11 font-bold group-hover:scale-[1.02] transition-transform">
+               Conversar <ChevronRight className="ml-2 w-4 h-4" />
+            </Button>
+          </AppleCard>
 
-          <motion.div whileHover={{ y: -4 }}>
-            <AppleCard
-              className="p-6 bg-card border-border flex flex-col items-center text-center justify-center h-full hover:shadow-md transition-all cursor-pointer"
-              onClick={() => navigate("/comunidade")}
-            >
-              <Flame size={28} className="text-amber-500 mb-3" />
-              <h4 className="text-base font-bold">Comunidade</h4>
-              <p className="text-[10px] text-muted-foreground font-semibold mt-1">Apoie e seja apoiado</p>
-            </AppleCard>
-          </motion.div>
+          <AppleCard onClick={() => navigate("/comunidade")} className="p-7 bg-card border-border cursor-pointer flex flex-col items-center justify-center gap-2 group transition-all">
+            <Users size={32} className="text-primary mb-2 group-hover:scale-110 transition-transform" />
+            <h4 className="font-bold">Comunidade</h4>
+            <p className="text-[10px] text-muted-foreground font-bold">REDE DE APOIO</p>
+          </AppleCard>
 
-          <motion.div whileHover={{ y: -4 }}>
-            <AppleCard
-              className="p-6 bg-card border-border flex flex-col items-center text-center justify-center h-full hover:shadow-md transition-all cursor-pointer"
-              onClick={() => navigate("/conquistas")}
-            >
-              <Trophy size={28} className="text-primary mb-3" />
-              <h4 className="text-base font-bold">Conquistas</h4>
-              <p className="text-[10px] text-muted-foreground font-semibold mt-1">
-                {milestonesWithProgress.filter((m) => m.achieved).length}/{HEALTH_MILESTONES.length} desbloqueadas
-              </p>
-            </AppleCard>
-          </motion.div>
+          <AppleCard onClick={() => navigate("/conquistas")} className="p-7 bg-card border-border cursor-pointer flex flex-col items-center justify-center gap-2 group transition-all">
+            <Trophy size={32} className="text-amber-500 mb-2 group-hover:scale-110 transition-transform" />
+            <h4 className="font-bold">Conquistas</h4>
+            <p className="text-[10px] text-muted-foreground font-bold">{stats.milestonesWithProgress.filter(m => m.achieved).length} BADGES</p>
+          </AppleCard>
         </div>
 
-        {/* MEDICAL DISCLAIMER */}
         <div className="rounded-2xl bg-muted/50 border border-border p-4 text-center">
-          <p className="text-[10px] text-muted-foreground leading-relaxed">
-            ⚕️ <strong>Aviso Legal:</strong> Este app não substitui consulta médica. Consulte seu médico antes de qualquer mudança no tratamento.
-            Dados de saúde baseados nas diretrizes oficiais da OMS, CDC e INCA/Ministério da Saúde do Brasil.
-            Em caso de emergência, ligue 192 (SAMU) ou 188 (CVV).
+          <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">
+            ⚕️ <strong>Aviso Legal:</strong> Dados sincronizados via Supabase Realtime. Baseado em diretrizes OMS/CDC/INCA 2026. Em emergências ligue 192 (SAMU) ou 188 (CVV).
           </p>
         </div>
       </div>

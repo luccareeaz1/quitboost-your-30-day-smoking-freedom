@@ -17,6 +17,8 @@ import Perfil from "./pages/Perfil";
 import AICoach from "./pages/AICoach";
 import Auth from "./pages/Auth";
 import Checkout from "./pages/Checkout";
+import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
+import TermosUso from "./pages/TermosUso";
 import NotFound from "./pages/NotFound";
 import PageTransition from "./components/app/PageTransition";
 import { AuthProvider } from "./hooks/useAuth";
@@ -47,6 +49,8 @@ const AnimatedRoutes = () => {
         <Route path="/coach" element={<PageTransition><AICoach /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
+        <Route path="/politica-de-privacidade" element={<PageTransition><PoliticaPrivacidade /></PageTransition>} />
+        <Route path="/termos-de-uso" element={<PageTransition><TermosUso /></PageTransition>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
