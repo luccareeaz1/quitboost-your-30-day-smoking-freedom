@@ -86,15 +86,8 @@ export default function AICoachInterface() {
       if (!user) return;
       try {
         setInitLoading(true);
-        const conversations = await coachService.getConversations(user.id);
-        let convId;
-        
-        if (conversations.length > 0) {
-          convId = conversations[0].id; // Get latest
-        } else {
-          const newConv = await coachService.createConversation(user.id, "Health Support");
-          convId = newConv.id;
-        }
+        const conv = await coachService.getOrCreateConversation(user.id);
+        const convId = conv.id;
         
         setActiveConversationId(convId);
         const msgs = await coachService.getMessages(convId);
