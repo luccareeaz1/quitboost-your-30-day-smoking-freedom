@@ -59,8 +59,8 @@ const Perfil = () => {
     if (!profile) return null;
     const quitDate = new Date(profile.quit_date || new Date().toISOString());
     const diffDays = Math.max(0, Math.floor((Date.now() - quitDate.getTime()) / (1000 * 60 * 60 * 24)));
-    const cigarrosEvitados = diffDays * (profile.daily_cigarettes || 0);
-    const economia = cigarrosEvitados * (profile.cigarette_cost || 0);
+    const cigarrosEvitados = diffDays * (profile.cigarettes_per_day || 0);
+    const economia = cigarrosEvitados * (Number(profile.price_per_cigarette) || 0);
     const lifeRecoveredHours = Math.floor((cigarrosEvitados * 11) / 60);
 
     return { diffDays, cigarrosEvitados, economia, lifeRecoveredHours, quitDate };
