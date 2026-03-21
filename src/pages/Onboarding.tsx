@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, Wind, Cigarette, Clock, DollarSign, Brain, Sparkles, Loader2, CheckCircle2, ShieldCheck, FileText } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { profileService, supabase } from "@/lib/services";
+import { profileService } from "@/lib/services";
+import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface OnboardingData {
