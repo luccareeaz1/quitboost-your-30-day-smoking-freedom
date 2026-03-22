@@ -1,17 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Check, Zap, ArrowLeft, Loader2, Sparkles, CreditCard, Landmark, Star, Crown } from "lucide-react";
+import { Check, Zap, ArrowLeft, Loader2, Sparkles, Star, Crown } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
-const plans = [
+const PLANS = [
   {
     id: "standard",
     name: "Standard",
     price: "39,90",
+    priceId: "price_1TDaiH2N0nzreyfm7NzaopPG",
     desc: "O essencial para começar",
     badge: null,
     features: [
@@ -26,6 +27,7 @@ const plans = [
     id: "elite",
     name: "Elite",
     price: "197,90",
+    priceId: "price_1TDaj82N0nzreyfmstYsVMTI",
     desc: "Arsenal completo de liberdade",
     badge: "Recomendado",
     features: [
@@ -44,10 +46,9 @@ export default function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("elite");
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "pix">("card");
   const { user } = useAuth();
 
-  const plan = plans.find(p => p.id === selectedPlan)!;
+  const plan = PLANS.find(p => p.id === selectedPlan)!;
 
   const handlePayment = async () => {
     if (!user) {
@@ -58,24 +59,20 @@ export default function Checkout() {
 
     try {
       setLoading(true);
-      await new Promise(r => setTimeout(r, 2500));
 
-      const { error } = await supabase
-        .from('subscriptions')
-        .upsert({
-          user_id: user.id,
-          plan: plan.id,
-          status: 'active',
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id' });
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId: plan.priceId },
+      });
 
       if (error) throw error;
-
-      toast.success(`Pagamento aprovado! Bem-vindo ao plano ${plan.name}.`);
-      navigate("/dashboard");
-    } catch (error) {
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      } else {
+        throw new Error("URL de checkout não recebida");
+      }
+    } catch (error: any) {
       console.error("Erro no pagamento:", error);
-      toast.error("Erro no processamento. Tente novamente.");
+      toast.error("Erro ao iniciar checkout. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -85,7 +82,6 @@ export default function Checkout() {
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-5xl">
 
-        {/* Back */}
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -98,12 +94,7 @@ export default function Checkout() {
           Voltar
         </motion.button>
 
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-14"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-14">
           <h1 className="text-4xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight">
             Escolha seu <span className="text-primary">Plano</span>
           </h1>
@@ -112,9 +103,8 @@ export default function Checkout() {
           </p>
         </motion.div>
 
-        {/* Plan Cards */}
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
-          {plans.map((p, i) => {
+          {PLANS.map((p, i) => {
             const isSelected = selectedPlan === p.id;
             const isElite = p.id === "elite";
 
@@ -131,14 +121,12 @@ export default function Checkout() {
                     : "border-border bg-card/50 hover:border-muted-foreground/30"
                 }`}
               >
-                {/* Badge */}
                 {p.badge && (
                   <div className="absolute -top-3 right-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
                     <Star size={10} fill="currentColor" /> {p.badge}
                   </div>
                 )}
 
-                {/* Radio */}
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${isElite ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
@@ -156,13 +144,11 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Price */}
                 <div className="mb-6">
                   <span className="text-3xl font-extrabold text-foreground tracking-tight">R${p.price}</span>
-                  <span className="text-sm text-muted-foreground ml-1">/ único</span>
+                  <span className="text-sm text-muted-foreground ml-1">/mês</span>
                 </div>
 
-                {/* Features */}
                 <ul className="space-y-2.5">
                   {p.features.map(f => (
                     <li key={f} className="flex items-center gap-3 text-sm text-foreground/80">
@@ -176,54 +162,7 @@ export default function Checkout() {
           })}
         </div>
 
-        {/* Payment Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="max-w-lg mx-auto"
-        >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-4 text-center">
-            Método de Pagamento
-          </p>
-
-          <div className="space-y-3 mb-8">
-            <div
-              onClick={() => setPaymentMethod("card")}
-              className={`p-5 rounded-2xl flex items-center justify-between cursor-pointer transition-all ${
-                paymentMethod === "card"
-                  ? "bg-foreground text-background shadow-lg"
-                  : "bg-card border border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <CreditCard size={20} />
-                <span className="text-sm font-semibold">Cartão de Crédito</span>
-              </div>
-              <div className={`w-5 h-5 rounded-full border-2 ${
-                paymentMethod === "card" ? "border-background bg-primary" : "border-border"
-              }`} />
-            </div>
-
-            <div
-              onClick={() => setPaymentMethod("pix")}
-              className={`p-5 rounded-2xl flex items-center justify-between cursor-pointer transition-all ${
-                paymentMethod === "pix"
-                  ? "bg-foreground text-background shadow-lg"
-                  : "bg-card border border-border hover:border-muted-foreground/30"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Landmark size={20} />
-                <span className="text-sm font-semibold">Pix Imediato</span>
-              </div>
-              <div className={`w-5 h-5 rounded-full border-2 ${
-                paymentMethod === "pix" ? "border-background bg-primary" : "border-border"
-              }`} />
-            </div>
-          </div>
-
-          {/* CTA */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="max-w-lg mx-auto">
           <Button
             className="w-full h-16 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-wide shadow-xl hover:opacity-90 active:scale-[0.98] transition-all"
             onClick={handlePayment}
@@ -234,12 +173,11 @@ export default function Checkout() {
             ) : (
               <div className="flex items-center gap-2">
                 <Sparkles size={18} />
-                Confirmar — R${plan.price}
+                Assinar {plan.name} — R${plan.price}/mês
               </div>
             )}
           </Button>
 
-          {/* Social proof */}
           <div className="mt-6 flex flex-col items-center gap-3">
             <div className="flex -space-x-2">
               {[1, 2, 3, 4].map(i => (
@@ -252,11 +190,10 @@ export default function Checkout() {
               </div>
             </div>
             <p className="text-[10px] text-muted-foreground text-center">
-              Pagamento seguro com criptografia SSL
+              Pagamento seguro via Stripe • Cancele quando quiser
             </p>
           </div>
         </motion.div>
-
       </div>
     </div>
   );
