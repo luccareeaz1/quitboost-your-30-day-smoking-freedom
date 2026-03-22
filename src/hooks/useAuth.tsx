@@ -56,16 +56,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('quitboost_profile', JSON.stringify(localProfile));
       }
 
-      // Fetch subscription
-      const { data: subData } = await supabase
-        .from('subscriptions')
-        .select('plan, status')
-        .eq('user_id', userId)
-        .single();
-
-      if (subData && subData.status === 'active') {
-        setSubscription(subData.plan as 'free' | 'standard' | 'elite');
-      } else {
+      // Fetch subscription from Stripe via edge function
+      try {
+        const { data: subData } = await supabase.functions.invoke('check-subscription');
+        if (subData?.subscribed && subData?.plan) {
+          setSubscription(subData.plan as 'free' | 'standard' | 'elite');
+        } else {
+          setSubscription('free');
+        }
+      } catch {
         setSubscription('free');
       }
     } catch (err) {
