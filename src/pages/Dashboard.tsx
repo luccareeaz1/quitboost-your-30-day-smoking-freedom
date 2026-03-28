@@ -5,7 +5,7 @@ import {
   Activity, Wallet, Cigarette, Target, Trophy, Flame,
   Sparkles, TrendingUp, Calendar, Heart, Wind, Timer,
   Zap, Users, Bot, ChevronRight, Shield, Clock,
-  Droplets, Brain, Eye, LayoutDashboard, LogOut, CheckCircle2
+  Droplets, Brain, Eye, LayoutDashboard, LogOut, CheckCircle2, Star
 } from "lucide-react";
 import {
   CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -114,7 +114,7 @@ export default function Dashboard() {
   const handleManageSubscription = async () => {
     try {
       setLoadingPortal(true);
-      const { data, error } = await supabaseClient.functions.invoke("create-portal-link");
+      const { data, error } = await (await import("@/integrations/supabase/client")).supabase.functions.invoke("create-portal-link");
       if (error) throw error;
       if (data?.url) {
         window.location.href = data.url;

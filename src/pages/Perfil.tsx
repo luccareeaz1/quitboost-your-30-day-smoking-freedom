@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService, achievementService } from "@/lib/services";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 interface Achievement {
   id: string;
