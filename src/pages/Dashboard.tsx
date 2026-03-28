@@ -5,7 +5,7 @@ import {
   Activity, Wallet, Cigarette, Target, Trophy, Flame,
   Sparkles, TrendingUp, Calendar, Heart, Wind, Timer,
   Zap, Users, Bot, ChevronRight, Shield, Clock,
-  Droplets, Brain, Eye, LayoutDashboard, LogOut, CheckCircle2
+  Droplets, Brain, Eye, LayoutDashboard, LogOut, CheckCircle2, Star
 } from "lucide-react";
 import {
   CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -47,6 +47,7 @@ export default function Dashboard() {
   const [now, setNow] = useState(new Date());
   const [missionCompleted, setMissionCompleted] = useState(false);
   const [streakData, setStreakData] = useState<any>(null);
+  const [loadingPortal, setLoadingPortal] = useState(false);
 
   useEffect(() => {
     if (!profile && !user) return;
@@ -82,9 +83,9 @@ export default function Dashboard() {
 
   if (!profile || !stats) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-black">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <SpaceBackground />
-        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full" />
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full" />
       </div>
     );
   }
@@ -109,12 +110,11 @@ export default function Dashboard() {
   const todayTip = DAILY_TIPS[stats.days % DAILY_TIPS.length];
   const greeting = now.getHours() < 12 ? "Bom dia" : now.getHours() < 18 ? "Boa tarde" : "Boa noite";
 
-  const [loadingPortal, setLoadingPortal] = useState(false);
 
   const handleManageSubscription = async () => {
     try {
       setLoadingPortal(true);
-      const { data, error } = await supabaseClient.functions.invoke("create-portal-link");
+      const { data, error } = await (await import("@/integrations/supabase/client")).supabase.functions.invoke("create-portal-link");
       if (error) throw error;
       if (data?.url) {
         window.location.href = data.url;
@@ -128,7 +128,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden">
       <SpaceBackground />
       
       <div className="container max-w-6xl mx-auto px-6 py-12 relative z-10 animate-in fade-in duration-1000">

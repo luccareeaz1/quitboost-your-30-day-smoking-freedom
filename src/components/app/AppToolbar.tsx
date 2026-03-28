@@ -23,44 +23,37 @@ const AppToolbar = () => {
     <>
       <CravingModal open={showCravingModal} onClose={() => setShowCravingModal(false)} />
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-      <nav className="glass rounded-2xl px-2 py-2 flex items-center gap-1">
-        {navItems.map((item) => {
-          const active = location.pathname === item.path;
-          return (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className={cn(
-                "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
-                active
-                  ? "bg-foreground text-background shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
-              )}
-            >
-              <item.icon className="w-4 h-4" />
-              <span className="hidden md:inline">{item.label}</span>
-            </button>
-          );
-        })}
+        <nav className="glass rounded-2xl px-2 py-2 flex items-center gap-1">
+          {navItems.map((item) => {
+            const active = location.pathname === item.path;
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
+                  active
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                )}
+              >
+                <item.icon className="w-4 h-4" />
+                <span className="hidden md:inline">{item.label}</span>
+              </button>
+            );
+          })}
 
-        <div className="w-[1px] h-6 bg-border mx-1" />
+          <div className="w-[1px] h-6 bg-border mx-1" />
 
-        <button 
-          onClick={() => setShowCravingModal(true)}
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-rose-500 hover:bg-rose-50 transition-all border border-rose-100 shadow-sm"
-          title="SOS Fissura"
-        >
-          <AlertTriangle size={18} />
-        </button>
-
-        <button 
-          onClick={() => navigate("/perfil")}
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all"
-        >
-          <User size={18} />
-        </button>
-      </nav>
-    </div>
+          <button 
+            onClick={() => setShowCravingModal(true)}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-destructive hover:bg-destructive/10 transition-all border border-destructive/20 shadow-sm"
+            title="SOS Fissura"
+          >
+            <AlertTriangle size={18} />
+          </button>
+        </nav>
+      </div>
     </>
   );
 };

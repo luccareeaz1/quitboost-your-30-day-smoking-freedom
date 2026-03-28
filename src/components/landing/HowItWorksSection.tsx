@@ -3,35 +3,38 @@ import { motion } from "framer-motion";
 const steps = [
   { 
     num: "01", 
-    title: "Mapeamento Neural", 
-    desc: "Nossa tecnologia analisa seus gatilhos comportamentais em segundos. Entendemos sua relação com o vício para criar o caminho de menor resistência." 
+    title: "Crie seu perfil", 
+    desc: "Responda um questionário rápido sobre seus hábitos. Em 2 minutos, criamos um plano personalizado para o seu perfil de fumante." 
   },
   { 
     num: "02", 
-    title: "Suporte Ativo 24/7", 
-    desc: "Diferente de apps comuns, nossa IA não apenas monitora — ela intervém. Se a fissura bater, seu Coach IA estará pronto com protocolos científicos." 
+    title: "Receba suporte diário", 
+    desc: "Nosso Coach IA te acompanha 24/7. Quando a vontade bater, ative o protocolo de respiração guiada e receba apoio imediato." 
   },
   { 
     num: "03", 
-    title: "Resgate de Liberdade", 
-    desc: "Acompanhe sua regeneração biológica e economia financeira em tempo real. Celebre vitórias com uma comunidade que fala sua língua." 
+    title: "Celebre sua evolução", 
+    desc: "Acompanhe a regeneração do seu corpo, a economia acumulada e conquiste badges. Tudo em tempo real, com dados reais." 
   },
 ];
 
 const HowItWorksSection = () => (
-  <section className="py-32 bg-transparent relative">
-    <div className="container mx-auto px-6">
+  <section id="how" className="py-24 relative">
+    <div className="container mx-auto px-6 max-w-5xl">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-center mb-24"
+        className="text-center mb-16"
       >
-        <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-white italic">A Engenharia da Liberdade</h2>
-        <p className="text-white/40 text-xl font-medium max-w-2xl mx-auto italic">Parar de fumar não é sobre força de vontade. É sobre o sistema certo.</p>
+        <p className="text-primary text-sm font-semibold mb-3">Simples e eficaz</p>
+        <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Como funciona</h2>
+        <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+          Três passos simples para começar sua vida livre do cigarro.
+        </p>
       </motion.div>
 
-      <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+      <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
         {steps.map((s, i) => (
           <motion.div
             key={s.num}
@@ -39,11 +42,13 @@ const HowItWorksSection = () => (
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.15 }}
-            className="relative"
+            className="relative text-center"
           >
-            <div className="text-8xl font-black text-white/[0.03] absolute -top-10 -left-4 italic pointer-events-none">{s.num}</div>
-            <h3 className="text-2xl font-black mb-4 tracking-tighter text-white uppercase italic">{s.title}</h3>
-            <p className="text-white/40 text-sm font-medium leading-relaxed">{s.desc}</p>
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mx-auto mb-5">
+              <span className="text-xl font-bold text-primary">{s.num}</span>
+            </div>
+            <h3 className="text-lg font-bold mb-3">{s.title}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
           </motion.div>
         ))}
       </div>
