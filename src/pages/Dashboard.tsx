@@ -180,7 +180,7 @@ export default function Dashboard() {
             <h1 className="text-3xl font-black tracking-tight">
               {greeting}, <span className="text-primary">{profile.display_name || user?.email?.split("@")[0] || "Guerreiro"}</span>.
             </h1>
-            <p className="text-muted-foreground font-medium mt-1">Sua jornada pela liberdade continua.</p>
+            <p className="text-muted-foreground font-medium mt-1">Sua nova vida começa agora.</p>
           </div>
           {user && (
             <button
@@ -279,7 +279,7 @@ export default function Dashboard() {
                       <Sparkles size={16} />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold">Dica Médica do Dia</h3>
+                      <h3 className="text-sm font-bold">Dica de Liberdade</h3>
                       <p className="text-[10px] text-muted-foreground">Fonte: {todayTip.source}</p>
                     </div>
                   </div>
@@ -320,7 +320,7 @@ export default function Dashboard() {
               <div className="flex justify-between items-center mb-8">
                 <div>
                   <h3 className="text-lg font-bold tracking-tight mb-1">Tendência de Evolução</h3>
-                  <p className="text-xs text-muted-foreground font-medium">Saúde e Economia (Realtime Supabase)</p>
+                  <p className="text-xs text-muted-foreground font-medium">Saúde e Economia (Vida Real)</p>
                 </div>
                 <TrendingUp size={20} className="text-primary" />
               </div>
@@ -358,9 +358,9 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <AppleCard onClick={() => navigate("/coach")} className="p-7 bg-card border-border md:col-span-2 lg:col-span-2 cursor-pointer group">
             <div className="flex items-center gap-2 mb-4 text-primary font-bold tracking-widest text-[9px] uppercase">
-              <Sparkles size={14} /> Suporte Clínico
+              <Sparkles size={14} /> Apoio do Especialista
             </div>
-            <h4 className="text-2xl font-black mb-3">Coach Neural IA</h4>
+            <h4 className="text-2xl font-black mb-3">Assistente de Liberdade</h4>
             <p className="text-muted-foreground text-sm font-medium mb-5 whitespace-pre-line">
                {stats.avoidedCount > 0 
                  ? `Você já evitou ${stats.avoidedCount} cigarros hoje.\nIsso equivale a R$ ${stats.moneySaved.toFixed(2)} economizados.`

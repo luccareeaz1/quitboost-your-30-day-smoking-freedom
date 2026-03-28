@@ -1,6 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, TrendingUp, Target, Users, Trophy, User, Bot } from "lucide-react";
+import { LayoutDashboard, TrendingUp, Target, Users, Trophy, User, Bot, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import CravingModal from "@/components/dashboard/CravingModal";
+import { useState } from "react";
 
 const navItems = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
@@ -15,9 +17,12 @@ const navItems = [
 const AppToolbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [showCravingModal, setShowCravingModal] = useState(false);
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+    <>
+      <CravingModal open={showCravingModal} onClose={() => setShowCravingModal(false)} />
+      <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
       <nav className="glass rounded-2xl px-2 py-2 flex items-center gap-1">
         {navItems.map((item) => {
           const active = location.pathname === item.path;
@@ -38,16 +43,25 @@ const AppToolbar = () => {
           );
         })}
 
-        <div className="w-[1px] h-6 bg-gray-100 mx-1" />
+        <div className="w-[1px] h-6 bg-border mx-1" />
+
+        <button 
+          onClick={() => setShowCravingModal(true)}
+          className="w-10 h-10 rounded-xl flex items-center justify-center text-rose-500 hover:bg-rose-50 transition-all border border-rose-100 shadow-sm"
+          title="SOS Fissura"
+        >
+          <AlertTriangle size={18} />
+        </button>
 
         <button 
           onClick={() => navigate("/perfil")}
-          className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:text-primary hover:bg-green-50 transition-all"
+          className="w-10 h-10 rounded-xl flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all"
         >
-          <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold">V</div>
+          <User size={18} />
         </button>
       </nav>
     </div>
+    </>
   );
 };
 

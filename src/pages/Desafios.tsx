@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Target, Check, Circle, Flame, Trophy, Users, Filter,
   Clock, Zap, Brain, Heart, Shield, Star, ChevronRight,
-  TrendingUp, Award, Timer, Sparkles, Lock, Info, Loader2
+  TrendingUp, Award, Timer, Sparkles, Lock, Info, Loader2, AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppLayout from "@/components/app/AppLayout";

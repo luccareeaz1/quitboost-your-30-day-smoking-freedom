@@ -62,7 +62,7 @@ const Onboarding = () => {
     try {
       setIsSubmitting(true);
       
-      // 1. Update Profile
+      // 1. Save Onboarding Profile (Corrected Column Names)
       await profileService.saveOnboarding(user.id, {
         cigarettes_per_day: data.cigarrosPorDia,
         years_smoking: data.anosFumando,
@@ -72,14 +72,12 @@ const Onboarding = () => {
         display_name: user.email?.split("@")[0],
       });
 
-      // 2. Save Consent Log (LGPD Requirement)
-      await supabase.from('consent_logs').insert({
-        user_id: user.id,
+      // 2. Save Consent Log (Using Service Method)
+      await profileService.saveConsent(user.id, {
         policy_version: '2026.1',
         accepted_terms: true,
         accepted_health_data: true,
-        marketing_consent: acceptedMarketing,
-        ip_address: 'local' // simplified
+        marketing_consent: acceptedMarketing
       });
 
       toast.success("Seu plano clínico foi criado!");
@@ -203,7 +201,7 @@ const Onboarding = () => {
               </div>
               <div className="flex-1">
                  <p className="text-sm font-black text-foreground mb-1 leading-tight">Consinto no processamento de meus dados sensíveis de saúde.</p>
-                 <p className="text-[10px] font-medium text-muted-foreground italic">Essenciais para o funcionamento do protocolo de cessação.</p>
+                 <p className="text-[10px] font-medium text-muted-foreground italic">Essenciais para o funcionamento do plano de libertação.</p>
               </div>
            </div>
 
@@ -234,7 +232,7 @@ const Onboarding = () => {
               <Wind size={28} />
            </div>
            <h1 className="text-3xl font-black tracking-tighter">Onboarding.</h1>
-           <p className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground mt-2">Iniciando Biografia Sanitária</p>
+           <p className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground mt-2">Personalizando Sua Experiência</p>
         </header>
 
         {/* Progress Bar */}

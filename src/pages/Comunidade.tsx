@@ -188,7 +188,7 @@ const Comunidade = () => {
             </button>
           </div>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            Apoio mútuo baseado em evidências. Você não está sozinho nesta jornada de liberdade.
+            Apoio real de quem vive os mesmos desafios. Você não está sozinho nesta jornada de liberdade.
           </p>
         </header>
 
@@ -205,7 +205,7 @@ const Comunidade = () => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-base font-bold flex items-center gap-2">
                     <Shield className="w-5 h-5 text-primary" />
-                    Regras Éticas da Startup
+                    Regras de Convivência
                   </h3>
                   <button onClick={() => setShowRules(false)}>
                     <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
@@ -395,6 +395,7 @@ const Comunidade = () => {
 
 // CHILD COMPONENTS
 const PostCard = ({ post, currentUser, isBookmarked, onLike, onBookmark, refreshData }: any) => {
+  const { profile } = useAuth();
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [isLiking, setIsLiking] = useState(false);

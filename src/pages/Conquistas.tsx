@@ -3,7 +3,7 @@ import { motion, AnimatePresence, animate } from "framer-motion";
 import {
   Trophy, Star, Flame, Heart, Shield, Zap, Target,
   Award, Lock, Share2, ChevronRight, Sparkles, Clock,
-  TrendingUp, Crown, Medal, Gift, Check, Info, Loader2
+  TrendingUp, Crown, Medal, Gift, Check, Info, Loader2, AlertCircle
 } from "lucide-react";
 import AppLayout from "@/components/app/AppLayout";
 import { useNavigate } from "react-router-dom";
@@ -128,7 +128,7 @@ const Conquistas = () => {
            </div>
            <h1 className="text-4xl font-black tracking-tight mb-2">Conquistas</h1>
            <p className="text-muted-foreground text-sm font-medium">
-             {stats.unlockedCount} de {achievements.length} badges desbloqueadas.
+             {stats.unlockedCount} de {achievements.length} marcos alcançados.
            </p>
         </header>
 
@@ -272,7 +272,7 @@ const Conquistas = () => {
                      <div className="bg-primary/5 rounded-3xl p-6 text-left mb-8 border border-primary/10">
                         <div className="flex items-center gap-2 mb-3">
                            <Shield className="w-4 h-4 text-primary" />
-                           <h4 className="text-xs font-black uppercase tracking-widest text-primary">Fato Médico</h4>
+                           <h4 className="text-xs font-black uppercase tracking-widest text-primary">Sabedoria de Saúde</h4>
                         </div>
                         <p className="text-xs font-medium text-foreground/80 leading-relaxed italic">
                           "{selectedAchievement.medical_fact}"
@@ -301,8 +301,8 @@ const Conquistas = () => {
         <div className="mt-16 p-6 rounded-[32px] bg-muted/30 border border-border text-center">
            <AlertCircle className="w-5 h-5 text-muted-foreground mx-auto mb-2" />
            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-relaxed">
-             Marcos Clínicos Baseados em OMS/CDC.<br />
-             Cada badge representa uma vitória biológica.
+             Marcos Baseados em Metas de Saúde.<br />
+             Cada marco representa uma evolução real.
            </p>
         </div>
       </div>
@@ -312,6 +312,4 @@ const Conquistas = () => {
 
 export default Conquistas;
 
-const AlertCircle = ({ className }: { className?: string }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-);
+// Custom utility components can go here

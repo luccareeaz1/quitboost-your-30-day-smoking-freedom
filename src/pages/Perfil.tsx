@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService, achievementService } from "@/lib/services";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Achievement {
   id: string;
@@ -114,7 +115,7 @@ const Perfil = () => {
     <AppLayout>
       <div className="container mx-auto px-4 sm:px-6 max-w-lg pb-32 pt-10 animate-fade-in">
         <header className="flex items-center justify-between mb-8">
-            <h1 className="text-4xl font-black tracking-tight">Vidal.</h1>
+            <h1 className="text-4xl font-black tracking-tight">Sua Jornada.</h1>
             <div className="flex gap-2">
                <button onClick={() => setShowSettings(!showSettings)} className="w-12 h-12 rounded-2xl bg-card border border-border flex items-center justify-center hover:bg-muted transition-all rotate-0 active:rotate-90">
                   <Settings className="w-5 h-5 text-muted-foreground" />
@@ -141,7 +142,7 @@ const Perfil = () => {
               <div className="mb-4">
                  <h2 className="text-2xl font-black tracking-tight">{profile.display_name || "Guerreiro"}</h2>
                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground mt-1">
-                   Livre desde {stats.quitDate.toLocaleDateString("pt-BR")}
+                   Liberdade desde {stats.quitDate.toLocaleDateString("pt-BR")}
                  </p>
               </div>
               
@@ -194,7 +195,7 @@ const Perfil = () => {
         {/* MENU */}
         <section className="space-y-3">
            {[
-             { label: "Dashboard de Saúde", icon: Heart, path: "/", color: "text-rose-500" },
+             { label: "Resumo da Saúde", icon: Heart, path: "/", color: "text-rose-500" },
              { label: "Coach Neural AI", icon: Bot, path: "/coach", color: "text-violet-500" },
              { label: "Comunidade QuitBoost", icon: Users, path: "/comunidade", color: "text-blue-500" },
              { label: "Central de Desafios", icon: Target, path: "/desafios", color: "text-emerald-500" },
@@ -308,8 +309,8 @@ const Perfil = () => {
             >
                <div className="bg-card w-full max-w-sm rounded-[40px] p-8 text-center space-y-6">
                   <div className="w-20 h-20 rounded-full bg-destructive/10 text-destructive flex items-center justify-center mx-auto"><Trash2 size={40} /></div>
-                  <h3 className="text-xl font-bold">Resete Total?</h3>
-                  <p className="text-sm text-muted-foreground font-medium">Isso apagará seu progresso físico, mas não sua história. Deseja recomeçar a jornada?</p>
+                  <h3 className="text-xl font-bold">Reiniciar Jornada?</h3>
+                  <p className="text-sm text-muted-foreground font-medium">Isso voltará seu progresso físico ao início, mas sua história permanece. Deseja recomeçar?</p>
                   <div className="flex gap-4">
                     <Button variant="outline" className="flex-1 h-14 rounded-2xl font-black text-xs uppercase" onClick={() => setShowDeleteConfirm(false)}>Agora não</Button>
                     <Button className="flex-1 h-14 rounded-2xl font-black text-xs uppercase bg-destructive hover:bg-destructive/90 text-white" onClick={() => navigate("/onboarding")}>Sim, Recomeçar</Button>

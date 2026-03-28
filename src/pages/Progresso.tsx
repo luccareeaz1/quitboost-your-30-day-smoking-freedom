@@ -89,7 +89,7 @@ const Progresso = () => {
       <div className="container mx-auto px-4 sm:px-6 max-w-4xl pb-32 pt-10 animate-fade-in space-y-10">
         <header className="text-center mb-12">
             <h1 className="text-5xl font-black tracking-tight mb-4">Progresso.</h1>
-            <p className="text-muted-foreground text-sm font-bold uppercase tracking-[0.3em]">Auditoria Biográfica & Financeira</p>
+            <p className="text-muted-foreground text-sm font-bold uppercase tracking-[0.3em]">Seu Histórico de Sucesso</p>
         </header>
 
         {/* FINANCIAL HERO */}
@@ -97,7 +97,7 @@ const Progresso = () => {
            <AppleCard className="p-10 sm:p-16 bg-foreground text-background rounded-[48px] overflow-hidden shadow-elevated">
               <div className="absolute top-0 right-0 p-10 opacity-10"><Wallet size={120} /></div>
               <div className="relative z-10 text-center space-y-4">
-                 <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-40">Capital de Saúde Recuperado</p>
+                 <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-40">Valor de Saúde Recuperado</p>
                   <div className="text-6xl sm:text-8xl font-black tracking-tighter italic">
                     <CountUp value={stats.moneySaved} prefix="R$" />
                   </div>
@@ -145,7 +145,7 @@ const Progresso = () => {
         {/* TIMELINE */}
         <section className="bg-card rounded-[48px] p-8 sm:p-12 border-none shadow-soft">
            <div className="flex items-center justify-between mb-12">
-              <h2 className="text-2xl font-black tracking-tight">Evolução Sistêmica</h2>
+              <h2 className="text-2xl font-black tracking-tight">Progresso de Saúde</h2>
               <div className="flex items-center gap-2">
                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Realtime</span>
@@ -173,7 +173,7 @@ const Progresso = () => {
                     <div className="flex-1 pt-1">
                        <div className="flex items-center gap-3 mb-1">
                           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{m.time}</span>
-                          {achieved && <span className="text-[8px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full">Biological Victory</span>}
+                          {achieved && <span className="text-[8px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full">Vitória Alcançada</span>}
                        </div>
                        <h4 className="text-lg font-black tracking-tight mb-2">{m.benefit}</h4>
                        {!achieved && progress > 0 && (
@@ -195,8 +195,7 @@ const Progresso = () => {
         {/* DISCLAIMER */}
         <footer className="p-8 rounded-[32px] bg-muted/30 border border-border/50 text-center">
            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground leading-relaxed">
-             PROTOCOLOS CLÍNICOS: OMS / CDC / INCA 2026<br />
-             Acompanhamento científico exclusivo para usuários Elite.
+             Acompanhamento exclusivo para usuários Elite.
            </p>
         </footer>
       </div>

@@ -66,7 +66,6 @@ export default function AICoachInterface() {
     try {
       setIsLoading(true);
       setInput("");
-
       // Save user message to DB
       const userMsg = await coachService.addMessage(activeConversationId, "user", text);
       setMessages(prev => [...prev, userMsg as any]);
