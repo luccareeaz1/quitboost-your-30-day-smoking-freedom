@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Check, Zap, ArrowLeft, Loader2, Sparkles, Star, Crown, ShieldCheck } from "lucide-react";
 import { useState } from "react";
@@ -66,14 +66,16 @@ export default function Checkout() {
 
       if (error) throw error;
       if (data?.url) {
-        window.location.href = data.url;
+        // Delay slightly for perceived quality
+        setTimeout(() => {
+          window.location.href = data.url;
+        }, 1200);
       } else {
         throw new Error("URL de checkout não recebida");
       }
     } catch (error: any) {
       console.error("Erro no pagamento:", error);
       toast.error("Erro ao iniciar checkout. Tente novamente.");
-    } finally {
       setLoading(false);
     }
   };
@@ -82,6 +84,32 @@ export default function Checkout() {
     <div className="min-h-screen bg-black text-white relative flex items-center justify-center px-6 py-12 overflow-hidden">
       <SpaceBackground />
       
+      {/* LOADING OVERLAY */}
+      <AnimatePresence>
+        {loading && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex flex-col items-center justify-center"
+          >
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+              className="w-24 h-24 rounded-[2rem] border-4 border-emerald-500/20 border-t-emerald-500 mb-10 shadow-[0_0_50px_-12px_rgba(16,185,129,0.5)]"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <h3 className="text-2xl font-black italic tracking-tighter mb-2 italic">Iniciando Protocolo...</h3>
+              <p className="text-gray-500 text-[10px] uppercase font-black tracking-[0.4em] animate-pulse">Sincronizando com o Centro de Comando</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="w-full max-w-5xl relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
         <motion.button
           onClick={() => navigate(-1)}
@@ -169,18 +197,14 @@ export default function Checkout() {
 
         <div className="max-w-xl mx-auto">
           <Button
-            className="w-full h-20 rounded-[2.5rem] bg-emerald-500 text-black font-black text-base uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/20 hover:bg-emerald-400 hover:scale-[1.02] active:scale-[0.98] transition-all"
+            className="w-full h-24 rounded-[2.5rem] bg-emerald-500 text-black font-black text-lg uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/20 hover:bg-emerald-400 hover:scale-[1.02] active:scale-[0.98] transition-all"
             onClick={handlePayment}
             disabled={loading}
           >
-            {loading ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <div className="flex items-center gap-3">
-                <Sparkles size={20} />
-                Assinar {plan.name}
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              <Sparkles size={24} />
+              Assinar {plan.name}
+            </div>
           </Button>
 
           <footer className="mt-10 flex flex-col items-center gap-6">

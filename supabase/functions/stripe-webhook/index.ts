@@ -51,17 +51,38 @@ serve(async (req) => {
           const priceId = subscription.items.data[0].price.id;
           const plan = TIERS[priceId] || "standard";
 
-          await supabaseClient.from("subscriptions").upsert({
-            user_id: userData.id,
-            plan,
-            status: "active",
-            stripe_customer_id: session.customer as string,
-            stripe_subscription_id: subscriptionId,
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-          });
+          await Promise.all([
+            supabaseClient.from("subscriptions").upsert({
+              user_id: userData.id,
+              plan,
+              status: "active",
+              stripe_customer_id: session.customer as string,
+              stripe_subscription_id: subscriptionId,
+              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            }),
+            supabaseClient.from("profiles").update({
+              stripe_customer_id: session.customer as string
+            }).eq("id", userData.id)
+          ]);
           
           console.log(`Subscription activated for ${userData.id} (Plan: ${plan})`);
         }
+        break;
+      }
+
+      case "customer.subscription.updated": {
+        const subscription = event.data.object;
+        const priceId = subscription.items.data[0].price.id;
+        const plan = TIERS[priceId] || "standard";
+        
+        await supabaseClient
+          .from("subscriptions")
+          .update({ 
+            plan,
+            status: subscription.status === "active" ? "active" : "past_due",
+            current_period_end: new Date(subscription.current_period_end * 1000).toISOString()
+          })
+          .eq("stripe_subscription_id", subscription.id);
         break;
       }
 

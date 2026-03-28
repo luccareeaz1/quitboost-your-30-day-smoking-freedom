@@ -109,6 +109,24 @@ export default function Dashboard() {
   const todayTip = DAILY_TIPS[stats.days % DAILY_TIPS.length];
   const greeting = now.getHours() < 12 ? "Bom dia" : now.getHours() < 18 ? "Boa tarde" : "Boa noite";
 
+  const [loadingPortal, setLoadingPortal] = useState(false);
+
+  const handleManageSubscription = async () => {
+    try {
+      setLoadingPortal(true);
+      const { data, error } = await supabaseClient.functions.invoke("create-portal-link");
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      console.error("Portal error:", err);
+      alert("Erro ao acessar o portal. Tente novamente mais tarde.");
+    } finally {
+      setLoadingPortal(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
       <SpaceBackground />
@@ -154,9 +172,21 @@ export default function Dashboard() {
             </h1>
             <p className="text-gray-500 font-bold uppercase tracking-[0.2em] text-[10px] mt-2 italic shadow-text">Sua órbita de liberdade está estável.</p>
           </div>
-          <button onClick={signOut} className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-500/20 hover:border-red-500/50 transition-all group">
-            <LogOut size={20} className="text-gray-500 group-hover:text-red-500" />
-          </button>
+          <div className="flex items-center gap-4">
+            {subscription !== "free" && (
+              <button 
+                onClick={handleManageSubscription} 
+                disabled={loadingPortal}
+                className="px-6 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2 hover:bg-emerald-500/20 transition-all font-black text-[10px] uppercase tracking-widest text-emerald-400 disabled:opacity-50"
+              >
+                <Shield size={16} />
+                {loadingPortal ? "Carregando..." : "Assinatura"}
+              </button>
+            )}
+            <button onClick={signOut} className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-500/20 hover:border-red-500/50 transition-all group">
+              <LogOut size={20} className="text-gray-500 group-hover:text-red-500" />
+            </button>
+          </div>
         </header>
 
         {/* MAIN STREAK - HERO */}

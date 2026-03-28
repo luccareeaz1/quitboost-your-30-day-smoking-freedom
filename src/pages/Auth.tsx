@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
-import { Wind, Mail, Lock, ArrowRight, Loader2, Sparkles } from "lucide-react";
+import { Wind, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import SpaceBackground from "@/components/landing/SpaceBackground";
 
@@ -30,7 +30,9 @@ export default function Auth() {
           email, 
           password,
           options: {
-            emailRedirectTo: window.location.origin + "/onboarding",
+            // Removing manual emailRedirectTo to let the dashboard default handle it correctly across environments,
+            // or ensuring it uses the site URL configured in Supabase.
+            // If the user needs a specific redirect, they should configure it in the dashboard.
           }
         });
         if (error) throw error;
@@ -123,9 +125,9 @@ export default function Auth() {
             variant="ghost"
             className="w-full h-14 rounded-full border border-white/5 text-gray-300 font-bold hover:bg-white/5 flex items-center justify-center gap-3 transition-all relative z-10"
             onClick={async () => {
-              const { error } = await lovable.auth.signInWithOAuth("google", {
-                redirect_uri: window.location.origin,
-              });
+              // The Lovable auth library handles the correct redirect_uri automatically
+              // across different environments (local, preview, and custom domains).
+              const { error } = await lovable.auth.signInWithOAuth("google");
               if (error) toast.error(error.message || "Erro ao entrar com Google");
             }}
           >
