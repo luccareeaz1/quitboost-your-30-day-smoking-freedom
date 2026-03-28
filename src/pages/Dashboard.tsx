@@ -47,6 +47,7 @@ export default function Dashboard() {
   const [now, setNow] = useState(new Date());
   const [missionCompleted, setMissionCompleted] = useState(false);
   const [streakData, setStreakData] = useState<any>(null);
+  const [loadingPortal, setLoadingPortal] = useState(false);
 
   useEffect(() => {
     if (!profile && !user) return;
@@ -109,7 +110,6 @@ export default function Dashboard() {
   const todayTip = DAILY_TIPS[stats.days % DAILY_TIPS.length];
   const greeting = now.getHours() < 12 ? "Bom dia" : now.getHours() < 18 ? "Boa tarde" : "Boa noite";
 
-  const [loadingPortal, setLoadingPortal] = useState(false);
 
   const handleManageSubscription = async () => {
     try {
