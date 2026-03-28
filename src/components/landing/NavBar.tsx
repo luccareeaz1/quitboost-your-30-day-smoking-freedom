@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Zap, User } from "lucide-react";
+import { Wind, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const NavBar = () => {
@@ -8,40 +8,32 @@ const NavBar = () => {
   const { user } = useAuth();
 
   return (
-    <nav className="fixed top-0 w-full z-50  bg-transparent backdrop-blur-md">
-      <div className="container mx-auto px-6 h-20 flex items-center justify-between max-w-6xl">
+    <nav className="fixed top-0 w-full z-50 glass">
+      <div className="container mx-auto px-6 h-16 flex items-center justify-between max-w-6xl">
         <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => navigate("/")}>
-          <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center border border-primary/30 group-hover:bg-primary transition-all">
-            <Zap className="w-5 h-5 text-primary group-hover:text-black transition-colors" fill="currentColor" />
+          <div className="w-9 h-9 bg-primary/20 rounded-xl flex items-center justify-center border border-primary/20 group-hover:bg-primary/30 transition-all">
+            <Wind className="w-4 h-4 text-primary" />
           </div>
-          <span className="text-xl font-black text-white tracking-tighter italic">Quit<span className="text-primary">Boost</span></span>
+          <span className="text-lg font-bold text-foreground tracking-tight">Breathe <span className="text-primary">Again</span></span>
         </div>
-        <div className="flex items-center gap-6">
+        
+        <div className="hidden md:flex items-center gap-8">
+          <button onClick={() => document.getElementById("benefits")?.scrollIntoView({ behavior: "smooth" })} className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">Benefícios</button>
+          <button onClick={() => document.getElementById("how")?.scrollIntoView({ behavior: "smooth" })} className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">Como Funciona</button>
+          <button onClick={() => document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" })} className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">Planos</button>
+        </div>
+
+        <div className="flex items-center gap-3">
           {user ? (
-            <Button 
-              variant="default" 
-              size="sm" 
-              className="rounded-full px-8 bg-gray-900 text-white font-bold uppercase tracking-widest text-[10px] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-gray-500/20" 
-              onClick={() => navigate("/dashboard")}
-            >
-              <User size={14} className="mr-2" /> Meu Dashboard
+            <Button size="sm" className="rounded-xl px-6 bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90" onClick={() => navigate("/dashboard")}>
+              <User size={14} className="mr-2" /> Dashboard
             </Button>
           ) : (
             <>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-white/50 hover:text-white font-black uppercase tracking-widest text-[10px]" 
-                onClick={() => navigate("/auth")}
-              >
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-medium text-sm" onClick={() => navigate("/auth")}>
                 Entrar
               </Button>
-              <Button 
-                variant="default" 
-                size="sm" 
-                className="rounded-full px-8 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-white/10" 
-                onClick={() => navigate("/onboarding")}
-              >
+              <Button size="sm" className="rounded-xl px-6 bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90" onClick={() => navigate("/onboarding")}>
                 Começar Grátis
               </Button>
             </>

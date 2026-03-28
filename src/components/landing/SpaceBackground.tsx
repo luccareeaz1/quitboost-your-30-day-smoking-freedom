@@ -1,92 +1,19 @@
-import React, { useEffect, useRef } from "react";
-
 const SpaceBackground = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animationFrameId: number;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener("resize", resize);
-    resize();
-
-    const particles: Particle[] = [];
-    const particleCount = 150;
-
-    class Particle {
-      x: number;
-      y: number;
-      size: number;
-      speedX: number;
-      speedY: number;
-      opacity: number;
-
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5;
-        this.speedX = (Math.random() - 0.5) * 0.2;
-        this.speedY = (Math.random() - 0.5) * 0.2;
-        this.opacity = Math.random();
-      }
-
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-
-        if (this.x > canvas.width) this.x = 0;
-        else if (this.x < 0) this.x = canvas.width;
-
-        if (this.y > canvas.height) this.y = 0;
-        else if (this.y < 0) this.y = canvas.height;
-      }
-
-      draw() {
-        if (!ctx) return;
-        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle());
-    }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.update();
-        p.draw();
-      });
-      animationFrameId = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      window.removeEventListener("resize", resize);
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, []);
-
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
-      style={{ background: "#000" }}
-    />
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" style={{ background: 'hsl(150, 10%, 4%)' }}>
+      {/* Top green glow */}
+      <div className="absolute top-[-30%] left-[20%] w-[800px] h-[800px] rounded-full opacity-30"
+        style={{ background: 'radial-gradient(circle, hsla(152, 58%, 48%, 0.15), transparent 70%)' }} />
+      {/* Right accent */}
+      <div className="absolute top-[10%] right-[-10%] w-[600px] h-[600px] rounded-full opacity-20"
+        style={{ background: 'radial-gradient(circle, hsla(152, 58%, 48%, 0.12), transparent 70%)' }} />
+      {/* Bottom subtle */}
+      <div className="absolute bottom-[-20%] left-[40%] w-[500px] h-[500px] rounded-full opacity-15"
+        style={{ background: 'radial-gradient(circle, hsla(152, 58%, 48%, 0.1), transparent 70%)' }} />
+      {/* Grid overlay */}
+      <div className="absolute inset-0 opacity-[0.03]"
+        style={{ backgroundImage: 'linear-gradient(hsla(152, 58%, 48%, 0.3) 1px, transparent 1px), linear-gradient(90deg, hsla(152, 58%, 48%, 0.3) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+    </div>
   );
 };
 

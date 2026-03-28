@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,79 +6,45 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 12%;
+    --background: 150 10% 4%;
+    --foreground: 150 5% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 12%;
+    --card: 150 8% 7%;
+    --card-foreground: 150 5% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 12%;
+    --popover: 150 8% 7%;
+    --popover-foreground: 150 5% 95%;
 
-    --primary: 0 0% 12%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 152 58% 48%;
+    --primary-foreground: 150 10% 4%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 20%;
+    --secondary: 150 6% 12%;
+    --secondary-foreground: 150 5% 80%;
 
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 50%;
+    --muted: 150 6% 10%;
+    --muted-foreground: 150 5% 50%;
 
-    --accent: 0 0% 92%;
-    --accent-foreground: 0 0% 12%;
+    --accent: 152 30% 15%;
+    --accent-foreground: 150 5% 95%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 92%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 12%;
+    --border: 150 8% 14%;
+    --input: 150 8% 12%;
+    --ring: 152 58% 48%;
 
-    --radius: 1.5rem;
+    --radius: 1.25rem;
 
-    --success: 142 60% 45%;
-    --success-foreground: 0 0% 100%;
+    --success: 152 58% 48%;
+    --success-foreground: 150 10% 4%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
     --streak: 38 92% 50%;
 
-    --apple-blue: 211 100% 50%;
-    --apple-green: 142 60% 45%;
-
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 25%));
-    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(0 0% 98%));
-    --gradient-glass: linear-gradient(135deg, hsla(0, 0%, 100%, 0.7), hsla(0, 0%, 100%, 0.4));
-
-    --shadow-sm: 0 2px 8px -2px hsl(0 0% 0% / 0.06);
-    --shadow-md: 0 8px 24px -4px hsl(0 0% 0% / 0.08);
-    --shadow-lg: 0 16px 48px -8px hsl(0 0% 0% / 0.12);
-    --shadow-glass: 0 8px 32px 0 hsl(0 0% 0% / 0.08);
-
-    --font-display: 'SF Pro Display', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  }
-
-  .dark {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 4%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 4%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 60%;
-    --accent: 0 0% 12%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 0 0% 98%;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 }
 
@@ -92,53 +58,54 @@
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-weight: 700;
+    letter-spacing: -0.03em;
   }
 }
 
 @layer utilities {
   .glass {
-    background: hsla(0, 0%, 100%, 0.65);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid hsla(0, 0%, 100%, 0.3);
-    box-shadow: var(--shadow-glass);
+    background: hsla(150, 8%, 7%, 0.7);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid hsla(152, 58%, 48%, 0.08);
   }
   .glass-dark {
-    background: hsla(0, 0%, 0%, 0.5);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    background: hsla(150, 10%, 5%, 0.6);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid hsla(152, 58%, 48%, 0.06);
   }
   .shadow-soft {
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 2px 16px -4px hsla(152, 58%, 48%, 0.08);
   }
   .shadow-elevated {
-    box-shadow: var(--shadow-lg);
-  }
-  .shadow-glass {
-    box-shadow: var(--shadow-glass);
+    box-shadow: 0 8px 32px -8px hsla(152, 58%, 48%, 0.12);
   }
   .shadow-glow {
-    box-shadow: 0 0 40px -10px hsl(0 0% 0% / 0.15);
+    box-shadow: 0 0 40px -10px hsla(152, 58%, 48%, 0.2);
   }
   .gradient-card {
-    background: var(--gradient-card);
+    background: linear-gradient(145deg, hsl(150 8% 7%), hsl(150 8% 9%));
   }
-  .gradient-glass {
-    background: var(--gradient-glass);
-  }
-  .gradient-dark {
-    background: var(--gradient-hero);
-  }
-  .gradient-accent {
-    background: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 30%));
+  .gradient-hero {
+    background: radial-gradient(ellipse 80% 50% at 50% -20%, hsla(152, 58%, 48%, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 50%, hsla(152, 58%, 48%, 0.08), transparent),
+                hsl(150, 10%, 4%);
   }
   .text-gradient {
-    background: linear-gradient(135deg, hsl(0 0% 12%), hsl(0 0% 40%));
+    background: linear-gradient(135deg, hsl(152 58% 48%), hsl(152 58% 68%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+  .text-gradient-white {
+    background: linear-gradient(180deg, hsl(150 5% 95%), hsl(150 5% 60%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glow-green {
+    box-shadow: 0 0 60px -12px hsla(152, 58%, 48%, 0.3);
   }
 }
