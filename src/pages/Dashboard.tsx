@@ -83,9 +83,9 @@ export default function Dashboard() {
 
   if (!profile || !stats) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-black">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <SpaceBackground />
-        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full" />
+        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full" />
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground relative overflow-x-hidden">
       <SpaceBackground />
       
       <div className="container max-w-6xl mx-auto px-6 py-12 relative z-10 animate-in fade-in duration-1000">
