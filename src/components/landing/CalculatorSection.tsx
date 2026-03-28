@@ -14,18 +14,18 @@ const CalculatorSection = () => {
   const anual = diario * 365;
 
   return (
-    <section id="calculator" className="py-24 bg-background">
+    <section id="calculator" className="py-32 bg-transparent relative">
       <div className="container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-24"
         >
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight">
-            Quanto você vai economizar?
+          <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-white italic">
+            O Preço da sua Liberdade
           </h2>
-          <p className="text-muted-foreground text-lg">Calcule agora mesmo.</p>
+          <p className="text-white/40 text-xl font-medium max-w-2xl mx-auto italic leading-relaxed">Quantos milhares de reais o vício está drenando da sua vida? Calcule o resgate abaixo.</p>
         </motion.div>
 
         <motion.div
@@ -34,57 +34,59 @@ const CalculatorSection = () => {
           viewport={{ once: true }}
           className="max-w-2xl mx-auto"
         >
-          <div className="rounded-3xl border border-border p-8 md:p-12 bg-card">
-            <div className="space-y-8">
+          <div className="rounded-[3rem] border border-white/5 p-10 md:p-14 glass-dark shadow-2xl backdrop-blur-3xl overflow-hidden relative">
+            <div className="space-y-12">
               <div>
-                <label className="block text-sm font-medium mb-3">
-                  Cigarros por dia: <span className="text-foreground text-xl font-bold">{cigarros}</span>
+                <label className="block text-xs font-black uppercase tracking-widest text-white/40 mb-5 italic">
+                  Cigarros por dia: <span className="text-white text-2xl font-black ml-2">{cigarros}</span>
                 </label>
                 <input
                   type="range" min={1} max={60} value={cigarros}
                   onChange={e => setCigarros(+e.target.value)}
-                  className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-foreground"
+                  className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-3">
-                  Preço por cigarro: <span className="text-foreground text-xl font-bold">R${preco.toFixed(2)}</span>
+                <label className="block text-xs font-black uppercase tracking-widest text-white/40 mb-5 italic">
+                  Preço por cigarro: <span className="text-white text-2xl font-black ml-2">R${preco.toFixed(2)}</span>
                 </label>
                 <input
                   type="range" min={0.5} max={5} step={0.1} value={preco}
                   onChange={e => setPreco(+e.target.value)}
-                  className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer accent-foreground"
+                  className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-white"
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4 pt-4">
+              <div className="grid grid-cols-3 gap-6 pt-6 italic">
                 {[
-                  { label: "Por dia", value: diario },
-                  { label: "Por mês", value: mensal },
-                  { label: "Por ano", value: anual },
+                  { label: "Diário", value: diario },
+                  { label: "Mensal", value: mensal },
+                  { label: "Anual", value: anual },
                 ].map(item => (
-                  <div key={item.label} className="text-center p-4 rounded-2xl bg-muted">
-                    <p className="text-xs text-muted-foreground mb-1">{item.label}</p>
-                    <p className="text-2xl md:text-3xl font-bold tracking-tight">
+                  <div key={item.label} className="text-center p-6 rounded-[1.5rem] bg-white/[0.03] border border-white/5">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-2">{item.label}</p>
+                    <p className="text-2xl md:text-3xl font-black text-white tracking-tighter">
                       R${item.value.toFixed(0)}
                     </p>
                   </div>
                 ))}
               </div>
 
-              <div className="flex items-center gap-3 p-4 rounded-2xl bg-muted border border-border">
-                <TrendingUp className="w-5 h-5 text-foreground flex-shrink-0" />
-                <p className="text-sm text-muted-foreground">
-                  Em 1 ano, você economiza{" "}
-                  <strong className="text-foreground">R${anual.toFixed(0)}</strong> — suficiente para uma viagem!
+              <div className="flex items-center gap-4 p-6 rounded-[2rem] bg-primary/5 border border-primary/10">
+                <TrendingUp className="w-6 h-6 text-primary flex-shrink-0" />
+                <p className="text-sm font-bold text-white/50 leading-relaxed italic">
+                  Em 1 ano, você resgata{" "}
+                  <strong className="text-primary text-xl font-black px-1 tracking-tighter">R${anual.toFixed(0)}</strong> direto para sua conta.
                 </p>
               </div>
 
-              <Button size="lg" className="w-full h-14 text-base rounded-full" onClick={() => navigate("/onboarding")}>
-                <Wallet className="mr-2 w-5 h-5" /> Quero economizar agora
+              <Button size="lg" className="w-full h-16 text-sm font-black uppercase tracking-widest rounded-[1.5rem] bg-white text-black hover:bg-white/90 shadow-xl shadow-white/5 transition-all" onClick={() => navigate("/onboarding")}>
+                <Wallet className="mr-2 w-5 h-5" /> Iniciar Resgate Financeiro
               </Button>
             </div>
+            
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 blur-[60px] rounded-full pointer-events-none" />
           </div>
         </motion.div>
       </div>
