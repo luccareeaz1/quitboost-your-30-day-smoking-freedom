@@ -4,7 +4,7 @@ import { AppleCard } from "@/components/ui/apple-card";
 import { Button } from "@/components/ui/button";
 import {
   Send, Bot, User, Target, Heart,
-  Brain, Flame, MessageCircle, AlertTriangle, Loader2
+  Brain, Flame, MessageCircle, AlertTriangle, Loader2, Sparkles, Zap
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -21,10 +21,10 @@ interface Message {
 }
 
 const QUICK_ACTIONS = [
-  { label: "Estou com fissura", icon: Flame, color: "text-rose-500 bg-rose-500/10 border-rose-500/20" },
-  { label: "Ansioso/irritado", icon: Brain, color: "text-violet-500 bg-violet-500/10 border-violet-500/20" },
-  { label: "Preciso de motivação", icon: Heart, color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-  { label: "Tive uma recaída", icon: AlertTriangle, color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
+  { label: "Estou com fissura", icon: Flame, color: "text-rose-400 bg-rose-500/10 border-rose-500/20" },
+  { label: "Ansioso/irritado", icon: Brain, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
+  { label: "Preciso de motivação", icon: Heart, color: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
+  { label: "Tive uma recaída", icon: AlertTriangle, color: "text-orange-400 bg-orange-500/10 border-orange-500/20" },
 ];
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-coach`;
@@ -145,73 +145,79 @@ export default function AICoachInterface() {
   if (initLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-        <p className="text-muted-foreground font-medium">Acordando o Coach...</p>
+        <Loader2 className="w-10 h-10 text-emerald-400 animate-spin" />
+        <p className="text-gray-500 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Sincronizando Link Neural...</p>
       </div>
     );
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col h-[calc(100vh-140px)] animate-fade-in">
-      <header className="flex items-center justify-between mb-8 shrink-0">
+    <div className="container max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col h-[calc(100vh-140px)]">
+      <header className="flex items-center justify-between mb-10 shrink-0">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">Coach <span className="text-primary italic">Neural.</span></h1>
-          <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest mt-1">Powered by AI • OMS/CDC/INCA</p>
+          <h1 className="text-3xl font-black tracking-tighter text-white italic">Neural <span className="text-emerald-400 drop-shadow-glow">Command.</span></h1>
+          <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] mt-2">Elite Bio-Support System • Protocol v2.4</p>
         </div>
-        <div className="w-10 h-10 rounded-2xl bg-card border border-border flex items-center justify-center shadow-soft">
-          <Target size={18} className="text-primary" />
+        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl overflow-hidden relative group">
+          <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Zap size={22} className="text-emerald-400 relative z-10" />
         </div>
       </header>
 
-      <AppleCard className="flex-1 flex flex-col bg-card border-none shadow-elevated overflow-hidden relative rounded-[40px]">
-        <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-8 no-scrollbar">
+      <AppleCard variant="glass-dark" className="flex-1 flex flex-col border-none shadow-2xl overflow-hidden relative rounded-[40px] p-0">
+        <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-10 no-scrollbar">
           {messages.length === 0 && (
-            <div className="flex flex-col items-center text-center space-y-4 py-20 opacity-60">
-              <div className="w-20 h-20 rounded-[32px] bg-primary/10 flex items-center justify-center text-primary mb-4 border border-primary/10">
-                <MessageCircle size={40} />
+            <div className="flex flex-col items-center text-center space-y-6 py-24">
+              <div className="w-24 h-24 rounded-[32px] bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-4 border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
+                <Sparkles size={44} />
               </div>
-              <h3 className="text-xl font-bold">Inicie sua jornada</h3>
-              <p className="text-sm max-w-xs font-medium">Fale sobre seu dia ou use um dos botões rápidos abaixo.</p>
+              <h3 className="text-2xl font-black text-white italic tracking-tighter">Pronto para a Missão?</h3>
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest max-w-xs leading-relaxed">Sua rede neural de suporte está ativa. Qual o status da sua força de vontade hoje?</p>
             </div>
           )}
 
           {messages.map((msg) => (
             <motion.div
               key={msg.id}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={cn("flex w-full", msg.role === "user" ? "justify-end" : "justify-start")}
+              className={cn("flex w-full px-2", msg.role === "user" ? "justify-end" : "justify-start")}
             >
-              <div className={cn("flex gap-4 max-w-[85%] sm:max-w-[75%]", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
-                <div className={cn("w-10 h-10 rounded-2xl shrink-0 flex items-center justify-center border-2",
-                  msg.role === "assistant" ? "bg-primary border-primary shadow-lg shadow-primary/20 text-white" : "bg-muted border-border text-muted-foreground"
+              <div className={cn("flex gap-6 max-w-[90%] sm:max-w-[80%]", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
+                <div className={cn("w-12 h-12 rounded-2xl shrink-0 flex items-center justify-center border transition-all duration-500",
+                  msg.role === "assistant" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 shadow-2xl shadow-emerald-500/10" : "bg-white/5 border-white/10 text-gray-400"
                 )}>
-                  {msg.role === "assistant" ? <Bot size={20} /> : <User size={20} />}
+                  {msg.role === "assistant" ? <Bot size={24} /> : <User size={24} />}
                 </div>
-                <div className={cn("space-y-1", msg.role === "user" ? "items-end" : "items-start")}>
-                  <div className={cn("p-5 rounded-[1.8rem] text-[15px] leading-relaxed shadow-soft",
-                    msg.role === "user" ? "bg-foreground text-background rounded-tr-sm font-medium" : "bg-muted/40 text-foreground rounded-tl-sm border border-border/50"
+                <div className={cn("space-y-2", msg.role === "user" ? "items-end text-right" : "items-start text-left")}>
+                  <div className={cn("p-6 sm:p-8 rounded-[2rem] text-[16px] leading-[1.6] shadow-2xl border transition-all duration-500",
+                    msg.role === "user" 
+                      ? "bg-white text-black font-bold rounded-tr-sm border-white" 
+                      : "bg-emerald-500/5 text-gray-100 rounded-tl-sm border-emerald-500/10 backdrop-blur-md"
                   )}>
                     {msg.role === "assistant" ? (
-                      <div className="prose prose-sm max-w-none dark:prose-invert">
+                      <div className="prose prose-emerald prose-invert max-w-none">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
                     ) : msg.content}
                   </div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-gray-600 block px-2">
+                    {msg.role === "user" ? "Protocolo Enviado" : "Neural Link Estável"}
+                  </span>
                 </div>
               </div>
             </motion.div>
           ))}
 
-          {messages.length < 2 && (
-            <div className="flex flex-wrap gap-2 justify-center pt-8">
+          {messages.length < 5 && (
+            <div className="flex flex-wrap gap-3 justify-center pt-8 border-t border-white/5">
               {QUICK_ACTIONS.map((action) => (
                 <button
                   key={action.label}
                   onClick={() => handleSend(action.label)}
-                  className={cn("flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest border transition-all hover:scale-105 hover:shadow-lg", action.color)}
+                  className={cn("flex items-center gap-3 px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] border transition-all hover:scale-105 active:scale-95 shadow-xl", action.color)}
                 >
-                  <action.icon size={16} />
+                  <action.icon size={18} />
                   {action.label}
                 </button>
               ))}
@@ -219,13 +225,15 @@ export default function AICoachInterface() {
           )}
 
           {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
-            <div className="flex justify-start">
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg animate-pulse"><Bot size={20} /></div>
-                <div className="px-6 py-4 rounded-[1.8rem] bg-muted/40 border border-border/50 flex gap-2">
-                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:0.4s]" />
+            <div className="flex justify-start px-2">
+              <div className="flex gap-6">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-2xl animate-pulse">
+                  <Bot size={24} />
+                </div>
+                <div className="px-8 py-6 rounded-[2rem] bg-emerald-500/5 border border-emerald-500/10 flex gap-3 backdrop-blur-md">
+                  <div className="w-2.5 h-2.5 bg-emerald-400/60 rounded-full animate-bounce" />
+                  <div className="w-2.5 h-2.5 bg-emerald-400/60 rounded-full animate-bounce [animation-delay:0.2s]" />
+                  <div className="w-2.5 h-2.5 bg-emerald-400/60 rounded-full animate-bounce [animation-delay:0.4s]" />
                 </div>
               </div>
             </div>
@@ -233,19 +241,24 @@ export default function AICoachInterface() {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-6 sm:p-10 bg-muted/20 border-t border-border/40">
-          <div className="flex gap-4 items-center">
+        <div className="p-6 sm:p-10 bg-black/50 border-t border-white/5 backdrop-blur-xl">
+          <div className="flex gap-4 items-center max-w-3xl mx-auto">
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSend(input)}
-              placeholder="Como você está hoje?"
-              className="flex-1 bg-card h-14 sm:h-16 rounded-[24px] px-8 shadow-inner border-2 border-transparent focus:border-primary/20 outline-none transition-all font-bold text-lg"
+              placeholder="Digite sua mensagem ao comando neural..."
+              className="flex-1 bg-white/5 h-16 sm:h-20 rounded-[28px] px-10 shadow-inner border border-white/10 focus:border-emerald-500/40 outline-none transition-all font-bold text-lg text-white placeholder:text-gray-600"
             />
-            <Button onClick={() => handleSend(input)} disabled={isLoading || !input.trim()} className="w-14 h-14 sm:w-16 sm:h-16 rounded-[24px] bg-primary shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-              <Send size={24} />
+            <Button 
+               onClick={() => handleSend(input)} 
+               disabled={isLoading || !input.trim()} 
+               className="w-16 h-16 sm:w-20 sm:h-20 rounded-[28px] bg-white text-black shadow-2xl hover:bg-emerald-400 hover:scale-105 active:scale-95 transition-all group"
+            >
+              <Send size={28} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
             </Button>
           </div>
+          <p className="text-center mt-6 text-[9px] font-bold text-gray-700 uppercase tracking-[0.4em]">Secure Neural Connection • End-to-End Encrypted</p>
         </div>
       </AppleCard>
     </div>

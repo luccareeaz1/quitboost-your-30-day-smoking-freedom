@@ -5,7 +5,8 @@ import { AppleCard } from "@/components/ui/apple-card";
 import {
   Heart, Wind, Activity, Flame, Target,
   Timer, Shield, CheckCircle2, Wallet, Cigarette,
-  TrendingUp, Clock, Zap, Brain, Droplets, Eye, BarChart3, Loader2, Sparkles, TrendingDown
+  TrendingUp, Clock, Zap, Brain, Droplets, Eye, BarChart3, Loader2, Sparkles, TrendingDown,
+  Navigation, Monitor
 } from "lucide-react";
 import AppLayout from "@/components/app/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
@@ -32,14 +33,14 @@ function CountUp({ value, prefix = "", suffix = "", decimals = 2 }: { value: num
 }
 
 const healthMilestones = [
-  { time: "20 min", minutes: 20, benefit: "Pressão arterial normaliza.", icon: Heart, color: "#f43f5e", source: "OMS" },
-  { time: "8h", minutes: 480, benefit: "CO₂ no sangue cai pela metade.", icon: Wind, color: "#3b82f6", source: "CDC" },
-  { time: "24h", minutes: 1440, benefit: "Risco cardíaco reduz.", icon: Activity, color: "#f59e0b", source: "OMS" },
-  { time: "48h", minutes: 2880, benefit: "Paladar e olfato melhoram.", icon: Droplets, color: "#8b5cf6", source: "INCA" },
+  { time: "20 min", minutes: 20, benefit: "Pressão arterial normaliza.", icon: Heart, color: "#10b981", source: "OMS" },
+  { time: "8h", minutes: 480, benefit: "CO₂ no sangue cai pela metade.", icon: Wind, color: "#10b981", source: "CDC" },
+  { time: "24h", minutes: 1440, benefit: "Risco cardíaco reduz.", icon: Activity, color: "#10b981", source: "OMS" },
+  { time: "48h", minutes: 2880, benefit: "Paladar e olfato melhoram.", icon: Droplets, color: "#10b981", source: "INCA" },
   { time: "72h", minutes: 4320, benefit: "Brônquios relaxam e O₂ sobe.", icon: Zap, color: "#10b981", source: "INCA" },
-  { time: "1 semana", minutes: 10080, benefit: "Cílios pulmonares regeneram.", icon: Shield, color: "#06b6d4", source: "OMS" },
-  { time: "1 mês", minutes: 43200, benefit: "Função pulmonar +30%.", icon: CheckCircle2, color: "#22c55e", source: "OMS" },
-  { time: "1 ano", minutes: 525600, benefit: "Risco coronariano cai 50%.", icon: Target, color: "#eab308", source: "CDC" },
+  { time: "1 semana", minutes: 10080, benefit: "Cílios pulmonares regeneram.", icon: Shield, color: "#10b981", source: "OMS" },
+  { time: "1 mês", minutes: 43200, benefit: "Função pulmonar +30%.", icon: CheckCircle2, color: "#10b981", source: "OMS" },
+  { time: "1 ano", minutes: 525600, benefit: "Risco coronariano cai 50%.", icon: Target, color: "#10b981", source: "CDC" },
 ];
 
 const Progresso = () => {
@@ -77,8 +78,8 @@ const Progresso = () => {
     return (
       <AppLayout>
          <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-           <Loader2 className="w-10 h-10 text-primary animate-spin" />
-           <p className="text-muted-foreground font-medium">Processando métricas vitais...</p>
+            <Loader2 className="w-10 h-10 text-emerald-400 animate-spin" />
+            <p className="text-gray-500 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Sincronizando Métricas Vitais...</p>
          </div>
       </AppLayout>
     );
@@ -86,102 +87,115 @@ const Progresso = () => {
 
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 sm:px-6 max-w-4xl pb-32 pt-10 animate-fade-in space-y-10">
-        <header className="text-center mb-12">
-            <h1 className="text-5xl font-black tracking-tight mb-4">Progresso.</h1>
-            <p className="text-muted-foreground text-sm font-bold uppercase tracking-[0.3em]">Seu Histórico de Sucesso</p>
+      <div className="container mx-auto px-4 sm:px-6 max-w-4xl pb-32 pt-10 animate-fade-in space-y-12">
+        <header className="text-center mb-16">
+            <h1 className="text-6xl font-black tracking-tighter mb-4 text-white italic">Mission <span className="text-emerald-400 drop-shadow-glow">Metrics.</span></h1>
+            <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.5em] mt-2">Relatório de Desempenho Biológico • ID: {user?.id.slice(0, 8)}</p>
         </header>
 
         {/* FINANCIAL HERO */}
         <section className="relative">
-           <AppleCard className="p-10 sm:p-16 bg-foreground text-background rounded-[48px] overflow-hidden shadow-elevated">
-              <div className="absolute top-0 right-0 p-10 opacity-10"><Wallet size={120} /></div>
-              <div className="relative z-10 text-center space-y-4">
-                 <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-40">Valor de Saúde Recuperado</p>
-                  <div className="text-6xl sm:text-8xl font-black tracking-tighter italic">
+           <AppleCard variant="glass-dark" className="p-10 sm:p-20 border-emerald-500/20 rounded-[48px] overflow-hidden shadow-2xl relative group">
+              <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 group-hover:scale-[1.6] transition-transform duration-1000"><Wallet size={160} /></div>
+              <div className="relative z-10 text-center space-y-6">
+                 <p className="text-[10px] font-black uppercase tracking-[0.6em] text-emerald-400 glow-sm">Créditos de Saúde Recuperados</p>
+                  <div className="text-7xl sm:text-9xl font-black tracking-tighter italic text-white drop-shadow-2xl">
                     <CountUp value={stats.moneySaved} prefix="R$" />
                   </div>
-                  <div className="flex items-center justify-center gap-4 text-xs font-bold opacity-60">
-                    <div className="flex items-center gap-2"><TrendingDown className="w-4 h-4" /> <span>-{stats.avoidedCount} cigarros</span></div>
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <div className="flex items-center gap-2"><Clock className="w-4 h-4" /> <span>+{stats.hoursRecovered}h de vida</span></div>
+                  <div className="flex flex-wrap items-center justify-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">
+                    <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/5"><TrendingDown className="w-4 h-4 text-rose-500" /> <span>-{stats.avoidedCount} cigarros</span></div>
+                    <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-emerald-500/30" />
+                    <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/5"><Clock className="w-4 h-4 text-emerald-400" /> <span>+{stats.hoursRecovered}h de vida</span></div>
                   </div>
-
               </div>
            </AppleCard>
         </section>
 
         {/* GRAPHS BENTO */}
-        <div className="grid md:grid-cols-3 gap-6">
-           <div className="md:col-span-2 p-8 rounded-[40px] bg-card border-none shadow-soft flex flex-col">
-              <h3 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-8">Fluxo de Economia Estendida</h3>
-              <div className="h-[240px] w-full">
+        <div className="grid md:grid-cols-3 gap-8">
+           <AppleCard variant="glass-dark" className="md:col-span-2 p-10 rounded-[40px] border-white/5 shadow-2xl flex flex-col">
+              <div className="flex items-center justify-between mb-10">
+                 <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Projeção Monetária Estelar</h3>
+                 <BarChart3 size={18} className="text-emerald-500 opacity-40" />
+              </div>
+              <div className="h-[280px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                   <AreaChart data={stats.chartData}>
+                   <AreaChart data={stats.chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <Tooltip 
-                        contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '24px', border: '1px solid hsl(var(--border))', fontWeight: 'bold' }}
-                        itemStyle={{ color: 'hsl(var(--primary))' }}
+                        contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(20px)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontWeight: '900', fontSize: '12px' }}
+                        itemStyle={{ color: '#10b981' }}
                       />
-                      <Area type="monotone" dataKey="valor" stroke="hsl(var(--primary))" strokeWidth={4} fillOpacity={1} fill="url(#colorVal)" />
+                      <Area type="monotone" dataKey="valor" stroke="#10b981" strokeWidth={5} fillOpacity={1} fill="url(#colorVal)" />
                    </AreaChart>
                 </ResponsiveContainer>
               </div>
-           </div>
-           <div className="p-8 rounded-[40px] bg-primary text-white shadow-lg space-y-6 flex flex-col justify-center">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shadow-inner"><Sparkles size={24} /></div>
-              <h3 className="text-2xl font-black tracking-tighter leading-tight">Você é 30% mais rico hoje.</h3>
-              <p className="text-xs font-medium opacity-80 leading-relaxed">Em 1 ano, você terá R${Math.round((profile.cigarettes_per_day || 0) * (Number(profile.price_per_cigarette) || 0) * 365)} extras na sua conta.</p>
-              <button className="w-full h-12 rounded-xl bg-white/10 border border-white/20 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/20 transition-colors">Ver Projeção</button>
-
-           </div>
+           </AppleCard>
+           
+           <AppleCard variant="glass-dark" className="p-10 rounded-[40px] bg-emerald-500/10 border-emerald-500/20 shadow-2xl space-y-8 flex flex-col justify-center relative overflow-hidden group">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/20 blur-[80px] group-hover:bg-emerald-500/30 transition-colors" />
+              <div className="w-16 h-16 rounded-[2rem] bg-emerald-500/20 flex items-center justify-center shadow-2xl border border-emerald-500/30 group-hover:scale-110 transition-transform"><Sparkles size={32} className="text-emerald-400" /></div>
+              <div>
+                <h3 className="text-3xl font-black tracking-tighter leading-tight text-white mb-4 italic">Liberdade Financeira.</h3>
+                <p className="text-[11px] font-bold text-gray-400 leading-relaxed uppercase tracking-wider">Em 1 ano, sua economia projetada é de <span className="text-emerald-400">R${Math.round((profile.cigarettes_per_day || 0) * (Number(profile.price_per_cigarette) || 0) * 365)}</span> extras.</p>
+              </div>
+              <button 
+                onClick={() => navigate("/checkout")}
+                className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-emerald-400 hover:scale-105 transition-all shadow-2xl"
+              >
+                Simular Futuro
+              </button>
+           </AppleCard>
         </div>
 
         {/* TIMELINE */}
-        <section className="bg-card rounded-[48px] p-8 sm:p-12 border-none shadow-soft">
-           <div className="flex items-center justify-between mb-12">
-              <h2 className="text-2xl font-black tracking-tight">Progresso de Saúde</h2>
-              <div className="flex items-center gap-2">
-                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                 <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Realtime</span>
+        <AppleCard variant="glass-dark" className="rounded-[48px] p-10 sm:p-16 border-white/5 shadow-2xl overflow-hidden relative">
+           <div className="absolute top-0 right-0 p-10 opacity-5"><Monitor size={140} /></div>
+           <div className="flex items-center justify-between mb-16 relative z-10">
+              <h2 className="text-3xl font-black tracking-tighter text-white italic">Status Biológico</h2>
+              <div className="flex items-center gap-3 bg-emerald-500/10 px-4 py-2 rounded-full border border-emerald-500/20">
+                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_#10b981]" />
+                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Neural Sync: Live</span>
               </div>
            </div>
 
-           <div className="space-y-12 relative">
-              <div className="absolute left-[21px] top-4 bottom-4 w-1 bg-muted rounded-full" />
+           <div className="space-y-16 relative">
+              <div className="absolute left-[25px] top-6 bottom-6 w-[2px] bg-white/5 rounded-full" />
               {healthMilestones.map((m, i) => {
                 const achieved = stats.totalSeconds / 60 >= m.minutes;
                 const progress = Math.min(100, (stats.totalSeconds / 60 / m.minutes) * 100);
 
-                
                 return (
                   <motion.div
                     key={m.time}
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className={cn("flex gap-8 items-start relative z-10", !achieved && "opacity-40 grayscale")}
+                    className={cn("flex gap-10 items-start relative z-10 transition-all duration-700", !achieved && "opacity-20 grayscale brightness-50")}
                   >
-                    <div className={cn("w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-lg transition-all", achieved ? "bg-white dark:bg-black scale-110" : "bg-muted")}>
-                       {achieved ? <CheckCircle2 className="w-6 h-6 text-emerald-500" /> : <m.icon className="w-5 h-5 text-muted-foreground" />}
+                    <div className={cn("w-14 h-14 rounded-[1.2rem] flex items-center justify-center shrink-0 shadow-2xl transition-all border duration-500", 
+                      achieved ? "bg-white text-black border-white scale-110 shadow-[0_0_20px_rgba(255,255,255,0.2)]" : "bg-white/5 text-gray-600 border-white/10"
+                    )}>
+                       {achieved ? <CheckCircle2 className="w-7 h-7" /> : <m.icon className="w-6 h-6" />}
                     </div>
-                    <div className="flex-1 pt-1">
-                       <div className="flex items-center gap-3 mb-1">
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{m.time}</span>
-                          {achieved && <span className="text-[8px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full">Vitória Alcançada</span>}
+                    <div className="flex-1 pt-2">
+                       <div className="flex items-center gap-4 mb-3">
+                          <span className={cn("text-[10px] font-black uppercase tracking-[0.3em]", achieved ? "text-emerald-400" : "text-gray-600")}>{m.time}</span>
+                          {achieved && <span className="text-[9px] font-black uppercase tracking-widest bg-emerald-500 text-black px-3 py-1 rounded-sm italic">Vitória Bio</span>}
                        </div>
-                       <h4 className="text-lg font-black tracking-tight mb-2">{m.benefit}</h4>
-                       {!achieved && progress > 0 && (
-                         <div className="w-full h-1.5 bg-muted rounded-full mt-4 overflow-hidden border border-border">
+                       <h4 className="text-2xl font-black tracking-tight mb-4 text-white leading-tight">{m.benefit}</h4>
+                       
+                       {!achieved && progress > 5 && (
+                         <div className="w-full h-2 bg-white/5 rounded-full mt-6 overflow-hidden border border-white/5 p-[1px]">
                             <motion.div 
                                initial={{ width: 0 }}
                                animate={{ width: `${progress}%` }}
-                               className="h-full bg-primary"
+                               className="h-full bg-emerald-400 rounded-full shadow-[0_0_10px_#10b981]"
                             />
                          </div>
                        )}
@@ -190,14 +204,14 @@ const Progresso = () => {
                 );
               })}
            </div>
-        </section>
+        </AppleCard>
 
         {/* DISCLAIMER */}
-        <footer className="p-8 rounded-[32px] bg-muted/30 border border-border/50 text-center">
-           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground leading-relaxed">
-             Acompanhamento exclusivo para usuários Elite.
+        <AppleCard variant="glass-dark" className="p-10 rounded-[40px] border-white/5 text-center bg-transparent">
+           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 leading-relaxed italic">
+             Protocolo de Monitoramento Elite 2.0 • Sincronizado com Bases OMS 2026
            </p>
-        </footer>
+        </AppleCard>
       </div>
     </AppLayout>
   );

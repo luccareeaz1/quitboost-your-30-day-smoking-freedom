@@ -1,73 +1,63 @@
-# Welcome to your Lovable project
+# 🛰️ QuitBoost: Mission Control Center
 
-## Project info
+**QuitBoost** is a premium, high-performance smoking cessation platform engineered for the elite. Combining neuroscientific protocols, real-time AI bio-support, and a luxury space-themed interface, we empower users to navigate their 30-day journey to permanent freedom.
 
-**URL**: <https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID>
+---
 
-## How can I edit this code?
+## 🚀 Mission Objectives
 
-There are several ways of editing your application.
+1.  **30-Day Trajectory**: Guided daily protocols to rewire neural habits.
+2.  **Neural Command (AI Coach)**: 24/7 AI-driven behavioral support using advanced LLMs.
+3.  **Vitality Dashboard**: Real-time tracking of health recovery, capital saved, and streak integrity.
+4.  **Galactic Missions**: Gamified behavioral challenges based on CBT (Cognitive Behavioral Therapy).
+5.  **Elite Community**: High-signal social proof and peer motivation.
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 🛠️ Tech Stack & Architecture
 
-Changes made via Lovable will be committed automatically to this repo.
+-   **Frontend**: React (Vite) + TypeScript + Framer Motion (Fluid Animations).
+-   **Design System**: Custom Space-Themed Glassmorphism & AppleCard Components.
+-   **Backend**: Supabase (Auth, Postgres, Realtime, Edge Functions).
+-   **Payments**: Stripe API (Subscriptions: Standard & Elite).
+-   **Observability**: Sentry (Errors) & PostHog (Product Analytics).
+-   **Testing**: Vitest (Unit & Smoke Tests).
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📡 Mission Launch Checklist (Beta)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Before deploying to production, ensure:
 
-Follow these steps:
+1.  [ ] **Stripe Webhooks**: `supabase/functions/stripe-webhook` is deployed with matching `STRIPE_WEBHOOK_SECRET`.
+2.  [ ] **Email Templates**: Supabase Auth templates are configured according to `email_configuration_guide.md`.
+3.  [ ] **Environment Variables**: All `VITE_SUPABASE_*` and `STRIPE_*` keys are set in the Lovable/Supabase dashboards.
+4.  [ ] **Unit Tests**: Pass with `npm test`.
+
+---
+
+## 🛠️ Local Command Center (Development)
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Clone the repository
+git clone <git-url>
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install Life Support (Dependencies)
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start the Engines
 npm run dev
+
+# Run Verification Protocols (Tests)
+npm test
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 🛰️ Reach Control
 
-**Use GitHub Codespaces**
+- **Project URL**: [lovable.dev/projects/quitboost](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID)
+- **Status**: Release Candidate (Beta v1.0)
+- **Protocol**: LGPD/GDPR Compliant
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+© 2026 QUITBOOST • MISSION CONTROL • SECURE UPLINK ESTABLISHED.
