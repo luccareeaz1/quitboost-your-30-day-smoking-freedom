@@ -9,7 +9,7 @@ import FooterSection from "@/components/landing/FooterSection";
 import SpaceBackground from "@/components/landing/SpaceBackground";
 
 const Index = () => (
-  <div className="min-h-screen bg-black text-white relative">
+  <div className="min-h-screen bg-background text-foreground relative">
     <SpaceBackground />
     <div className="relative z-10">
       <NavBar />
