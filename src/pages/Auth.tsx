@@ -109,9 +109,7 @@ export default function Auth() {
             variant="outline"
             className="w-full h-14 rounded-full border-gray-100 text-gray-600 font-bold hover:bg-gray-50 flex items-center justify-center gap-3 transition-all hover:scale-[1.01]"
             onClick={async () => {
-              const { error } = await lovable.auth.signInWithOAuth("google", {
-                redirect_uri: window.location.origin,
-              });
+              const { error } = await lovable.auth.signInWithOAuth("google");
               if (error) toast.error(error.message || "Erro ao entrar com Google");
             }}
           >
