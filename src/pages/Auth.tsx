@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
-import { AppleCard } from "@/components/ui/apple-card";
 import { Wind, Mail, Lock, ArrowRight, Loader2, Github } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,7 +39,6 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-black text-white relative flex items-center justify-center px-6 overflow-hidden">
-      <SpaceBackground />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
@@ -136,7 +134,7 @@ export default function Auth() {
               {isLogin ? "Não tem uma conta? Inicie aqui" : "Já tem uma conta? Entre"}
             </button>
           </div>
-        </AppleCard>
+        </div>
       </motion.div>
     </div>
   );
