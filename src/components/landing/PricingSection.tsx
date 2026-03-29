@@ -38,7 +38,7 @@ const PricingSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-32 bg-transparent text-white overflow-hidden relative">
+    <section className="py-32 bg-white text-gray-900 overflow-hidden">
       <div className="container mx-auto px-6 max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -46,14 +46,14 @@ const PricingSection = () => {
           viewport={{ once: true }}
           className="text-center mb-24"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold mb-6 uppercase tracking-[0.2em] border border-primary/20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-600 text-[10px] font-bold mb-6 uppercase tracking-[0.2em] border border-green-100">
             <Zap size={12} fill="currentColor" /> Escolha seu Plano
           </div>
-          <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tighter italic">Um investimento em <span className="text-primary">vida.</span></h2>
-          <p className="text-white/40 text-xl font-medium max-w-2xl mx-auto italic leading-relaxed">O custo do vício é a sua saúde. O custo do QuitBoost é a sua liberdade. Recupere o controle hoje mesmo.</p>
+          <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">Um investimento em <span className="text-primary italic">vida.</span></h2>
+          <p className="text-gray-500 text-xl font-medium max-w-2xl mx-auto italic">O custo do vício é a sua saúde. O custo do QuitBoost é a sua liberdade.</p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto items-center">
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-center">
           {plans.map((plan, i) => (
             <motion.div
               key={plan.name}
@@ -61,32 +61,30 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.6 }}
-              className={`relative rounded-[3rem] p-12 md:p-14 border transition-all duration-500 overflow-hidden ${
+              className={`relative rounded-[2.5rem] p-10 md:p-14 border transition-all duration-500 ${
                 plan.highlighted 
-                  ? "bg-white/[0.03] border-primary/30 shadow-[0_0_100px_rgba(255,255,255,0.02)] scale-105 z-10 backdrop-blur-3xl" 
-                  : "bg-white/[0.01] border-white/5 hover:border-white/10"
+                  ? "bg-white border-primary shadow-2xl shadow-green-500/20 scale-105 z-10" 
+                  : "bg-gray-50 border-gray-100 hover:border-gray-200"
               }`}
             >
               {plan.highlighted && (
-                <div className="absolute top-8 right-10 bg-primary text-black px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-xl">
+                <div className="absolute top-8 right-10 bg-primary text-white px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-lg">
                   <Star size={12} fill="currentColor" /> Recomendado
                 </div>
               )}
               
-              <h3 className="text-4xl font-black tracking-tighter mb-2 uppercase italic">{plan.name}</h3>
-              <p className={`text-sm font-bold mb-12 ${plan.highlighted ? "text-white/60" : "text-white/30"}`}>{plan.desc}</p>
+              <h3 className="text-3xl font-black tracking-tight mb-2 uppercase">{plan.name}</h3>
+              <p className={`text-sm font-bold mb-10 ${plan.highlighted ? "text-gray-600" : "text-gray-400"}`}>{plan.desc}</p>
               
-              <div className="mb-14">
-                <span className="text-6xl font-black tracking-tighter italic text-white flex items-baseline gap-2">
-                    R${plan.price}
-                    <span className={`text-sm font-bold tracking-widest uppercase ${plan.highlighted ? "text-white/40" : "text-white/20"}`}>/ único</span>
-                </span>
+              <div className="mb-12">
+                <span className="text-5xl font-black tracking-tighter italic text-gray-900">R${plan.price}</span>
+                <span className={`text-sm font-bold ml-2 ${plan.highlighted ? "text-gray-500" : "text-gray-400"}`}>/ único</span>
               </div>
               
-              <ul className="space-y-5 mb-14">
+              <ul className="space-y-4 mb-12">
                 {plan.features.map(f => (
-                  <li key={f} className="flex items-start gap-4 text-sm font-bold text-white/50">
-                    <Check className={`w-5 h-5 mt-0.5 flex-shrink-0 ${plan.highlighted ? "text-primary" : "text-white/10"}`} strokeWidth={4} />
+                  <li key={f} className="flex items-start gap-4 text-sm font-semibold text-gray-600">
+                    <Check className={`w-5 h-5 mt-0.5 flex-shrink-0 ${plan.highlighted ? "text-primary" : "text-gray-300"}`} strokeWidth={3} />
                     <span>{f}</span>
                   </li>
                 ))}
@@ -95,18 +93,18 @@ const PricingSection = () => {
               <Button
                 variant={plan.highlighted ? "default" : "outline"}
                 size="lg"
-                className={`w-full h-16 rounded-[1.5rem] text-sm font-black uppercase tracking-widest transition-all ${
+                className={`w-full h-16 rounded-full text-md font-bold uppercase tracking-widest transition-all ${
                   plan.highlighted 
-                    ? "bg-white text-black hover:bg-white/90 shadow-[0_0_30px_rgba(255,255,255,0.1)]" 
-                    : "border-white/10 text-white/40 hover:bg-white/5"
+                    ? "bg-primary text-white hover:bg-green-600 shadow-xl shadow-green-500/30" 
+                    : "border-gray-200 text-gray-500 hover:bg-gray-100"
                 }`}
                 onClick={() => navigate("/checkout", { state: { plan } })}
               >
-                Ativar Minha Liberdade
+                Inicar Protocolo
               </Button>
 
               {plan.highlighted && (
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/10 blur-[60px] rounded-full pointer-events-none" />
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-green-500/5 blur-[50px] rounded-full" />
               )}
             </motion.div>
           ))}

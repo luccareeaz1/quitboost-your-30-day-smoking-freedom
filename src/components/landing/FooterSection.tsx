@@ -1,16 +1,14 @@
-import { Zap } from "lucide-react";
+import { Wind } from "lucide-react";
 
 const FooterSection = () => (
-  <footer className="py-20 border-t border-white/5 bg-transparent relative overflow-hidden italic">
+  <footer className="py-12 border-t border-border bg-background">
     <div className="container mx-auto px-6">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center border border-white/20">
-             <Zap className="w-4 h-4 text-primary" fill="currentColor" />
-          </div>
-          <span className="text-xl font-black text-white tracking-tighter">QuitBoost</span>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="flex items-center gap-2">
+          <Wind className="w-5 h-5 text-foreground" />
+          <span className="text-lg font-semibold tracking-tight">QuitBoost</span>
         </div>
-        <p className="text-white/20 text-[10px] font-black uppercase tracking-[0.3em]">© 2026 QuitBoost AI. Todos os direitos reservados.</p>
+        <p className="text-muted-foreground text-sm">© 2026 QuitBoost AI. Todos os direitos reservados.</p>
       </div>
     </div>
   </footer>

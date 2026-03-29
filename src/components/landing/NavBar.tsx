@@ -8,13 +8,13 @@ const NavBar = () => {
   const { user } = useAuth();
 
   return (
-    <nav className="fixed top-0 w-full z-50  bg-transparent backdrop-blur-md">
+    <nav className="fixed top-0 w-full z-50 border-b border-gray-100 bg-white/70 backdrop-blur-xl">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between max-w-6xl">
         <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => navigate("/")}>
-          <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center border border-primary/30 group-hover:bg-primary transition-all">
-            <Zap className="w-5 h-5 text-primary group-hover:text-black transition-colors" fill="currentColor" />
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 group-hover:bg-primary transition-all">
+            <Zap className="w-5 h-5 text-primary group-hover:text-white transition-colors" fill="currentColor" />
           </div>
-          <span className="text-xl font-black text-white tracking-tighter italic">Quit<span className="text-primary">Boost</span></span>
+          <span className="text-xl font-bold text-gray-900 tracking-tight">Quit<span className="text-primary">Boost</span></span>
         </div>
         <div className="flex items-center gap-6">
           {user ? (
@@ -31,7 +31,7 @@ const NavBar = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-white/50 hover:text-white font-black uppercase tracking-widest text-[10px]" 
+                className="text-gray-500 hover:text-gray-900 font-bold uppercase tracking-widest text-[10px]" 
                 onClick={() => navigate("/auth")}
               >
                 Entrar
@@ -39,7 +39,7 @@ const NavBar = () => {
               <Button 
                 variant="default" 
                 size="sm" 
-                className="rounded-full px-8 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-white/10" 
+                className="rounded-full px-8 bg-primary text-white font-bold uppercase tracking-widest text-[10px] hover:scale-105 active:scale-95 transition-all shadow-lg shadow-green-500/20" 
                 onClick={() => navigate("/onboarding")}
               >
                 Começar Grátis
