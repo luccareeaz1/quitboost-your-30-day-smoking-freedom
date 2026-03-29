@@ -8,7 +8,7 @@ vi.mock("@/integrations/supabase/client", () => ({
       insert: vi.fn().mockReturnThis(),
       update: vi.fn().mockReturnThis(),
       eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ data: { id: "test-user", points: 100 }, error: null }),
+      single: vi.fn().mockResolvedValue({ data: { id: "test-user", total_points: 100 }, error: null }),
     })),
   },
 }));
@@ -19,7 +19,7 @@ describe("Smoke Test: Auth & Services Integration", () => {
     const { data } = await supabase.from("profiles").select("*").eq("id", "test-user").single();
     
     expect(data.id).toBe("test-user");
-    expect(data.points).toBe(100);
+    expect(data.total_points).toBe(100);
   });
 
   it("should verify health milestones calculation logic", async () => {
