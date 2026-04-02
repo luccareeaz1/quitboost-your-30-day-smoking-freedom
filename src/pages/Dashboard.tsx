@@ -65,6 +65,7 @@ export default function Dashboard() {
   const [missionCompleted, setMissionCompleted] = useState(false);
   const [showTip, setShowTip] = useState(true);
   const [streakData, setStreakData] = useState<any>(null);
+  const [dailyChallenge, setDailyChallenge] = useState<any>(null);
 
   useEffect(() => {
     if (!profile && !user) return; // Wait for auth/profile
@@ -77,6 +78,28 @@ export default function Dashboard() {
     }
 
     const interval = setInterval(() => setNow(new Date()), 1000);
+    
+    // Load daily challenge
+    const loadDaily = async () => {
+      try {
+        const all = await challengeService.getAll();
+        const dailyOnes = all.filter(c => !c.is_weekly);
+        if (dailyOnes.length > 0) {
+          const seed = parseInt(new Date().toISOString().split('T')[0].replace(/-/g, ''));
+          const index = seed % dailyOnes.length;
+          setDailyChallenge(dailyOnes[index]);
+          
+          if (user) {
+            const completed = await challengeService.getUserChallenges(user.id);
+            if (completed.some(c => c.challenge_id === dailyOnes[index].id)) {
+              setMissionCompleted(true);
+            }
+          }
+        }
+      } catch (err) { console.error(err); }
+    };
+    loadDaily();
+
     return () => clearInterval(interval);
   }, [profile, user]);
 
@@ -297,12 +320,22 @@ export default function Dashboard() {
                 <Target size={14} /> Missão do Dia
               </div>
               <h3 className="text-xl font-black mb-3 leading-tight">
-                {stats.days <= 3 ? "Beba 8 copos de água hoje" : "Faça 10 minutos de caminhada"}
+                {dailyChallenge?.title || "Mantenha-se Hidratado"}
               </h3>
-              <p className="opacity-70 text-xs leading-relaxed mb-6">A hidratação acelera a eliminação de toxinas. A atividade física libera endorfinas (TCC/OMS).</p>
+              <p className="opacity-70 text-xs leading-relaxed mb-6">
+                {dailyChallenge?.description || "A hidratação acelera a eliminação de toxinas do seu sistema."}
+              </p>
               <Button
-                onClick={() => setMissionCompleted(true)}
-                disabled={missionCompleted}
+                onClick={async () => {
+                  if (user && dailyChallenge) {
+                    try {
+                      await challengeService.completeChallenge(user.id, dailyChallenge.id);
+                      setMissionCompleted(true);
+                      toast.success("Missão concluída! +PX");
+                    } catch (e) { toast.error("Erro ao salvar progresso."); }
+                  }
+                }}
+                disabled={missionCompleted || !dailyChallenge}
                 className={`w-full h-12 rounded-full font-bold uppercase tracking-widest text-sm transition-all ${
                   missionCompleted ? "bg-background/20 text-background/50" : "bg-background text-foreground shadow-lg"
                 }`}

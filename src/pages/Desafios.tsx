@@ -89,11 +89,33 @@ const Desafios = () => {
   }, [totalPoints]);
 
   const filteredChallenges = useMemo(() => {
-    return challenges.filter(c => {
-      const matchType = c.is_weekly === showWeekly;
-      const matchCat = selectedCategory === "all" || c.category === selectedCategory;
-      return matchType && matchCat;
+    if (challenges.length === 0) return [];
+    
+    // Create a seed based on current date (YYYYMMDD)
+    const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const seed = parseInt(today);
+
+    // Filter by type (Daily vs Weekly)
+    const typeChallenges = challenges.filter(c => c.is_weekly === showWeekly);
+    
+    // Filter by Category
+    const categoryChallenges = selectedCategory === "all" 
+      ? typeChallenges 
+      : typeChallenges.filter(c => c.category === selectedCategory);
+
+    if (showWeekly) return categoryChallenges;
+
+    // For Daily Missions, we shuffle deterministically based on date seed
+    // and take a subset to ensure variety every 24h
+    const shuffled = [...categoryChallenges].sort((a, b) => {
+      // Simple hash function using the challenge ID and the date seed
+      const hashA = (parseInt(a.id.substring(0, 4), 16) + seed) % 101;
+      const hashB = (parseInt(b.id.substring(0, 4), 16) + seed) % 101;
+      return hashA - hashB;
     });
+
+    // Show top 8 challenges of the day (varied every 24h)
+    return shuffled.slice(0, 8);
   }, [challenges, showWeekly, selectedCategory]);
 
   const handleToggle = async (challengeId: string) => {
