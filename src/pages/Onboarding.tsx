@@ -30,9 +30,9 @@ const Onboarding = () => {
     gatilhos: [],
   });
   
-  // LGPD States
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [acceptedHealth, setAcceptedHealth] = useState(false);
+  // LGPD States (Set to true by default as requested to bypass)
+  const [acceptedTerms, setAcceptedTerms] = useState(true);
+  const [acceptedHealth, setAcceptedHealth] = useState(true);
   const [acceptedMarketing, setAcceptedMarketing] = useState(false);
 
   const navigate = useNavigate();
@@ -54,11 +54,6 @@ const Onboarding = () => {
 
   const finishOnboarding = async () => {
     if (!user) return;
-    if (!acceptedTerms || !acceptedHealth) {
-      toast.error("Você precisa aceitar os termos e o processamento de dados de saúde para continuar.");
-      return;
-    }
-
     try {
       setIsSubmitting(true);
       
@@ -270,7 +265,7 @@ const Onboarding = () => {
           ) : (
             <div className="flex-1" />
           )}
-          <Button disabled={isSubmitting || (step === steps.length - 1 && (!acceptedTerms || !acceptedHealth))} 
+          <Button disabled={isSubmitting} 
             className="flex-[1.5] h-14 rounded-[20px] bg-primary font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
             onClick={() => step < steps.length - 1 ? setStep(s => s + 1) : finishOnboarding()}
           >

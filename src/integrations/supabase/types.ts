@@ -227,19 +227,19 @@ export type Database = {
       comment_likes: {
         Row: {
           comment_id: string
-          created_at: string | null
+          created_at: string
           id: string
           user_id: string
         }
         Insert: {
           comment_id: string
-          created_at?: string | null
+          created_at?: string
           id?: string
           user_id: string
         }
         Update: {
           comment_id?: string
-          created_at?: string | null
+          created_at?: string
           id?: string
           user_id?: string
         }
@@ -270,7 +270,7 @@ export type Database = {
       comments: {
         Row: {
           content: string
-          created_at: string | null
+          created_at: string
           id: string
           parent_id: string | null
           post_id: string
@@ -278,7 +278,7 @@ export type Database = {
         }
         Insert: {
           content: string
-          created_at?: string | null
+          created_at?: string
           id?: string
           parent_id?: string | null
           post_id: string
@@ -286,7 +286,7 @@ export type Database = {
         }
         Update: {
           content?: string
-          created_at?: string | null
+          created_at?: string
           id?: string
           parent_id?: string | null
           post_id?: string
@@ -421,19 +421,19 @@ export type Database = {
       }
       post_likes: {
         Row: {
-          created_at: string | null
+          created_at: string
           id: string
           post_id: string
           user_id: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           id?: string
           post_id: string
           user_id: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           id?: string
           post_id?: string
           user_id?: string
@@ -466,7 +466,7 @@ export type Database = {
         Row: {
           category: string | null
           content: string
-          created_at: string | null
+          created_at: string
           hashtags: string[] | null
           id: string
           is_medical: boolean | null
@@ -478,7 +478,7 @@ export type Database = {
         Insert: {
           category?: string | null
           content: string
-          created_at?: string | null
+          created_at?: string
           hashtags?: string[] | null
           id?: string
           is_medical?: boolean | null
@@ -490,7 +490,7 @@ export type Database = {
         Update: {
           category?: string | null
           content?: string
-          created_at?: string | null
+          created_at?: string
           hashtags?: string[] | null
           id?: string
           is_medical?: boolean | null
@@ -533,6 +533,7 @@ export type Database = {
           price_per_cigarette: number | null
           privacy: string | null
           quit_date: string | null
+          stripe_customer_id: string | null
           theme: string | null
           total_points: number | null
           triggers: string[] | null
@@ -555,6 +556,7 @@ export type Database = {
           price_per_cigarette?: number | null
           privacy?: string | null
           quit_date?: string | null
+          stripe_customer_id?: string | null
           theme?: string | null
           total_points?: number | null
           triggers?: string[] | null
@@ -577,6 +579,7 @@ export type Database = {
           price_per_cigarette?: number | null
           privacy?: string | null
           quit_date?: string | null
+          stripe_customer_id?: string | null
           theme?: string | null
           total_points?: number | null
           triggers?: string[] | null
@@ -946,6 +949,7 @@ export type Database = {
     Functions: {
       get_post_comments_count: { Args: { p_post_id: string }; Returns: number }
       get_post_likes_count: { Args: { p_post_id: string }; Returns: number }
+      refresh_leaderboard: { Args: never; Returns: undefined }
       user_has_liked_post: {
         Args: { p_post_id: string; p_user_id: string }
         Returns: boolean
