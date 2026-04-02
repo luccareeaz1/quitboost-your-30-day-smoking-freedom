@@ -41,7 +41,7 @@ const Onboarding = () => {
     if (!user && !isSubmitting) {
       navigate("/auth");
     }
-  }, [user, navigate]);
+  }, [user, navigate, isSubmitting]);
 
   const toggleGatilho = (g: string) => {
     setData(prev => ({

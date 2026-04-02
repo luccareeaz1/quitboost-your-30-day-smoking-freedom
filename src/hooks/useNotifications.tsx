@@ -35,14 +35,14 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
     loadNotifications();
 
-    // Subscribe to realtime changes
-    const channel = notificationService.subscribeToNotifications(user.id, (newNotification) => {
+    const channel = notificationService.subscribeToNotifications(user.id, (payload: any) => {
+      const newNotification = payload as any; // The service passes payload.new
       setNotifications(prev => [newNotification, ...prev]);
       setUnreadCount(prev => prev + 1);
       
       // Visual toast for the new notification
       toast(newNotification.title, {
-        description: newNotification.content,
+        description: newNotification.body,
         action: {
           label: "Ver",
           onClick: () => {
@@ -55,7 +55,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       // Try browser native push if supported
       if (Notification.permission === "granted") {
         new Notification(newNotification.title, {
-          body: newNotification.content,
+          body: newNotification.body,
           icon: "/favicon.ico"
         });
       }

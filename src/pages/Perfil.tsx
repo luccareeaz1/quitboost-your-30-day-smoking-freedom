@@ -14,10 +14,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { profileService, achievementService } from "@/lib/services";
 import { toast } from "sonner";
 
-interface Achievement {
+interface UserAchievement {
   id: string;
   title: string;
-  icon_url: string;
+  icon: string | null;
+  emoji: string | null;
 }
 
 const Perfil = () => {
@@ -27,7 +28,7 @@ const Perfil = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [userAchievements, setUserAchievements] = useState<Achievement[]>([]);
+  const [userAchievements, setUserAchievements] = useState<UserAchievement[]>([]);
 
   const [editData, setEditData] = useState({
     nome: "",
@@ -51,7 +52,16 @@ const Perfil = () => {
       
       // Load achievements for the badge bar
       achievementService.getUserAchievements(user!.id).then(ua => {
-        setUserAchievements(ua.map(item => item.achievements) as any);
+        const mapped = ua.map(item => {
+          const ach = item.achievements as any;
+          return {
+            id: ach.id,
+            title: ach.title,
+            icon: ach.icon,
+            emoji: ach.emoji
+          };
+        });
+        setUserAchievements(mapped);
       });
     }
   }, [profile, user]);
@@ -181,7 +191,7 @@ const Perfil = () => {
                   transition={{ delay: i * 0.1 }}
                   className="w-14 h-14 rounded-2xl bg-muted shrink-0 flex items-center justify-center text-2xl border border-border shadow-inner"
                 >
-                  {badge.icon_url || "🏅"}
+                  {badge.emoji || "🏅"}
                 </motion.div>
               )) : (
                 <div className="py-4 text-center w-full">
