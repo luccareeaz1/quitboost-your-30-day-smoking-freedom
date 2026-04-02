@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
-import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { createClient, SupabaseClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -109,8 +109,9 @@ serve(async (req) => {
   }
 });
 
-async function getUserByEmail(supabase: any, email: string) {
+async function getUserByEmail(supabase: SupabaseClient, email: string) {
   // This requires a custom RPC or a way to search auth.users which is restricted
   // Usually, we pass client_reference_id in Checkout Session
+  console.log(`Searching user by email: ${email}`);
   return null;
 }

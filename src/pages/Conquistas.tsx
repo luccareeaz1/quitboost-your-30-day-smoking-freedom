@@ -26,7 +26,14 @@ interface Achievement {
   source?: string;
 }
 
-const RARITY_MAP: any = {
+interface RarityConfig {
+  label: string;
+  color: string;
+  bg: string;
+  border: string;
+}
+
+const RARITY_MAP: Record<string, RarityConfig> = {
   "comum": { label: "Comum", color: "text-slate-500", bg: "bg-slate-500/10", border: "border-slate-500/20" },
   "raro": { label: "Raro", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
   "épico": { label: "Épico", color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/20" },
@@ -52,7 +59,7 @@ const Conquistas = () => {
   const [selectedAchievement, setSelectedAchievement] = useState<Achievement | null>(null);
   const [filter, setFilter] = useState<"all" | "unlocked" | "locked">("all");
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!user) return;
     try {
       setLoading(true);
@@ -60,18 +67,18 @@ const Conquistas = () => {
         achievementService.getAll(),
         achievementService.getUserAchievements(user.id)
       ]);
-      setAchievements(all as any);
+      setAchievements(all as Achievement[]);
       setUnlockedIds(new Set(userAchievements.map(ua => ua.achievement_id)));
     } catch (error) {
       console.error("Erro ao carregar conquistas:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     loadData();
-  }, [user]);
+  }, [loadData]);
 
   // Derived stats
   const stats = useMemo(() => {

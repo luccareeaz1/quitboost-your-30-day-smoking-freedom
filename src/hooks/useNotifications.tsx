@@ -4,9 +4,20 @@ import { notificationService } from "@/lib/services";
 import { toast } from "sonner";
 import { Bell } from "lucide-react";
 
+interface AppNotification {
+  id: string;
+  user_id: string;
+  type: string;
+  title: string;
+  body: string;
+  data: Record<string, unknown>;
+  read: boolean;
+  created_at: string;
+}
+
 interface NotificationContextType {
   unreadCount: number;
-  notifications: any[];
+  notifications: AppNotification[];
   requestPushPermission: () => Promise<boolean>;
   markAllAsRead: () => Promise<void>;
 }
@@ -16,7 +27,7 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -35,8 +46,8 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
 
     loadNotifications();
 
-    const channel = notificationService.subscribeToNotifications(user.id, (payload: any) => {
-      const newNotification = payload as any; // The service passes payload.new
+    const channel = notificationService.subscribeToNotifications(user.id, (payload: { new: AppNotification }) => {
+      const newNotification = payload.new;
       setNotifications(prev => [newNotification, ...prev]);
       setUnreadCount(prev => prev + 1);
       

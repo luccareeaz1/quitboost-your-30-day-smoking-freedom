@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Target, Check, Circle, Flame, Trophy, Users, Filter,
@@ -22,10 +22,26 @@ interface Challenge {
   technique: string;
   source: string;
   is_weekly: boolean;
-  metadata?: any;
+  metadata?: Record<string, any>;
 }
 
-const CHALLENGE_CATEGORIES: any = {
+interface LeaderboardEntry {
+  id: string;
+  display_name: string;
+  total_points: number;
+  current_level: number;
+  current_streak?: number;
+}
+
+interface CategoryConfig {
+  label: string;
+  icon: React.ElementType;
+  color: string;
+  bg: string;
+  border: string;
+}
+
+const CHALLENGE_CATEGORIES: Record<string, CategoryConfig> = {
   comportamental: { label: "Comportamental", icon: Brain, color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/20" },
   mindfulness: { label: "Mindfulness", icon: Heart, color: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20" },
   fisico: { label: "Físico", icon: Zap, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
@@ -33,7 +49,7 @@ const CHALLENGE_CATEGORIES: any = {
   cognitivo: { label: "Cognitivo", icon: Shield, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
 };
 
-const DIFFICULTY_MAP: any = {
+const DIFFICULTY_MAP: Record<string, { label: string; color: string; bg: string }> = {
   facil: { label: "Fácil", color: "text-emerald-400", bg: "bg-emerald-500/10" },
   medio: { label: "Médio", color: "text-amber-400", bg: "bg-amber-500/10" },
   dificil: { label: "Difícil", color: "text-rose-400", bg: "bg-rose-500/10" },
@@ -48,10 +64,10 @@ const Desafios = () => {
   const [showWeekly, setShowWeekly] = useState(false);
   const [expandedChallenge, setExpandedChallenge] = useState<string | null>(null);
   const [showLeaderboard, setShowLeaderboard] = useState(true);
-  const [leaderboard, setLeaderboard] = useState<any[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [isSyncing, setIsSyncing] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const [allChallenges, userCompletions, lbData] = await Promise.all([
@@ -60,19 +76,19 @@ const Desafios = () => {
         leaderboardService.getTop()
       ]);
       
-      setChallenges(allChallenges as any);
+      setChallenges(allChallenges as Challenge[]);
       setCompletedIds(new Set(userCompletions.map(c => c.challenge_id)));
-      setLeaderboard(lbData);
+      setLeaderboard(lbData as unknown as LeaderboardEntry[]);
     } catch (error) {
       console.error("Erro ao carregar desafios:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     loadData();
-  }, [user]);
+  }, [loadData]);
 
   const totalPoints = useMemo(() => {
     return challenges

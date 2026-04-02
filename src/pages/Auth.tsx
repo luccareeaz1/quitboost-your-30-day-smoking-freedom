@@ -30,8 +30,9 @@ export default function Auth() {
         toast.success("Conta criada! Verifique seu e-mail.");
         setIsLogin(true);
       }
-    } catch (error: any) {
-      toast.error(error.message || "Erro na autenticação");
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err.message || "Erro na autenticação");
     } finally {
       setLoading(false);
     }

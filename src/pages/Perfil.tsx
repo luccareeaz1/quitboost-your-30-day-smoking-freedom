@@ -53,7 +53,7 @@ const Perfil = () => {
       // Load achievements for the badge bar
       achievementService.getUserAchievements(user!.id).then(ua => {
         const mapped = ua.map(item => {
-          const ach = item.achievements as any;
+          const ach = item.achievements as unknown as { id: string; title: string; icon: string; emoji: string };
           return {
             id: ach.id,
             title: ach.title,

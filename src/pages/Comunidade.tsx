@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { User } from "@supabase/supabase-js";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MessageSquare, Heart, Share2, Bookmark, Send, 
@@ -17,6 +18,26 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 // Types derived from database
+interface Profile {
+  id: string;
+  display_name: string;
+  avatar_url: string;
+}
+
+interface Like {
+  user_id: string;
+}
+
+interface Comment {
+  id: string;
+  content: string;
+  created_at: string;
+  parent_id: string | null;
+  user_id: string;
+  profiles: Profile;
+  comment_likes: Like[];
+}
+
 interface PostWithData {
   id: string;
   content: string;
@@ -26,13 +47,9 @@ interface PostWithData {
   views_count: number;
   is_medical: boolean;
   user_id: string;
-  profiles: {
-    id: string;
-    display_name: string;
-    avatar_url: string;
-  };
-  post_likes: { user_id: string }[];
-  comments: any[];
+  profiles: Profile;
+  post_likes: Like[];
+  comments: Comment[];
 }
 
 const CATEGORIES = [
@@ -71,7 +88,7 @@ const Comunidade = () => {
         category: activeCategory === "all" ? undefined : activeCategory,
         search: searchQuery || undefined
       });
-      setPosts(fetchedPosts as any);
+      setPosts(fetchedPosts as PostWithData[]);
 
       if (user) {
         const userBookmarks = await communityService.getBookmarks(user.id);
@@ -394,12 +411,19 @@ const Comunidade = () => {
 };
 
 // CHILD COMPONENTS
-const PostCard = ({ post, currentUser, isBookmarked, onLike, onBookmark, refreshData }: any) => {
+const PostCard = ({ post, currentUser, isBookmarked, onLike, onBookmark, refreshData }: {
+  post: PostWithData;
+  currentUser: User | null;
+  isBookmarked: boolean;
+  onLike: () => Promise<void>;
+  onBookmark: () => Promise<void>;
+  refreshData: () => void;
+}) => {
   const { profile } = useAuth();
   const [showReply, setShowReply] = useState(false);
   const [replyContent, setReplyContent] = useState("");
   const [isLiking, setIsLiking] = useState(false);
-  const likedByMe = post.post_likes?.some((l: any) => l.user_id === currentUser?.id);
+  const likedByMe = post.post_likes?.some((l: Like) => l.user_id === currentUser?.id);
 
   const handleAddComment = async (parentId?: string) => {
     if (!currentUser) {
@@ -555,7 +579,7 @@ const PostCard = ({ post, currentUser, isBookmarked, onLike, onBookmark, refresh
 
               {/* NESTED COMMENTS */}
               <div className="space-y-6">
-                {post.comments?.filter((c: any) => !c.parent_id).map((comment: any) => (
+                {post.comments?.filter((c: Comment) => !c.parent_id).map((comment: Comment) => (
                   <CommentItem 
                     key={comment.id} 
                     comment={comment} 
@@ -574,12 +598,19 @@ const PostCard = ({ post, currentUser, isBookmarked, onLike, onBookmark, refresh
   );
 };
 
-const CommentItem = ({ comment, allComments, currentUser, postId, refreshData, depth = 0 }: any) => {
+const CommentItem = ({ comment, allComments, currentUser, postId, refreshData, depth = 0 }: {
+  comment: Comment;
+  allComments: Comment[];
+  currentUser: User | null;
+  postId: string;
+  refreshData: () => void;
+  depth?: number;
+}) => {
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyContent, setReplyContent] = useState("");
-  const replies = allComments.filter((c: any) => c.parent_id === comment.id);
+  const replies = allComments.filter((c: Comment) => c.parent_id === comment.id);
   
-  const likedByMe = comment.comment_likes?.some((l: any) => l.user_id === currentUser?.id);
+  const likedByMe = comment.comment_likes?.some((l: Like) => l.user_id === currentUser?.id);
 
   const handleReply = async () => {
     if (!currentUser) return;
@@ -676,7 +707,7 @@ const CommentItem = ({ comment, allComments, currentUser, postId, refreshData, d
 
       {replies.length > 0 && (
         <div className="space-y-4">
-          {replies.map((reply: any) => (
+          {replies.map((reply: Comment) => (
             <CommentItem 
               key={reply.id} 
               comment={reply} 

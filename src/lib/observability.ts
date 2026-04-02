@@ -47,7 +47,7 @@ export const initObservability = () => {
  * Custom Hook for Analytics
  */
 export const useAnalytics = () => {
-  const trackEvent = (eventName: string, properties?: Record<string, any>) => {
+  const trackEvent = (eventName: string, properties?: Record<string, unknown>) => {
     if (import.meta.env.PROD) {
       posthog.capture(eventName, properties);
     } else {

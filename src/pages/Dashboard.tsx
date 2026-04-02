@@ -16,7 +16,8 @@ import { calculateQuitStats, calculateHealthProgress } from "@/lib/calculations"
 import { Button } from "@/components/ui/button";
 import { AppleCard } from "@/components/ui/apple-card";
 import { useAuth } from "@/hooks/useAuth";
-import { streakService, progressService } from "@/lib/services";
+import { streakService, progressService, challengeService } from "@/lib/services";
+import { toast } from "sonner";
 
 // ========== MEDICAL DATA (Fontes: OMS, CDC, INCA) ==========
 const HEALTH_MILESTONES = [
@@ -58,14 +59,29 @@ function AnimatedNumber({ value, prefix = "", suffix = "", decimals = 0 }: { val
   return <span>{prefix}{display.toLocaleString("pt-BR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</span>;
 }
 
+interface Challenge {
+  id: string;
+  title: string;
+  description: string;
+  points: number;
+  is_weekly: boolean;
+}
+
+interface Streak {
+  current_streak: number;
+  longest_streak: number;
+  last_check_in: string;
+  total_days_smoke_free: number;
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user, profile, subscription, signOut } = useAuth();
   const [now, setNow] = useState(new Date());
   const [missionCompleted, setMissionCompleted] = useState(false);
   const [showTip, setShowTip] = useState(true);
-  const [streakData, setStreakData] = useState<any>(null);
-  const [dailyChallenge, setDailyChallenge] = useState<any>(null);
+  const [streakData, setStreakData] = useState<Streak | null>(null);
+  const [dailyChallenge, setDailyChallenge] = useState<Challenge | null>(null);
 
   useEffect(() => {
     if (!profile && !user) return; // Wait for auth/profile

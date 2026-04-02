@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef, useEffect } from "react";
 import { AppleCard } from "@/components/ui/apple-card";
 import { Button } from "@/components/ui/button";
@@ -137,9 +136,9 @@ export default function AICoachInterface() {
       // Save final assistant message to DB
       if (assistantContent) {
         const savedMsg = await coachService.addMessage(activeConversationId, "assistant", assistantContent);
-        setMessages(prev => prev.map(m => m.id === tempId ? { ...(savedMsg as any) } : m));
+        setMessages(prev => prev.map(m => m.id === tempId ? { id: savedMsg.id, role: savedMsg.role as "user" | "assistant", content: savedMsg.content } : m));
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Coach error:", error);
       toast.error(error.message || "Erro ao processar mensagem.");
     } finally {

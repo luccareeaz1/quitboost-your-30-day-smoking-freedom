@@ -559,7 +559,7 @@ export const notificationService = {
   },
 
   // Realtime subscription
-  subscribeToNotifications(userId: string, callback: (notification: any) => void) {
+  subscribeToNotifications(userId: string, callback: (payload: { new: unknown }) => void) {
     return supabase
       .channel(`notifications:${userId}`)
       .on('postgres_changes', {
@@ -568,7 +568,7 @@ export const notificationService = {
         table: 'notifications',
         filter: `user_id=eq.${userId}`,
       }, (payload) => {
-        callback(payload.new);
+        callback(payload as { new: unknown });
       })
       .subscribe();
   },

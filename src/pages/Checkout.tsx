@@ -70,7 +70,7 @@ export default function Checkout() {
       } else {
         throw new Error("URL de checkout não recebida");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erro no pagamento:", error);
       toast.error("Erro ao iniciar checkout. Tente novamente.");
     } finally {
