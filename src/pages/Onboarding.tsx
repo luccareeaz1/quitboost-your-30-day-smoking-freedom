@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Wind, Cigarette, Clock, DollarSign, Brain, Sparkles, Loader2, CheckCircle2, ShieldCheck, FileText } from "lucide-react";
+import { ArrowRight, ArrowLeft, Wind, Cigarette, Clock, DollarSign, Brain, Sparkles, Loader2, CheckCircle2, ShieldCheck, FileText, Zap, Shield, Target } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService } from "@/lib/services";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AppleCard } from "@/components/ui/apple-card";
 
 interface OnboardingData {
   cigarrosPorDia: number;
@@ -30,7 +30,6 @@ const Onboarding = () => {
     gatilhos: [],
   });
   
-  // LGPD States (Set to true by default as requested to bypass)
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [acceptedHealth, setAcceptedHealth] = useState(true);
   const [acceptedMarketing, setAcceptedMarketing] = useState(false);
@@ -56,8 +55,6 @@ const Onboarding = () => {
     if (!user) return;
     try {
       setIsSubmitting(true);
-      
-      // 1. Save Onboarding Profile (Corrected Column Names)
       await profileService.saveOnboarding(user.id, {
         cigarettes_per_day: data.cigarrosPorDia,
         years_smoking: data.anosFumando,
@@ -67,7 +64,6 @@ const Onboarding = () => {
         display_name: user.email?.split("@")[0],
       });
 
-      // 2. Save Consent Log (Using Service Method)
       await profileService.saveConsent(user.id, {
         policy_version: '2026.1',
         accepted_terms: true,
@@ -75,11 +71,11 @@ const Onboarding = () => {
         marketing_consent: acceptedMarketing
       });
 
-      toast.success("Seu plano clínico foi criado!");
+      toast.success("Sincronização concluída! Iniciando protocolo.");
       navigate("/checkout");
     } catch (error) {
        console.error("Erro no onboarding:", error);
-       toast.error("Ocorreu um erro ao salvar seus dados. Tente novamente.");
+       toast.error("Falha na sincronização neuronal. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -88,75 +84,90 @@ const Onboarding = () => {
   const steps = [
     {
       icon: Cigarette,
-      title: "Consumo Diário",
-      subtitle: "Quantos cigarros você fuma por dia?",
+      title: "Carga Operacional",
+      subtitle: "Quantos sinais tóxicos por ciclo solar?",
       content: (
-        <div className="space-y-8">
+        <div className="space-y-12">
           <div className="flex flex-col items-center">
-             <div className="text-8xl font-black text-primary tracking-tighter drop-shadow-sm">{data.cigarrosPorDia}</div>
-             <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mt-2">Unidades</p>
+             <div className="text-9xl font-black text-primary italic tracking-tighter drop-shadow-glow leading-none">{data.cigarrosPorDia}</div>
+             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mt-4 italic">Unidades / Dia</p>
           </div>
-          <input
-            type="range" min={1} max={60} value={data.cigarrosPorDia}
-            onChange={e => setData(d => ({ ...d, cigarrosPorDia: +e.target.value }))}
-            className="w-full h-3 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
-          />
-          <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground"><span>1 un.</span><span>60 un.</span></div>
+          <div className="relative pt-6">
+            <input
+              type="range" min={1} max={60} value={data.cigarrosPorDia}
+              onChange={e => setData(d => ({ ...d, cigarrosPorDia: +e.target.value }))}
+              className="w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-primary"
+            />
+            <div className="absolute top-0 left-0 w-full flex justify-between text-[8px] font-black uppercase tracking-widest text-white/20 italic">
+              <span>Nível Mínimo</span>
+              <span>Alinhamento Crítico</span>
+            </div>
+          </div>
         </div>
       ),
     },
     {
       icon: Clock,
-      title: "Histórico de Uso",
-      subtitle: "Há quantos anos você fuma?",
+      title: "Vetor de Tempo",
+      subtitle: "Tempo total de exposição em órbitas?",
       content: (
-        <div className="space-y-8">
+        <div className="space-y-12">
           <div className="flex flex-col items-center">
-             <div className="text-8xl font-black text-primary tracking-tighter drop-shadow-sm">{data.anosFumando}</div>
-             <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mt-2">Anos</p>
+             <div className="text-9xl font-black text-primary italic tracking-tighter drop-shadow-glow leading-none">{data.anosFumando}</div>
+             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mt-4 italic">Anos de Acúmulo</p>
           </div>
-          <input
-            type="range" min={1} max={50} value={data.anosFumando}
-            onChange={e => setData(d => ({ ...d, anosFumando: +e.target.value }))}
-            className="w-full h-3 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
-          />
-          <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground"><span>1 ano</span><span>50 anos</span></div>
+          <div className="relative pt-6">
+            <input
+              type="range" min={1} max={50} value={data.anosFumando}
+              onChange={e => setData(d => ({ ...d, anosFumando: +e.target.value }))}
+              className="w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-primary"
+            />
+            <div className="absolute top-0 left-0 w-full flex justify-between text-[8px] font-black uppercase tracking-widest text-white/20 italic">
+              <span>1 Órbita</span>
+              <span>50 Órbitas</span>
+            </div>
+          </div>
         </div>
       ),
     },
     {
       icon: DollarSign,
-      title: "Investimento Social",
-      subtitle: "Quanto custa cada cigarro individual?",
+      title: "Alocação de Recurso",
+      subtitle: "Investimento por unidade individual?",
       content: (
-        <div className="space-y-8">
+        <div className="space-y-12">
           <div className="flex flex-col items-center">
-             <div className="text-7xl font-black text-primary tracking-tighter drop-shadow-sm">R${data.custoPorCigarro.toFixed(2)}</div>
-             <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mt-2">Preço por Unidade</p>
+             <div className="text-7xl font-black text-primary italic tracking-tighter drop-shadow-glow leading-none">R${data.custoPorCigarro.toFixed(2)}</div>
+             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mt-4 italic">Preço Individual</p>
           </div>
-          <input
-            type="range" min={0.2} max={10} step={0.1} value={data.custoPorCigarro}
-            onChange={e => setData(d => ({ ...d, custoPorCigarro: +e.target.value }))}
-            className="w-full h-3 bg-muted rounded-full appearance-none cursor-pointer accent-primary"
-          />
-          <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-muted-foreground"><span>R$0,20</span><span>R$10,00</span></div>
+          <div className="relative pt-6">
+            <input
+              type="range" min={0.2} max={10} step={0.1} value={data.custoPorCigarro}
+              onChange={e => setData(d => ({ ...d, custoPorCigarro: +e.target.value }))}
+              className="w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-primary"
+            />
+            <div className="absolute top-0 left-0 w-full flex justify-between text-[8px] font-black uppercase tracking-widest text-white/20 italic">
+              <span>Econômico</span>
+              <span>Premium</span>
+            </div>
+          </div>
         </div>
       ),
     },
     {
       icon: Brain,
-      title: "Gatilhos Mentais",
-      subtitle: "Identifique seus momentos mais críticos.",
+      title: "Sinais de Gatilho",
+      subtitle: "Mapeie seus pontos de falha sistêmica.",
       content: (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {gatilhoOptions.map(g => (
             <button
               key={g}
               onClick={() => toggleGatilho(g)}
-              className={`h-16 rounded-[20px] text-[10px] font-black uppercase tracking-widest border-2 transition-all flex items-center justify-center px-4 text-center ${
+              className={`h-16 rounded-[1.2rem] text-[10px] font-black uppercase tracking-[0.2em] border-2 transition-all flex items-center justify-center px-4 text-center italic ${
                 data.gatilhos.includes(g)
-                  ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105"
-                  : "bg-card text-muted-foreground border-border hover:border-primary/30"
+                  ? "bg-primary text-white border-primary shadow-glow scale-105"
+                  : "bg-white/5 text-white/40 border-white/10 hover:border-primary/40 hover:text-white"
               }`}
             >
               {g}
@@ -166,50 +177,51 @@ const Onboarding = () => {
       ),
     },
     {
-      icon: ShieldCheck,
-      title: "Contrato de Liberdade",
-      subtitle: "Conformidade LGPD & Termos Clínicos.",
+      icon: Shield,
+      title: "Protocolo de Segurança",
+      subtitle: "Ative seus módulos de proteção e privacidade.",
       content: (
         <div className="space-y-4">
            <div 
              onClick={() => setAcceptedTerms(!acceptedTerms)}
-             className={`p-4 rounded-3xl border-2 cursor-pointer transition-all flex items-start gap-4 ${acceptedTerms ? "bg-primary/5 border-primary shadow-soft" : "bg-card border-border hover:border-primary/20"}`}
+             className={`p-6 rounded-[1.5rem] border transition-all flex items-start gap-4 backdrop-blur-xl cursor-pointer ${acceptedTerms ? "bg-primary/10 border-primary/40 shadow-glow" : "bg-white/5 border-white/10 opacity-60 hover:opacity-100"}`}
            >
-              <div className={`mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center ${acceptedTerms ? "bg-primary border-primary text-white" : "border-muted"}`}>
+              <div className={`mt-1 w-6 h-6 rounded-lg border flex items-center justify-center ${acceptedTerms ? "bg-primary border-primary text-white" : "border-white/20"}`}>
                  {acceptedTerms && <CheckCircle2 size={14} />}
               </div>
               <div className="flex-1">
-                 <p className="text-sm font-black text-foreground mb-1 leading-tight">Li e aceito os Termos de Uso e a Política de Privacidade.</p>
-                 <div className="flex gap-4 text-[10px] font-black uppercase tracking-widest text-primary">
-                    <Link to="/politica-de-privacidade" target="_blank" className="hover:underline">Política</Link>
-                    <Link to="/termos-de-uso" target="_blank" className="hover:underline">Termos</Link>
+                 <p className="text-sm font-black text-white italic tracking-tight mb-2 uppercase">Protokollo Alpha v1.0</p>
+                 <p className="text-[10px] font-bold text-white/60 mb-2 leading-tight">Li e aceito os Termos de Uso e a Política de Privacidade.</p>
+                 <div className="flex gap-4 text-[9px] font-black uppercase tracking-widest text-primary italic">
+                    <Link to="/politica-de-privacidade" target="_blank" className="hover:underline underline-offset-4">Privacidade</Link>
+                    <Link to="/termos-de-uso" target="_blank" className="hover:underline underline-offset-4">Licença</Link>
                  </div>
               </div>
            </div>
 
            <div 
              onClick={() => setAcceptedHealth(!acceptedHealth)}
-             className={`p-4 rounded-3xl border-2 cursor-pointer transition-all flex items-start gap-4 ${acceptedHealth ? "bg-emerald-500/5 border-emerald-500 shadow-soft" : "bg-card border-border hover:border-primary/20"}`}
+             className={`p-6 rounded-[1.5rem] border transition-all flex items-start gap-4 backdrop-blur-xl cursor-pointer ${acceptedHealth ? "bg-emerald-500/10 border-emerald-500/40 shadow-glow" : "bg-white/5 border-white/10 opacity-60 hover:opacity-100"}`}
            >
-              <div className={`mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center ${acceptedHealth ? "bg-emerald-500 border-emerald-500 text-white" : "border-muted"}`}>
+              <div className={`mt-1 w-6 h-6 rounded-lg border flex items-center justify-center ${acceptedHealth ? "bg-emerald-500 border-emerald-500 text-white" : "border-white/20"}`}>
                  {acceptedHealth && <CheckCircle2 size={14} />}
               </div>
               <div className="flex-1">
-                 <p className="text-sm font-black text-foreground mb-1 leading-tight">Consinto no processamento de meus dados sensíveis de saúde.</p>
-                 <p className="text-[10px] font-medium text-muted-foreground italic">Essenciais para o funcionamento do plano de libertação.</p>
+                 <p className="text-sm font-black text-white italic tracking-tight mb-2 uppercase">Dados Biométricos</p>
+                 <p className="text-[10px] font-bold text-white/60 leading-tight">Consinto no processamento de meus dados sensíveis de saúde para otimização do plano.</p>
               </div>
            </div>
 
            <div 
              onClick={() => setAcceptedMarketing(!acceptedMarketing)}
-             className={`p-4 rounded-3xl border-2 cursor-pointer transition-all flex items-start gap-4 ${acceptedMarketing ? "bg-blue-500/5 border-blue-500 shadow-soft" : "bg-card border-border hover:border-primary/20 opacity-60"}`}
+             className={`p-6 rounded-[1.5rem] border transition-all flex items-start gap-4 backdrop-blur-xl cursor-pointer ${acceptedMarketing ? "bg-blue-500/10 border-blue-500/40 shadow-glow" : "bg-white/5 border-white/10 opacity-40 hover:opacity-100"}`}
            >
-              <div className={`mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center ${acceptedMarketing ? "bg-blue-500 border-blue-500 text-white" : "border-muted"}`}>
+              <div className={`mt-1 w-6 h-6 rounded-lg border flex items-center justify-center ${acceptedMarketing ? "bg-blue-500 border-blue-500 text-white" : "border-white/20"}`}>
                  {acceptedMarketing && <CheckCircle2 size={14} />}
               </div>
               <div className="flex-1">
-                 <p className="text-sm font-black text-foreground mb-1 leading-tight">Desejo receber dicas de saúde por e-mail.</p>
-                 <p className="text-[10px] font-medium text-muted-foreground italic">Dicas científicas semanais para o e-mail {user?.email}.</p>
+                 <p className="text-sm font-black text-white italic tracking-tight mb-2 uppercase">Transmissão de Inteligência</p>
+                 <p className="text-[10px] font-bold text-white/60 leading-tight">Desejo receber dicas semanais de alta performance por e-mail.</p>
               </div>
            </div>
         </div>
@@ -220,58 +232,83 @@ const Onboarding = () => {
   const currentStep = steps[step];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-12 animate-fade-in">
-      <div className="w-full max-w-lg">
-        <header className="flex flex-col items-center mb-10">
-           <div className="w-14 h-14 rounded-[20px] bg-primary/10 flex items-center justify-center text-primary mb-5 shadow-soft">
-              <Wind size={28} />
-           </div>
-           <h1 className="text-3xl font-black tracking-tighter">Onboarding.</h1>
-           <p className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground mt-2">Personalizando Sua Experiência</p>
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none animate-pulse" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-primary/10 blur-[100px] rounded-full pointer-events-none animate-pulse duration-5000" />
+      
+      <div className="w-full max-w-xl relative z-10">
+        <header className="flex flex-col items-center mb-12">
+           <motion.div 
+             initial={{ scale: 0 }} animate={{ scale: 1 }}
+             className="w-16 h-16 rounded-[1.5rem] bg-primary flex items-center justify-center text-white mb-6 shadow-glow"
+           >
+              <Wind size={32} className="animate-pulse" />
+           </motion.div>
+           <h1 className="text-5xl font-black tracking-tighter text-white italic uppercase leading-none">Recrutamento.</h1>
+           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-primary mt-4 italic">Sincronizando Perfil de Comandante</p>
         </header>
 
-        {/* Progress Bar */}
-        <div className="flex gap-2.5 mb-10 px-4">
+        {/* Progress System */}
+        <div className="flex gap-3 mb-12 px-2">
           {steps.map((_, i) => (
-            <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-500 shadow-sm ${i <= step ? "bg-primary" : "bg-muted"}`} />
+            <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-700 ${i <= step ? "bg-primary shadow-glow" : "bg-white/5"}`} />
           ))}
         </div>
 
-        <section className="relative min-h-[500px]">
+        <section className="relative min-h-[550px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
-              initial={{ opacity: 0, scale: 0.98, y: 10 }}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1.02, y: -10 }}
-              transition={{ duration: 0.4, ease: "circOut" }}
-              className="rounded-[40px] bg-card p-10 sm:p-14 border-none shadow-elevated h-full flex flex-col justify-center"
+              exit={{ opacity: 0, scale: 1.05, y: -20 }}
+              transition={{ duration: 0.5, ease: "anticipate" }}
+              className="h-full"
             >
-              <div className="w-12 h-12 rounded-[18px] bg-primary/5 border border-primary/10 flex items-center justify-center mb-6">
-                <currentStep.icon className="w-6 h-6 text-primary" />
-              </div>
-              <h2 className="text-3xl font-black text-foreground tracking-tight mb-2 leading-tight">{currentStep.title}</h2>
-              <p className="text-sm font-medium text-muted-foreground mb-8 leading-relaxed max-w-xs">{currentStep.subtitle}</p>
-              {currentStep.content}
+              <AppleCard className="bg-card/40 backdrop-blur-3xl p-10 sm:p-16 border border-white/10 shadow-elevated h-full flex flex-col justify-center rounded-[3rem]">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-14 h-14 rounded-[1rem] bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <currentStep.icon className="w-7 h-7 text-primary drop-shadow-glow" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">{currentStep.title}</h2>
+                    <p className="text-[10px] font-black tracking-[0.2em] text-white/40 uppercase mt-2 italic">{currentStep.subtitle}</p>
+                  </div>
+                </div>
+                {currentStep.content}
+              </AppleCard>
             </motion.div>
           </AnimatePresence>
         </section>
 
-        <footer className="flex gap-4 mt-8">
+        <footer className="flex gap-4 mt-12 px-2">
           {step > 0 && !isSubmitting ? (
-            <Button variant="outline" className="flex-1 h-14 rounded-[20px] font-black uppercase tracking-widest text-[10px] border-2 border-border" onClick={() => setStep(s => s - 1)}>
-              <ArrowLeft size={14} className="mr-2" /> Voltar
+            <Button 
+              variant="outline" 
+              className="flex-1 h-16 rounded-[1.5rem] font-black uppercase tracking-widest text-[11px] border-white/10 bg-white/5 hover:bg-white/10 text-white italic transition-all active:scale-95 border-none" 
+              onClick={() => setStep(s => s - 1)}
+            >
+              <ArrowLeft size={16} className="mr-3" /> Regressar
             </Button>
           ) : (
             <div className="flex-1" />
           )}
-          <Button disabled={isSubmitting} 
-            className="flex-[1.5] h-14 rounded-[20px] bg-primary font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+          <Button disabled={isSubmitting || (step === steps.length - 1 && (!acceptedTerms || !acceptedHealth))} 
+            className="flex-[1.5] h-16 rounded-[1.5rem] bg-white text-black font-black uppercase tracking-widest text-[11px] shadow-glow hover:scale-[1.02] active:scale-[0.98] transition-all italic"
             onClick={() => step < steps.length - 1 ? setStep(s => s + 1) : finishOnboarding()}
           >
-            {isSubmitting ? <Loader2 className="animate-spin" /> : step < steps.length - 1 ? <>Continuar <ArrowRight className="ml-2 w-4 h-4" /></> : <>Ativar Minha Liberdade <Sparkles className="ml-2 w-4 h-4" /></>}
+            {isSubmitting ? <Loader2 className="animate-spin" /> : step < steps.length - 1 ? <>Próxima Fase <ArrowRight className="ml-3 w-5 h-5" /></> : <>Finalizar Conexão <Sparkles className="ml-3 w-5 h-5" /></>}
           </Button>
         </footer>
+
+        {/* Tactical Footer */}
+        <div className="mt-16 text-center">
+          <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] italic leading-loose">
+            🔒 Protocolo de Criptografia Ativo • LGPD Compliant 2026<br />
+            Sistema de Automação QuitBoost v4.0.0
+          </p>
+        </div>
       </div>
     </div>
   );

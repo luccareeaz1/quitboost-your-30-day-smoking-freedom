@@ -1,9 +1,9 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, animate } from "framer-motion";
 import {
   Trophy, Star, Flame, Heart, Shield, Zap, Target,
   Award, Lock, Share2, ChevronRight, Sparkles, Clock,
-  TrendingUp, Crown, Medal, Gift, Check, Info, Loader2, AlertCircle
+  TrendingUp, Crown, Medal, Gift, Check, Info, Loader2, AlertCircle, ArrowRight
 } from "lucide-react";
 import AppLayout from "@/components/app/AppLayout";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { achievementService } from "@/lib/services";
 import { toast } from "sonner";
+import { AppleCard } from "@/components/ui/apple-card";
 
 interface Achievement {
   id: string;
@@ -31,13 +32,14 @@ interface RarityConfig {
   color: string;
   bg: string;
   border: string;
+  glow: string;
 }
 
 const RARITY_MAP: Record<string, RarityConfig> = {
-  "comum": { label: "Comum", color: "text-slate-500", bg: "bg-slate-500/10", border: "border-slate-500/20" },
-  "raro": { label: "Raro", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
-  "épico": { label: "Épico", color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/20" },
-  "lendário": { label: "Lendário", color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+  "comum": { label: "Comum", color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", glow: "" },
+  "raro": { label: "Raro", color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", glow: "shadow-[0_0_15px_rgba(59,130,246,0.2)]" },
+  "épico": { label: "Épico", color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", glow: "shadow-[0_0_20px_rgba(168,85,247,0.3)]" },
+  "lendário": { label: "Lendário", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", glow: "shadow-glow" },
 };
 
 function AnimatedCounter({ value }: { value: number }) {
@@ -80,7 +82,6 @@ const Conquistas = () => {
     loadData();
   }, [loadData]);
 
-  // Derived stats
   const stats = useMemo(() => {
     if (!profile) return null;
     const quitDate = new Date(profile.quit_date || new Date().toISOString());
@@ -98,11 +99,11 @@ const Conquistas = () => {
     }
 
     const currentLevel = (() => {
-      if (totalPoints >= 1000) return { level: 6, name: "Lenda Viva", icon: "🌌" };
-      if (totalPoints >= 500) return { level: 5, name: "Mestre", icon: "👑" };
-      if (totalPoints >= 300) return { level: 4, name: "Guerreiro", icon: "⚔️" };
-      if (totalPoints >= 150) return { level: 3, name: "Determinado", icon: "🔥" };
-      if (totalPoints >= 50) return { level: 2, name: "Iniciante Forte", icon: "💪" };
+      if (totalPoints >= 1000) return { level: 6, name: "Lenda Galáctica", icon: "🌌" };
+      if (totalPoints >= 500) return { level: 5, name: "Almirante", icon: "👑" };
+      if (totalPoints >= 300) return { level: 4, name: "Veterano", icon: "⚔️" };
+      if (totalPoints >= 150) return { level: 3, name: "Explorador", icon: "🔥" };
+      if (totalPoints >= 50) return { level: 2, name: "Cadete", icon: "💪" };
       return { level: 1, name: "Recruta", icon: "🌱" };
     })();
 
@@ -118,9 +119,13 @@ const Conquistas = () => {
   if (loading || !stats) {
     return (
       <AppLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <Loader2 className="w-10 h-10 text-primary animate-spin" />
-          <p className="text-muted-foreground font-medium">Sincronizando seu Hall da Fama...</p>
+        <div className="flex flex-col items-center justify-center min-h-screen gap-6">
+          <motion.div 
+            animate={{ rotate: 360, scale: [1, 1.1, 1] }} 
+            transition={{ repeat: Infinity, duration: 1.5 }} 
+            className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full shadow-glow" 
+          />
+          <p className="text-muted-foreground font-black uppercase tracking-[0.4em] text-[10px] italic animate-pulse text-center">Sincronizando Hall da Fama...</p>
         </div>
       </AppLayout>
     );
@@ -128,86 +133,105 @@ const Conquistas = () => {
 
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 sm:px-6 max-w-2xl pb-24 pt-10">
-        <header className="mb-10 text-center animate-fade-in">
-           <div className="inline-block p-4 rounded-full bg-amber-500/10 mb-4 border border-amber-500/20 shadow-lg shadow-amber-500/5">
-             <Crown className="w-8 h-8 text-amber-500" />
-           </div>
-           <h1 className="text-4xl font-black tracking-tight mb-2">Conquistas</h1>
-           <p className="text-muted-foreground text-sm font-medium">
-             {stats.unlockedCount} de {achievements.length} marcos alcançados.
+      <div className="container mx-auto px-4 sm:px-6 max-w-4xl pb-32 pt-12 relative z-10">
+        <header className="mb-16 text-center">
+           <motion.div 
+             initial={{ scale: 0 }} 
+             animate={{ scale: 1 }} 
+             className="inline-block p-6 rounded-[2rem] bg-primary/10 mb-6 border border-primary/20 shadow-glow relative group"
+           >
+             <div className="absolute inset-0 bg-primary/5 blur-xl group-hover:bg-primary/20 transition-all rounded-full" />
+             <Crown className="w-10 h-10 text-primary relative z-10" />
+           </motion.div>
+           <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 italic text-white leading-none">
+             Hall da <span className="text-primary drop-shadow-glow">Fama</span>
+           </h1>
+           <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.5em] italic">
+             {stats.unlockedCount} de {achievements.length} Protokollos Sincronizados
            </p>
         </header>
 
-        {/* LEVEL CARD */}
+        {/* LEVEL CARD - PREMIUM GLASS */}
         <motion.div
            initial={{ opacity: 0, y: 30 }}
            animate={{ opacity: 1, y: 0 }}
-           className="rounded-[32px] bg-foreground text-background p-8 mb-8 relative overflow-hidden shadow-2xl"
+           className="relative group mb-12"
         >
-          <div className="absolute top-[-40%] right-[-10%] w-72 h-72 bg-primary/20 blur-[100px] rounded-full" />
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-5xl border border-white/5 shadow-inner">
-                {stats.currentLevel.icon}
+          <div className="absolute inset-0 bg-primary/10 rounded-[2.5rem] blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity" />
+          <AppleCard className="bg-card/40 backdrop-blur-3xl p-10 relative overflow-hidden rounded-[2.5rem] border border-border/40 shadow-elevated">
+            <div className="absolute top-[-40%] right-[-10%] w-96 h-96 bg-primary/10 blur-[100px] rounded-full animate-pulse" />
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="flex items-center gap-8">
+                <div className="w-24 h-24 rounded-[1.5rem] bg-black/40 border border-primary/20 flex items-center justify-center text-6xl shadow-glow">
+                  {stats.currentLevel.icon}
+                </div>
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 text-primary italic mb-2">Classificação de Frota</p>
+                  <p className="text-4xl font-black tracking-tighter italic text-white uppercase">{stats.currentLevel.name}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Classificação</p>
-                <p className="text-2xl font-black tracking-tight">{stats.currentLevel.name}</p>
+              <div className="text-center md:text-right">
+                <p className="text-6xl font-black text-primary drop-shadow-glow italic tracking-tighter leading-none">
+                  <AnimatedCounter value={stats.totalPoints} />
+                </p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 text-white italic mt-2">PX Acumulados</p>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-4xl font-black text-primary drop-shadow-[0_0_10px_rgba(var(--primary),0.3)]">
-                <AnimatedCounter value={stats.totalPoints} />
-              </p>
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-40">PX Acumulados</p>
-            </div>
-          </div>
+          </AppleCard>
         </motion.div>
 
-        {/* NEXT GOAL */}
+        {/* PROGRESS TRACKER */}
         {stats.nextAchievement && (
-          <div className="bg-card border-2 border-primary/5 rounded-[32px] p-6 mb-8 shadow-soft">
-            <div className="flex items-center justify-between mb-4">
-               <div className="flex items-center gap-3">
-                 <div className="p-2 rounded-xl bg-muted"><Target className="w-4 h-4 text-primary" /></div>
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            className="bg-card/20 backdrop-blur-md border border-border/20 rounded-[2.5rem] p-8 mb-12 shadow-inner"
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8">
+               <div className="flex items-center gap-4">
+                 <div className="p-4 rounded-[1rem] bg-primary/10 border border-primary/20"><Target className="w-6 h-6 text-primary" /></div>
                  <div>
-                   <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">Próximo Alvo</p>
-                   <p className="text-sm font-bold">{stats.nextAchievement.title}</p>
+                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground italic">Próximo Marco Neuronal</p>
+                   <p className="text-xl font-black italic text-white">{stats.nextAchievement.title}</p>
                  </div>
                </div>
-               <div className="text-right">
-                  <p className="text-xs font-bold text-primary">-{stats.nextAchievement.requirement_value - stats.diffDays} dias</p>
+               <div className="text-center sm:text-right">
+                  <p className="text-xl font-black text-primary italic tracking-tight italic">-{stats.nextAchievement.requirement_value - stats.diffDays} dias</p>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-40">Para Sincronização</p>
                </div>
             </div>
-            <div className="w-full h-3 bg-muted rounded-full overflow-hidden border border-border/50">
+            <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
                <motion.div
                  initial={{ width: 0 }}
                  animate={{ width: `${stats.progress}%` }}
-                 transition={{ duration: 1.5, ease: "circOut" }}
-                 className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full"
-               />
+                 transition={{ duration: 2, ease: "circOut" }}
+                 className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full shadow-glow relative"
+               >
+                 <div className="absolute inset-0 bg-white/20 animate-pulse opacity-50" />
+               </motion.div>
             </div>
-          </div>
+          </motion.div>
         )}
 
-        {/* FILTERS */}
-        <div className="flex gap-2 mb-8">
+        {/* FILTERS - NEUMORPHIC DARK */}
+        <div className="flex flex-wrap gap-4 mb-12 justify-center">
            {['all', 'unlocked', 'locked'].map(f => (
              <button
                key={f}
                onClick={() => setFilter(f as 'all' | 'unlocked' | 'locked')}
-               className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all ${
-                 filter === f ? "bg-foreground text-background border-foreground shadow-lg" : "bg-card text-muted-foreground border-border hover:bg-muted"
+               className={`px-8 py-4 rounded-[1.2rem] text-[10px] font-black uppercase tracking-[0.3em] border transition-all italic hover:scale-105 active:scale-95 ${
+                 filter === f 
+                 ? "bg-primary text-white border-primary shadow-glow" 
+                 : "bg-card/40 text-muted-foreground border-border/40 hover:bg-card/60 backdrop-blur-xl"
                }`}
              >
-               {f === 'all' ? "Tudo" : f === 'unlocked' ? "Concluídos" : "Bloqueados"}
+               {f === 'all' ? "Arsenal Completo" : f === 'unlocked' ? "Sincronizados" : "Bloqueados"}
              </button>
            ))}
         </div>
 
-        {/* GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        {/* ACHIEVEMENT GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
            {filteredList.map((badge, i) => {
              const unlocked = unlockedIds.has(badge.id);
              const rarity = RARITY_MAP[badge.rarity] || RARITY_MAP.comum;
@@ -215,34 +239,38 @@ const Conquistas = () => {
              return (
                <motion.div
                  key={badge.id}
-                 initial={{ opacity: 0, scale: 0.9 }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 transition={{ delay: i * 0.04 }}
+                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ delay: i * 0.05 }}
                  onClick={() => unlocked && setSelectedAchievement(badge)}
-                 className={`group rounded-[28px] p-6 border-2 transition-all cursor-pointer ${
+                 className={`group rounded-[2.5rem] p-8 border transition-all duration-500 relative overflow-hidden ${
                    unlocked 
-                   ? `${rarity.border} bg-card hover:shadow-xl hover:scale-[1.02]`
-                   : "bg-muted/30 border-transparent grayscale opacity-40 hover:grayscale-0 hover:opacity-100"
+                   ? `bg-card/40 backdrop-blur-xl border-border/40 cursor-pointer hover:border-primary/40 hover:shadow-elevated hover:scale-[1.03]`
+                   : "bg-white/5 border-transparent opacity-30 grayscale cursor-not-allowed"
                  }`}
                >
-                 <div className="flex flex-col items-center text-center">
-                    <div className={`w-20 h-20 rounded-[28px] mb-4 flex items-center justify-center text-4xl shadow-inner ${
-                      unlocked ? "bg-white dark:bg-black/20 border border-border" : "bg-muted"
-                    }`}>
-                      {unlocked ? (badge.icon_url || "🏅") : <Lock className="w-8 h-8 text-muted-foreground" />}
+                 {unlocked && (
+                    <div className={`absolute -top-10 -right-10 w-24 h-24 ${rarity.color.replace('text-', 'bg-')}/5 blur-[40px] rounded-full group-hover:scale-150 transition-transform`} />
+                 )}
+                 <div className="flex flex-col items-center text-center relative z-10">
+                    <div className={`w-24 h-24 rounded-[1.8rem] mb-6 flex items-center justify-center text-5xl transition-all duration-500 shadow-inner ${
+                      unlocked ? `bg-black/40 border ${rarity.border} ${rarity.glow}` : "bg-white/5 border border-white/5"
+                    } group-hover:scale-110 group-hover:rotate-6`}>
+                      {unlocked ? (badge.icon_url || "🏅") : <Lock className="w-10 h-10 text-white/20" />}
                     </div>
-                    <div className="mb-2">
-                       <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-full border mb-2 inline-block ${rarity.bg} ${rarity.color} ${rarity.border}`}>
+                    <div className="mb-4">
+                       <span className={`text-[8px] font-black uppercase px-3 py-1 rounded-full border mb-3 inline-block italic ${rarity.bg} ${rarity.color} ${rarity.border}`}>
                          {rarity.label}
                        </span>
-                       <h4 className="text-sm font-black tracking-tight line-clamp-1">{badge.title}</h4>
+                       <h4 className="text-lg font-black tracking-tighter text-white italic line-clamp-1 group-hover:text-primary transition-colors">{badge.title}</h4>
                     </div>
-                    <p className="text-[11px] text-muted-foreground font-medium leading-tight mb-4 line-clamp-2">
+                    <p className="text-xs text-muted-foreground font-bold leading-relaxed mb-6 line-clamp-2 italic opacity-60">
                        {badge.description}
                     </p>
-                    <div className="flex items-center gap-3">
-                       <span className="text-[10px] font-black text-primary">+{badge.points} PX</span>
-                       {unlocked && <Share2 className="w-3.5 h-3.5 text-muted-foreground hover:text-primary transition-colors" />}
+                    <div className="flex items-center justify-between w-full mt-auto pt-6 border-t border-white/5">
+                       <span className="text-[10px] font-black text-primary italic uppercase tracking-widest">+{badge.points} PX</span>
+                       {unlocked && <Share2 className="w-4 h-4 text-muted-foreground hover:text-white transition-colors" />}
                     </div>
                  </div>
                </motion.div>
@@ -250,66 +278,69 @@ const Conquistas = () => {
            })}
         </div>
 
-        {/* MODAL */}
+        {/* MODAL - ULTRA PREMIUM OVERLAY */}
         <AnimatePresence>
           {selectedAchievement && (
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-background/90 backdrop-blur-xl flex items-center justify-center p-6"
+              className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-4"
               onClick={() => setSelectedAchievement(null)}
             >
               <motion.div
-                initial={{ scale: 0.9, y: 30 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 30 }}
-                className="bg-card w-full max-w-md rounded-[40px] border-2 border-primary/10 p-8 shadow-2xl relative overflow-hidden"
+                initial={{ scale: 0.9, y: 30, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 0.9, y: 30, opacity: 0 }}
+                className="bg-card w-full max-w-xl rounded-[3rem] border border-primary/20 p-10 shadow-glow relative overflow-hidden text-center"
                 onClick={e => e.stopPropagation()}
               >
-                <div className="absolute top-0 left-0 w-full h-2 bg-primary" />
-                <div className="text-center">
-                   <div className="w-24 h-24 rounded-[32px] bg-primary/5 border-2 border-primary/10 flex items-center justify-center text-6xl mx-auto mb-6 shadow-soft">
-                     {selectedAchievement.icon_url || "🏅"}
-                   </div>
-                   <h3 className="text-2xl font-black mb-2 tracking-tight">{selectedAchievement.title}</h3>
-                   <p className="text-muted-foreground text-sm font-medium mb-8 leading-relaxed">
-                     {selectedAchievement.description}
-                   </p>
+                <div className="absolute inset-0 bg-primary/2 pointer-events-none" />
+                <div className="w-40 h-40 rounded-[2.5rem] bg-black/60 border border-primary/30 flex items-center justify-center text-8xl mx-auto mb-10 shadow-glow rotate-3">
+                  {selectedAchievement.icon_url || "🏅"}
+                </div>
+                <h3 className="text-4xl font-black italic text-white tracking-tighter mb-4 leading-none">{selectedAchievement.title}</h3>
+                <p className="text-xl font-bold italic text-white/60 mb-10 leading-relaxed px-4">
+                  {selectedAchievement.description}
+                </p>
 
-                   {selectedAchievement.medical_fact && (
-                     <div className="bg-primary/5 rounded-3xl p-6 text-left mb-8 border border-primary/10">
-                        <div className="flex items-center gap-2 mb-3">
-                           <Shield className="w-4 h-4 text-primary" />
-                           <h4 className="text-xs font-black uppercase tracking-widest text-primary">Sabedoria de Saúde</h4>
-                        </div>
-                        <p className="text-xs font-medium text-foreground/80 leading-relaxed italic">
-                          "{selectedAchievement.medical_fact}"
-                        </p>
-                        {selectedAchievement.source && (
-                          <p className="text-[10px] text-muted-foreground font-bold mt-4 uppercase">Fonte: {selectedAchievement.source}</p>
-                        )}
-                     </div>
-                   )}
+                {selectedAchievement.medical_fact && (
+                  <div className="bg-primary/5 rounded-[2rem] p-8 text-left mb-10 border border-primary/20 relative group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="flex items-center gap-3 mb-4 relative z-10">
+                       <Shield className="w-5 h-5 text-primary drop-shadow-glow" />
+                       <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary italic leading-none">Dados de Biocontrole</h4>
+                    </div>
+                    <p className="text-sm font-bold text-white/80 leading-relaxed italic relative z-10">
+                      "{selectedAchievement.medical_fact}"
+                    </p>
+                    {selectedAchievement.source && (
+                      <p className="text-[10px] text-muted-foreground font-black mt-6 uppercase tracking-[0.2em] italic relative z-10 opacity-40">Fonte: {selectedAchievement.source}</p>
+                    )}
+                  </div>
+                )}
 
-                   <div className="flex gap-4">
-                     <Button className="flex-1 h-12 rounded-2xl font-black text-xs uppercase transition-all hover:scale-[1.02]" onClick={() => setSelectedAchievement(null)}>
-                        Fechar
-                     </Button>
-                     <Button variant="outline" className="h-12 w-12 rounded-2xl p-0 transition-transform active:scale-90">
-                        <Share2 className="w-5 h-5" />
-                     </Button>
-                   </div>
+                <div className="flex gap-4">
+                  <Button 
+                    className="flex-1 h-16 rounded-[1.5rem] bg-white text-black font-black italic uppercase tracking-[0.3em] text-[11px] transition-all hover:scale-105 active:scale-95 shadow-glow" 
+                    onClick={() => setSelectedAchievement(null)}
+                  >
+                     Cerrar Protokollo
+                  </Button>
+                  <Button variant="outline" className="h-16 w-16 rounded-[1.5rem] border-white/10 bg-white/5 hover:bg-white/10 transition-all active:scale-90 border-none">
+                     <Share2 className="w-6 h-6 text-white" />
+                  </Button>
                 </div>
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* DISCLAIMER */}
-        <div className="mt-16 p-6 rounded-[32px] bg-muted/30 border border-border text-center">
-           <AlertCircle className="w-5 h-5 text-muted-foreground mx-auto mb-2" />
-           <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-relaxed">
-             Marcos Baseados em Metas de Saúde.<br />
-             Cada marco representa uma evolução real.
+        {/* COMMAND FOOTER */}
+        <div className="mt-24 p-12 rounded-[2.5rem] bg-card/20 backdrop-blur-md border border-border/20 text-center relative overflow-hidden group">
+           <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+           <AlertCircle className="w-8 h-8 text-primary/40 mx-auto mb-6 group-hover:animate-bounce" />
+           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.5em] leading-loose italic max-w-2xl mx-auto">
+             Marcos Evolutivos Sincronizados com Dados de Saúde Real.<br />
+             Cada emblema representa a reconquista de autonomia celular.
            </p>
         </div>
       </div>

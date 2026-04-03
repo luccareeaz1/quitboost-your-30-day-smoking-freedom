@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Star, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, Star, ShieldCheck, Zap, Crosshair, Cpu, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SparklesCore } from "@/components/ui/sparkles";
 
@@ -8,72 +8,70 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-background flex flex-col">
-      {/* === SPARKLES HERO BLOCK (top, exact replica of the image) === */}
-      <div className="w-full bg-black flex flex-col items-center justify-center overflow-hidden pt-40 pb-0">
+    <section className="relative min-h-screen overflow-hidden bg-black flex flex-col font-sans">
+      {/* Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
+      
+      {/* === SPARKLES HERO BLOCK === */}
+      <div className="w-full bg-black flex flex-col items-center justify-center overflow-hidden pt-48 pb-12 relative">
         {/* Main title */}
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="md:text-7xl text-4xl lg:text-9xl font-bold text-center text-white relative z-20 tracking-tight"
-        >
-          Quit<span className="text-indigo-400 italic">Boost</span>
-        </motion.h1>
+        <div className="relative z-20 flex flex-col items-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 px-6 py-2 rounded-full border border-primary/20 bg-primary/10 backdrop-blur-xl flex items-center gap-3 shadow-glow"
+          >
+            <ShieldCheck size={14} className="text-primary animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">Protocolo Alpha v4.0 Ativo</span>
+          </motion.div>
+          
+          <motion.h1
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "circOut" }}
+            className="md:text-8xl text-5xl lg:text-[10rem] font-black text-center text-white relative z-20 tracking-tighter uppercase italic leading-none"
+          >
+            Quit<span className="text-primary italic drop-shadow-glow">Boost.</span>
+          </motion.h1>
+        </div>
 
-        {/* Sparkles area — exactly as in image */}
-        <div className="w-[40rem] h-40 relative">
-          {/* Gradient lines — exact replica */}
-          <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm" />
-          <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4" />
-          <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-[5px] w-1/4 blur-sm" />
-          <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-px w-1/4" />
+        {/* Sparkles area — Emerald Optimized */}
+        <div className="w-[60rem] h-40 relative mt-4">
+          {/* Emerald Gradient lines */}
+          <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-primary to-transparent h-[2px] w-3/4 blur-sm shadow-glow" />
+          <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-primary to-transparent h-px w-3/4" />
+          <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-primary/60 to-transparent h-[5px] w-1/4 blur-sm" />
+          <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-primary/60 to-transparent h-px w-1/4" />
 
           {/* Core particle component */}
           <SparklesCore
             background="transparent"
             minSize={0.4}
-            maxSize={1}
-            particleDensity={1200}
+            maxSize={1.2}
+            particleDensity={1500}
             className="w-full h-full"
-            particleColor="#FFFFFF"
+            particleColor="#10b981" // Emerald Primary
           />
 
-          {/* Radial gradient mask — fades particles at edges just like the image */}
+          {/* Radial gradient mask */}
           <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]" />
         </div>
       </div>
 
-      {/* === REST OF HERO (below the sparkles) === */}
-      <div className="relative z-10 bg-background flex-1">
-        {/* Soft gradient blobs */}
-        <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[500px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
-
-        <div className="container relative z-10 mx-auto px-6 max-w-7xl py-20">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="flex justify-center mb-8"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 backdrop-blur-md">
-              <Zap size={14} fill="currentColor" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">O Futuro da Liberdade está aqui</span>
-            </div>
-          </motion.div>
-
+      {/* === REST OF HERO === */}
+      <div className="relative z-10 flex-1 px-6">
+        <div className="container relative z-10 mx-auto max-w-5xl py-12">
           {/* Subtitle */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-12 font-medium italic text-center"
+            className="text-2xl md:text-3xl text-white/40 max-w-4xl mx-auto mb-16 font-black italic text-center uppercase tracking-tight leading-tight"
           >
             A única plataforma que usa{" "}
-            <span className="text-foreground font-bold">Inteligência Artificial Neural</span>{" "}
-            para reprogramar seu cérebro e te libertar do cigarro em 30 dias.
+            <span className="text-white drop-shadow-glow">Inteligência Artificial Neural</span>{" "}
+            para reprogramar sua biologia e te libertar do cigarro em 30 dias.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -81,55 +79,74 @@ const HeroSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-6 items-center justify-center"
+            className="flex flex-col sm:flex-row gap-8 items-center justify-center mb-24"
           >
             <Button
               size="lg"
               onClick={() => navigate("/onboarding")}
-              className="h-20 px-12 text-lg rounded-full bg-primary text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/40 hover:scale-105 active:scale-95 transition-all"
+              className="h-24 px-16 text-[13px] rounded-[2.5rem] bg-white text-black font-black uppercase tracking-[0.3em] shadow-glow hover:scale-105 active:scale-95 transition-all italic flex items-center group overflow-hidden relative"
             >
-              Iniciar Protocolo <ArrowRight className="ml-3 w-6 h-6 animate-pulse" />
+              <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="relative z-10">Iniciar Recrutamento</span>
+              <ArrowRight className="relative z-10 ml-4 w-6 h-6 group-hover:translate-x-2 transition-transform" />
             </Button>
 
-            <div className="flex flex-col items-start px-4">
-              <div className="flex gap-0.5 text-amber-500 mb-1">
+            <div className="flex flex-col items-center sm:items-start px-6 py-4 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl">
+              <div className="flex gap-1 text-primary mb-2">
                 {[1, 2, 3, 4, 5].map(i => (
-                  <Star key={i} size={14} fill="currentColor" />
+                  <Star key={i} size={14} fill="currentColor" className="drop-shadow-glow" />
                 ))}
               </div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                Nota de excelência 5.0/5
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic">
+                Sincronização Perfeita <span className="text-white">5.0/5.0</span>
               </p>
             </div>
           </motion.div>
 
-          {/* Social proof strip */}
+          {/* Tactical Specs */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="flex items-center justify-center gap-6 mt-14"
+            className="grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/10 pt-16"
           >
-            <div className="flex -space-x-3">
-              {["A", "B", "C", "D", "E"].map(l => (
-                <div
-                  key={l}
-                  className="w-10 h-10 rounded-full bg-muted border-2 border-background flex items-center justify-center text-xs font-bold text-muted-foreground"
-                >
-                  {l}
-                </div>
-              ))}
+            <div className="flex flex-col items-center text-center group">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:shadow-glow transition-all">
+                <Cpu size={20} />
+              </div>
+              <p className="text-[10px] font-black text-white uppercase tracking-widest italic mb-1">Mecanismo</p>
+              <p className="text-[11px] font-bold text-white/40 italic">IA Neuro-Focada</p>
             </div>
-            <div className="text-left">
-              <p className="text-foreground font-semibold text-sm">+12.000 pessoas</p>
-              <p className="text-muted-foreground text-xs">já respiram livres</p>
+            <div className="flex flex-col items-center text-center group">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:shadow-glow transition-all">
+                <Crosshair size={20} />
+              </div>
+              <p className="text-[10px] font-black text-white uppercase tracking-widest italic mb-1">Taxa Êxito</p>
+              <p className="text-[11px] font-bold text-white/40 italic">94.2% Conclusão</p>
             </div>
-            <div className="hidden sm:flex items-center gap-2 pl-6 border-l border-border text-muted-foreground text-xs font-bold uppercase tracking-widest">
-              <ShieldCheck size={14} className="text-primary" />
-              Protocolo Seguro
+            <div className="flex flex-col items-center text-center group">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:shadow-glow transition-all">
+                <Globe size={20} />
+              </div>
+              <p className="text-[10px] font-black text-white uppercase tracking-widest italic mb-1">Global</p>
+              <p className="text-[11px] font-bold text-white/40 italic">+12k Usuários</p>
+            </div>
+            <div className="flex flex-col items-center text-center group">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:shadow-glow transition-all">
+                <ShieldCheck size={20} />
+              </div>
+              <p className="text-[10px] font-black text-white uppercase tracking-widest italic mb-1">Segurança</p>
+              <p className="text-[11px] font-bold text-white/40 italic">Militar AES-256</p>
             </div>
           </motion.div>
         </div>
+      </div>
+
+      {/* Hero Footnote */}
+      <div className="pb-12 text-center relative z-20">
+         <p className="text-[8px] font-black text-white/10 uppercase tracking-[0.5em] italic">
+           Sincronized with Global Health Standards • 2026 Fleet Base
+         </p>
       </div>
     </section>
   );

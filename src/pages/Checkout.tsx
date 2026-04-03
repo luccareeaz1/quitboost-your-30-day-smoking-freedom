@@ -1,20 +1,22 @@
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Check, Zap, ArrowLeft, Loader2, Sparkles, Star, Crown } from "lucide-react";
+import { Check, Zap, ArrowLeft, Loader2, Sparkles, Star, Crown, ShieldCheck, CreditCard, Rocket, Target } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { AppleCard } from "@/components/ui/apple-card";
 
 const PLANS = [
   {
     id: "standard",
-    name: "Standard",
+    name: "Standard Protocol",
     price: "39,90",
     priceId: "price_1TDaiH2N0nzreyfm7NzaopPG",
-    desc: "O essencial para começar",
+    desc: "Fundação para o despertar",
     badge: null,
+    icon: Rocket,
     features: [
       "Protocolo de 30 dias",
       "Monitor de Saúde em Tempo Real",
@@ -25,11 +27,12 @@ const PLANS = [
   },
   {
     id: "elite",
-    name: "Elite",
+    name: "Elite Tactical",
     price: "197,90",
     priceId: "price_1TDaj82N0nzreyfmstYsVMTI",
-    desc: "Arsenal completo de liberdade",
-    badge: "Recomendado",
+    desc: "Supremacia total de liberdade",
+    badge: "Alta Performance",
+    icon: Target,
     features: [
       "Tudo do Standard +",
       "IA Coach Neural (Ilimitada)",
@@ -52,14 +55,13 @@ export default function Checkout() {
 
   const handlePayment = async () => {
     if (!user) {
-      toast.error("Sua sessão expirou. Reconecte-se.");
+      toast.error("Sincronização perdida. Reinicie o sistema.");
       navigate("/auth");
       return;
     }
 
     try {
       setLoading(true);
-
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { priceId: plan.priceId },
       });
@@ -72,125 +74,165 @@ export default function Checkout() {
       }
     } catch (error) {
       console.error("Erro no pagamento:", error);
-      toast.error("Erro ao iniciar checkout. Tente novamente.");
+      toast.error("Falha ao abrir portal de pagamento. Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-5xl">
+    <div className="min-h-screen bg-black flex items-center justify-center px-4 py-20 relative overflow-hidden">
+      {/* Immersive Background Decor */}
+      <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
+      <div className="absolute -top-24 -left-24 w-[600px] h-[600px] bg-primary/5 blur-[150px] rounded-full pointer-events-none animate-pulse" />
+      <div className="absolute -bottom-24 -right-24 w-[500px] h-[500px] bg-primary/10 blur-[150px] rounded-full pointer-events-none animate-pulse duration-5000" />
 
+      <div className="w-full max-w-6xl relative z-10 font-sans">
+        {/* Navigation */}
         <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
           onClick={() => navigate(-1)}
-          className="group flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-all mb-10"
+          className="group flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-white/40 hover:text-primary transition-all mb-16 italic"
         >
-          <div className="w-8 h-8 rounded-xl bg-card border border-border flex items-center justify-center group-hover:-translate-x-1 transition-transform">
-            <ArrowLeft size={14} />
+          <div className="w-10 h-10 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-primary/40 group-hover:shadow-glow transition-all">
+            <ArrowLeft size={16} />
           </div>
-          Voltar
+          Recuar
         </motion.button>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-14">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight">
-            Escolha seu <span className="text-primary">Plano</span>
+        {/* Header Section */}
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-6 italic animate-fade-in shadow-glow">
+            <ShieldCheck size={12} /> Autorização de Missão
+          </div>
+          <h1 className="text-6xl md:text-7xl font-black text-white tracking-tighter italic uppercase leading-none">
+            Ative sua <span className="text-primary italic drop-shadow-glow">Soberania.</span>
           </h1>
-          <p className="text-muted-foreground text-base md:text-lg mt-3 max-w-md mx-auto">
-            Invista na sua saúde. Retorno garantido em qualidade de vida.
+          <p className="text-white/40 text-[11px] font-black uppercase tracking-[0.5em] mt-6 max-w-md mx-auto leading-relaxed italic">
+            Selecione o seu protocolo de libertação para iniciar a reconexão.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
+        {/* Plans Grid */}
+        <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
           {PLANS.map((p, i) => {
             const isSelected = selectedPlan === p.id;
             const isElite = p.id === "elite";
+            const Icon = p.icon;
 
             return (
               <motion.div
                 key={p.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.2 }}
                 onClick={() => setSelectedPlan(p.id)}
-                className={`relative cursor-pointer rounded-3xl p-8 border-2 transition-all duration-300 ${
-                  isSelected
-                    ? "border-primary bg-card shadow-lg scale-[1.02]"
-                    : "border-border bg-card/50 hover:border-muted-foreground/30"
-                }`}
+                className="h-full"
               >
-                {p.badge && (
-                  <div className="absolute -top-3 right-6 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5">
-                    <Star size={10} fill="currentColor" /> {p.badge}
-                  </div>
-                )}
-
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${isElite ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
-                      {isElite ? <Crown size={20} /> : <Zap size={20} />}
+                <AppleCard 
+                  className={`relative cursor-pointer rounded-[3rem] p-10 border transition-all duration-500 h-full flex flex-col ${
+                    isSelected
+                      ? "border-primary bg-primary/5 shadow-glow scale-[1.03]"
+                      : "border-white/10 bg-white/5 hover:border-white/20 opacity-60 hover:opacity-100"
+                  }`}
+                >
+                  {p.badge && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-black px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2 italic shadow-glow">
+                      <Zap size={12} fill="currentColor" /> {p.badge}
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground tracking-tight">{p.name}</h3>
-                      <p className="text-xs text-muted-foreground">{p.desc}</p>
+                  )}
+
+                  <div className="flex items-start justify-between mb-8">
+                    <div className="flex items-center gap-5">
+                      <div className={`w-14 h-14 rounded-[1.2rem] flex items-center justify-center border ${isElite ? "bg-primary border-primary text-white shadow-glow" : "bg-white/5 border-white/10 text-white/40"}`}>
+                        <Icon size={24} />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">{p.name}</h3>
+                        <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mt-2 italic">{p.desc}</p>
+                      </div>
+                    </div>
+                    <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${
+                      isSelected ? "border-primary bg-primary text-white shadow-glow" : "border-white/20"
+                    }`}>
+                      {isSelected && <Check size={16} strokeWidth={4} />}
                     </div>
                   </div>
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mt-1 transition-all ${
-                    isSelected ? "border-primary bg-primary" : "border-border"
-                  }`}>
-                    {isSelected && <Check size={14} className="text-primary-foreground" strokeWidth={3} />}
+
+                  <div className="mb-10">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-[13px] font-black text-primary uppercase italic mr-1">R$</span>
+                      <span className="text-6xl font-black text-white tracking-tighter italic">{p.price.split(',')[0]}</span>
+                      <span className="text-2xl font-black text-white/60 tracking-tighter italic">,{p.price.split(',')[1]}</span>
+                      <span className="text-[10px] font-black text-white/20 uppercase tracking-widest ml-3 italic">/ Ciclo Solar</span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="mb-6">
-                  <span className="text-3xl font-extrabold text-foreground tracking-tight">R${p.price}</span>
-                  <span className="text-sm text-muted-foreground ml-1">/mês</span>
-                </div>
+                  <div className="h-px bg-white/10 mb-10 w-full" />
 
-                <ul className="space-y-2.5">
-                  {p.features.map(f => (
-                    <li key={f} className="flex items-center gap-3 text-sm text-foreground/80">
-                      <Check className={`w-4 h-4 flex-shrink-0 ${isSelected ? "text-primary" : "text-muted-foreground/50"}`} strokeWidth={2.5} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+                  <ul className="space-y-4 mb-10 flex-1">
+                    {p.features.map(f => (
+                      <li key={f} className="flex items-center gap-4 text-[11px] font-black text-white/70 uppercase italic tracking-tight">
+                        <div className={`w-5 h-5 rounded-lg flex items-center justify-center flex-shrink-0 ${isSelected ? "bg-primary/20 text-primary border border-primary/20" : "bg-white/5 text-white/20 border border-white/10"}`}>
+                          <Check className="w-3 h-3" strokeWidth={4} />
+                        </div>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  {isElite && (
+                    <div className="mt-auto p-4 rounded-2xl bg-primary/10 border border-primary/20 text-center">
+                      <p className="text-[10px] font-black text-primary uppercase tracking-[0.1em] italic leading-tight">
+                        ⚡ OTIMIZAÇÃO NEURAL INCLUSA
+                      </p>
+                    </div>
+                  )}
+                </AppleCard>
               </motion.div>
             );
           })}
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="max-w-lg mx-auto">
+        {/* Action Button Section */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="max-w-xl mx-auto">
           <Button
-            className="w-full h-16 rounded-2xl bg-primary text-primary-foreground font-bold text-sm tracking-wide shadow-xl hover:opacity-90 active:scale-[0.98] transition-all"
+            className="w-full h-20 rounded-[2rem] bg-white text-black font-black italic uppercase tracking-[0.2em] text-[13px] shadow-glow hover:scale-[1.02] active:scale-[0.98] transition-all group overflow-hidden"
             onClick={handlePayment}
             disabled={loading}
           >
             {loading ? (
               <Loader2 className="animate-spin" />
             ) : (
-              <div className="flex items-center gap-2">
-                <Sparkles size={18} />
-                Assinar {plan.name} — R${plan.price}/mês
+              <div className="flex items-center gap-4">
+                <CreditCard size={20} className="group-hover:rotate-12 transition-transform" />
+                Validar Acesso {plan.name} — R${plan.price}
+                <Sparkles size={20} className="text-primary animate-pulse" />
               </div>
             )}
+            <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
           </Button>
 
-          <div className="mt-6 flex flex-col items-center gap-3">
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="w-7 h-7 rounded-full border-2 border-background bg-muted overflow-hidden">
-                  <img src={`https://i.pravatar.cc/150?u=${i + 10}`} alt="" className="w-full h-full object-cover" />
-                </div>
-              ))}
-              <div className="h-7 px-2.5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center border-2 border-background">
-                +2.4k hoje
+          <div className="mt-10 flex flex-col items-center gap-6">
+            {/* Social Trust */}
+            <div className="flex items-center gap-4 px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl">
+              <div className="flex -space-x-3">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="w-9 h-9 rounded-full border-2 border-black overflow-hidden ring-1 ring-white/10">
+                    <img src={`https://i.pravatar.cc/150?u=${i + 60}`} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ))}
               </div>
+              <div className="h-px w-6 bg-white/10" />
+              <p className="text-[10px] font-black text-white uppercase tracking-[0.2em] italic">
+                +4.2k <span className="text-primary italic">Comandantes</span> Ativos
+              </p>
             </div>
-            <p className="text-[10px] text-muted-foreground text-center">
-              Pagamento seguro via Stripe • Cancele quando quiser
+
+            <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em] text-center italic mt-4 leading-loose">
+              💳 PAGAMENTO CRIPTOGRAFADO • STRIPE SECURE GATEWAY<br />
+              TERMINE O SEU VÍCIO OU SOLICITE REEMBOLSO EM 7 DIAS.
             </p>
           </div>
         </motion.div>
