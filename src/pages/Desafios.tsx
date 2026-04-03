@@ -159,9 +159,13 @@ const Desafios = () => {
   if (loading) {
     return (
       <AppLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <Loader2 className="w-10 h-10 text-emerald-400 animate-spin" />
-          <p className="text-gray-500 font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Sincronizando Conquistas Galácticas...</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
+          <div className="w-20 h-20 rounded-[2rem] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary animate-pulse shadow-glow">
+            <Trophy size={40} fill="currentColor" />
+          </div>
+          <p className="text-muted-foreground font-black uppercase tracking-[0.5em] text-[10px] animate-pulse italic">
+            Sincronizando Conquistas Galácticas...
+          </p>
         </div>
       </AppLayout>
     );
@@ -169,50 +173,55 @@ const Desafios = () => {
 
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 sm:px-6 max-w-2xl pb-32 pt-10 animate-fade-in space-y-12">
+      <div className="container mx-auto px-4 sm:px-6 max-w-2xl pb-32 pt-10 animate-fade-in space-y-12 relative z-10">
         <header className="mb-14 text-center">
-          <div className="inline-block p-6 rounded-3xl bg-emerald-500/10 mb-6 shadow-2xl border border-emerald-500/20 relative group overflow-hidden">
-             <div className="absolute inset-0 bg-emerald-500/5 rotate-45 group-hover:bg-emerald-500/10 transition-colors" />
-             <Trophy size={36} className="text-emerald-400 relative z-10" />
+          <div className="inline-block p-8 rounded-[2.5rem] bg-card/40 backdrop-blur-xl mb-8 shadow-elevated border border-border/40 relative group overflow-hidden">
+             <div className="absolute inset-0 bg-primary/5 rotate-45 group-hover:bg-primary/10 transition-colors duration-700" />
+             <Trophy size={48} className="text-primary relative z-10 drop-shadow-glow" />
           </div>
-          <h1 className="text-5xl font-black tracking-tighter mb-4 text-white italic">Mission <span className="text-emerald-400 drop-shadow-glow">Control.</span></h1>
-          <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.4em] leading-relaxed">Protocolos de Gamificação Aplicada • Nível de Dificuldade: Adaptativo</p>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 text-white italic leading-none">
+            Mission <span className="text-primary drop-shadow-glow">Control.</span>
+          </h1>
+          <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.5em] leading-relaxed italic">
+            Protocolos de Gamificação Aplicada • Nível de Dificuldade: Adaptativo Neural
+          </p>
         </header>
 
         {/* LEVEL PROGRESS */}
         <AppleCard
-          variant="glass-dark"
-          className="rounded-[40px] border-emerald-500/20 p-10 mb-12 relative overflow-hidden shadow-2xl group"
+          className="rounded-[40px] border-primary/20 p-10 mb-12 relative overflow-hidden shadow-elevated group bg-card/40 backdrop-blur-3xl"
         >
-          <div className="absolute top-[-50%] right-[-20%] w-80 h-80 bg-emerald-500/5 blur-[120px] rounded-full group-hover:bg-emerald-500/10 transition-colors duration-1000" />
+          <div className="absolute top-[-50%] right-[-20%] w-80 h-80 bg-primary/10 blur-[120px] rounded-full group-hover:bg-primary/20 transition-all duration-1000" />
           
           <div className="relative z-10">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-8 mb-10">
-              <div className="flex items-center gap-6">
-                <div className="text-5xl bg-white/5 w-20 h-20 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl group-hover:rotate-12 transition-transform duration-700">{currentLevel.icon}</div>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-10 mb-12">
+              <div className="flex items-center gap-8">
+                <div className="text-5xl bg-black/60 w-24 h-24 rounded-[2rem] flex items-center justify-center border border-border/40 shadow-glow group-hover:rotate-12 transition-transform duration-700 backdrop-blur-md">
+                  {currentLevel.icon}
+                </div>
                 <div className="text-center sm:text-left">
-                  <p className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-400 glow-sm">Rank: Categoria {currentLevel.level}</p>
-                  <p className="text-3xl font-black tracking-tighter text-white italic">{currentLevel.name}</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.4em] text-primary italic leading-none mb-2">Rank: Categoria {currentLevel.level}</p>
+                  <p className="text-4xl font-black tracking-tighter text-white italic leading-none">{currentLevel.name}</p>
                 </div>
               </div>
               <div className="text-center sm:text-right">
-                <p className="text-5xl font-black text-white drop-shadow-[0_0_20px_rgba(16,185,129,0.3)]">{totalPoints}</p>
-                <p className="text-[11px] font-black uppercase tracking-widest text-gray-500">PX Acumulados</p>
+                <p className="text-6xl font-black text-white drop-shadow-glow italic leading-none">{totalPoints}</p>
+                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground mt-2 italic leading-none">PX Acumulados</p>
               </div>
             </div>
 
             {currentLevel.next && (
-              <div className="space-y-4">
-                <div className="flex justify-between text-[11px] font-black uppercase tracking-[0.2em] text-gray-500">
+              <div className="space-y-5">
+                <div className="flex justify-between text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground italic leading-none">
                   <span>Upgrade para Categoria {currentLevel.level + 1}</span>
-                  <span className="text-emerald-400">{currentLevel.next - totalPoints} PX para o Salto</span>
+                  <span className="text-primary">{currentLevel.next - totalPoints} PX para o Salto</span>
                 </div>
-                <div className="w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/10 p-[1px]">
+                <div className="w-full h-4 bg-black/60 rounded-full overflow-hidden border border-border/40 p-[2px] shadow-inner backdrop-blur-sm">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${currentLevel.progress}%` }}
                     transition={{ duration: 2, ease: "circOut" }}
-                    className="h-full bg-white rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+                    className="h-full bg-primary rounded-full shadow-glow"
                   />
                 </div>
               </div>
@@ -220,29 +229,29 @@ const Desafios = () => {
           </div>
         </AppleCard>
 
-        {/* TABS & LB */}
-        <div className="flex gap-3 mb-10">
+        {/* TABS & LB NAVIGATION */}
+        <div className="flex flex-wrap gap-4 mb-12">
           <button
             onClick={() => setShowWeekly(false)}
-            className={`flex-1 h-14 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${
-              !showWeekly ? "bg-white text-black shadow-2xl" : "bg-white/5 border border-white/10 text-gray-500 hover:bg-white/10"
+            className={`flex-1 h-16 rounded-[1.2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all italic ${
+              !showWeekly ? "bg-white text-black shadow-glow scale-[1.02] border-white" : "bg-card/40 border border-border/40 text-muted-foreground hover:bg-card/60 hover:text-white"
             }`}
           >
             Missões Diárias
           </button>
           <button
             onClick={() => setShowWeekly(true)}
-            className={`flex-1 h-14 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${
-              showWeekly ? "bg-white text-black shadow-2xl" : "bg-white/5 border border-white/10 text-gray-500 hover:bg-white/10"
+            className={`flex-1 h-16 rounded-[1.2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all italic ${
+              showWeekly ? "bg-white text-black shadow-glow scale-[1.02] border-white" : "bg-card/40 border border-border/40 text-muted-foreground hover:bg-card/60 hover:text-white"
             }`}
           >
             Objetivos Mensais
           </button>
           <button
             onClick={() => setShowLeaderboard(!showLeaderboard)}
-            className={`w-14 h-14 rounded-2xl transition-all border flex items-center justify-center ${showLeaderboard ? "bg-emerald-500 border-emerald-400 text-black shadow-2xl" : "bg-white/5 border-white/10 text-gray-500 hover:bg-white/10"}`}
+            className={`w-16 h-16 rounded-[1.2rem] transition-all border flex items-center justify-center shadow-lg ${showLeaderboard ? "bg-primary border-primary text-primary-foreground shadow-glow scale-[1.05]" : "bg-card/40 border-border/40 text-muted-foreground hover:bg-card/60 hover:text-white"}`}
           >
-            <Users className="w-5 h-5" />
+            <Users className="w-7 h-7" />
           </button>
         </div>
 
@@ -250,36 +259,42 @@ const Desafios = () => {
         <AnimatePresence mode="wait">
           {showLeaderboard && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              initial={{ height: 0, opacity: 0, scale: 0.98 }}
+              animate={{ height: "auto", opacity: 1, scale: 1 }}
+              exit={{ height: 0, opacity: 0, scale: 0.98 }}
               className="overflow-hidden mb-12"
             >
-              <AppleCard variant="glass-dark" className="border-emerald-500/10 rounded-[32px] p-8 shadow-2xl bg-emerald-500/5">
-                <h3 className="text-xl font-black text-white italic tracking-tighter mb-8 flex items-center gap-3">
-                  <Trophy className="w-6 h-6 text-amber-400" /> Ranking da Frota Elite
+              <AppleCard className="border-primary/10 rounded-[40px] p-10 shadow-elevated bg-card/40 backdrop-blur-3xl relative overflow-hidden group">
+                <div className="absolute -top-20 -left-20 w-60 h-60 bg-primary/5 blur-[100px] rounded-full pointer-events-none" />
+                <h3 className="text-2xl font-black text-white italic tracking-tighter mb-10 flex items-center gap-4 relative z-10 leading-none">
+                  <Trophy className="w-8 h-8 text-primary drop-shadow-glow" fill="currentColor" /> Ranking da Frota Elite
                 </h3>
-                <div className="space-y-6">
+                <div className="space-y-8 relative z-10">
                   {leaderboard.length > 0 ? leaderboard.slice(0, 5).map((entry, i) => (
-                    <div key={i} className="flex items-center gap-6 group relative">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm border ${
-                        i === 0 ? "bg-amber-400/20 border-amber-400 text-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.2)]" : "bg-white/5 border-white/10 text-gray-400"
+                    <div key={i} className="flex items-center gap-8 group/entry relative">
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm border transition-all duration-500 ${
+                        i === 0 ? "bg-primary text-primary-foreground border-white shadow-glow scale-110" : "bg-black/60 border-border/40 text-muted-foreground group-hover/entry:border-primary/40"
                       }`}>
                         {i + 1}
                       </div>
                       <div className="flex-1">
-                         <p className="text-base font-black text-white truncate group-hover:text-emerald-400 transition-colors uppercase tracking-tight">{entry.display_name || "Comandante Solitário"}</p>
+                         <p className="text-lg font-black text-white truncate group-hover/entry:text-primary transition-colors uppercase tracking-tight italic">{entry.display_name || "Comandante Solitário"}</p>
                          <div className="flex items-center gap-3 mt-1">
-                           <span className="text-[9px] text-gray-600 font-black uppercase tracking-widest italic group-hover:text-gray-400 transition-colors">Neural Sync {entry.current_streak}D</span>
+                           <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest italic group-hover/entry:text-foreground transition-colors leading-none">Neural Sync {entry.current_streak}D</span>
                          </div>
                       </div>
                       <div className="text-right">
-                         <p className="text-lg font-black text-emerald-400 drop-shadow-glow">{entry.total_points}</p>
-                         <p className="text-[9px] font-black text-gray-700 uppercase tracking-widest">PX</p>
+                         <p className="text-2xl font-black text-primary drop-shadow-glow italic leading-none">{entry.total_points}</p>
+                         <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-1 leading-none italic">PX</p>
                       </div>
                     </div>
                   )) : (
-                    <p className="text-center py-6 text-[10px] text-gray-600 font-black uppercase tracking-[0.3em] animate-pulse">Sincronizando Dados da Frota...</p>
+                    <div className="flex flex-col items-center py-10 gap-4">
+                      <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                      <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.4em] animate-pulse italic">
+                        Sincronizando Dados da Frota...
+                      </p>
+                    </div>
                   )}
                 </div>
               </AppleCard>
@@ -288,24 +303,25 @@ const Desafios = () => {
         </AnimatePresence>
 
         {/* CATEGORY FILTERS */}
-        <div className="flex gap-3 overflow-x-auto pb-6 no-scrollbar">
+        <div className="flex gap-4 overflow-x-auto pb-8 no-scrollbar scroll-smooth">
           {["all", ...Object.keys(CHALLENGE_CATEGORIES)].map(catId => (
             <button
               key={catId}
               onClick={() => setSelectedCategory(catId)}
-              className={`h-11 px-6 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap border ${
+              className={`h-12 px-8 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all whitespace-nowrap border italic flex items-center gap-3 ${
                 selectedCategory === catId 
-                ? "bg-white text-black border-white shadow-2xl" 
-                : "bg-white/5 border-white/10 text-gray-500 hover:border-emerald-500/40"
+                ? "bg-white text-black border-white shadow-glow scale-105" 
+                : "bg-card/40 border-border/40 text-muted-foreground hover:border-primary/40 hover:text-white"
               }`}
             >
-              {catId === "all" ? "Filtro: Base" : CHALLENGE_CATEGORIES[catId].label}
+              {catId !== "all" && <span className="w-2 h-2 rounded-full bg-current shadow-glow" />}
+              {catId === "all" ? "Filtro: Base Central" : CHALLENGE_CATEGORIES[catId].label}
             </button>
           ))}
         </div>
 
         {/* CHALLENGES FEED */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {filteredChallenges.map((c, i) => {
             const isDone = completedIds.has(c.id);
             const cat = CHALLENGE_CATEGORIES[c.category] || CHALLENGE_CATEGORIES.comportamental;
@@ -317,49 +333,48 @@ const Desafios = () => {
                 key={c.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
+                transition={{ delay: i * 0.05, duration: 0.5 }}
               >
                 <AppleCard
-                   variant="glass-dark"
-                   className={`group rounded-[32px] border transition-all duration-700 overflow-hidden p-0 ${
-                     isDone ? "border-emerald-500/20 opacity-50 bg-emerald-500/5" : "border-white/5 hover:border-emerald-500/30"
+                   className={`group rounded-[40px] border transition-all duration-700 overflow-hidden p-0 shadow-elevated ${
+                     isDone ? "border-primary/10 opacity-40 bg-card/10 blur-[0.5px]" : "border-border/40 hover:border-primary/30 bg-card/40 backdrop-blur-2xl"
                    }`}
                 >
-                  <div className="p-8 flex items-start gap-6">
+                  <div className="p-10 flex items-start gap-8">
                     <button 
                       onClick={() => handleToggle(c.id)}
                       disabled={isDone || isSyncing === c.id}
-                      className={`mt-1 shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 border ${
-                        isDone ? "bg-emerald-500 border-white text-black shadow-[0_0_20px_#10b981]" : "bg-white/5 border-white/10 text-gray-600 hover:bg-emerald-500/20 hover:border-emerald-500/40"
+                      className={`mt-1 shrink-0 w-16 h-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-700 border-2 relative ${
+                        isDone ? "bg-primary border-white text-primary-foreground shadow-glow scale-110" : "bg-black/60 border-border/40 text-muted-foreground hover:bg-primary/20 hover:border-primary/40 hover:text-primary backdrop-blur-md"
                       }`}
                     >
                       {isSyncing === c.id ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <Loader2 className="w-6 h-6 animate-spin" />
                       ) : isDone ? (
-                        <Check className="w-7 h-7 stroke-[3px]" />
+                        <Check className="w-10 h-10 stroke-[4px]" />
                       ) : (
-                        <Circle className="w-6 h-6" />
+                        <Circle className="w-8 h-8 group-hover:scale-110 transition-transform" />
                       )}
                     </button>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start mb-4 cursor-pointer" onClick={() => setExpandedChallenge(isExpanded ? null : c.id)}>
-                        <div className="space-y-3">
-                          <h4 className={`text-xl font-black tracking-tight leading-tight italic ${isDone ? "text-gray-500 line-through" : "text-white"}`}>
+                      <div className="flex justify-between items-start mb-6 cursor-pointer" onClick={() => setExpandedChallenge(isExpanded ? null : c.id)}>
+                        <div className="space-y-4">
+                          <h4 className={`text-2xl font-black tracking-tighter leading-none italic transition-all duration-500 ${isDone ? "text-muted-foreground line-through opacity-60" : "text-white group-hover:text-primary"}`}>
                             {c.title}
                           </h4>
-                          <div className="flex flex-wrap gap-2 pt-1">
-                             <span className={`text-[8px] font-black uppercase px-3 py-1 rounded-sm border ${cat.bg} ${cat.color} ${cat.border} tracking-widest`}>
+                          <div className="flex flex-wrap gap-3 pt-1">
+                             <span className={`text-[9px] font-black uppercase px-4 py-1.5 rounded-full border shadow-sm ${cat.bg} ${cat.color} ${cat.border} tracking-[0.2em] italic leading-none`}>
                                PROTOCOL: {cat.label}
                              </span>
-                             <span className={`text-[8px] font-black uppercase px-3 py-1 rounded-sm border ${diff.bg} ${diff.color} border-current opacity-60 tracking-widest`}>
-                               {diff.label}
+                             <span className={`text-[9px] font-black uppercase px-4 py-1.5 rounded-full border shadow-sm ${diff.bg} ${diff.color} border-current opacity-70 tracking-[0.2em] italic leading-none`}>
+                               LVL: {diff.label}
                              </span>
                           </div>
                         </div>
-                        <div className="text-right ml-4">
-                          <p className="text-xl font-black text-emerald-400 drop-shadow-glow">+{c.points}</p>
-                          <p className="text-[9px] font-black text-gray-700 uppercase tracking-widest">PX</p>
+                        <div className="text-right ml-6 shrink-0 pt-1">
+                          <p className="text-3xl font-black text-primary drop-shadow-glow leading-none italic">+{c.points}</p>
+                          <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-1 italic leading-none">PX</p>
                         </div>
                       </div>
 
@@ -369,19 +384,26 @@ const Desafios = () => {
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            className="pt-6 mt-6 border-t border-white/5 space-y-6"
+                            transition={{ duration: 0.5, ease: "circOut" }}
+                            className="pt-10 mt-8 border-t border-border/20 space-y-8"
                           >
-                            <p className="text-base text-gray-400 leading-relaxed font-bold">
+                            <p className="text-lg text-muted-foreground leading-relaxed font-bold italic">
                               {c.description}
                             </p>
                             <div className="grid sm:grid-cols-2 gap-4">
-                              <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
-                                 <Brain size={16} className="text-emerald-400" />
-                                 <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Base Neural: {c.technique}</span>
+                              <div className="flex items-center gap-4 p-5 bg-black/40 rounded-[1.5rem] border border-border/20 backdrop-blur-md group/info">
+                                 <Brain size={20} className="text-primary group-hover/info:scale-110 transition-transform" />
+                                 <div className="flex flex-col">
+                                   <span className="text-[8px] font-black text-primary uppercase tracking-[0.3em] italic mb-1">Base Neural</span>
+                                   <span className="text-[11px] font-bold text-white uppercase tracking-wider">{c.technique}</span>
+                                 </div>
                               </div>
-                              <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
-                                 <Shield size={16} className="text-emerald-400" />
-                                 <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Fonte Info: {c.source}</span>
+                              <div className="flex items-center gap-4 p-5 bg-black/40 rounded-[1.5rem] border border-border/20 backdrop-blur-md group/info">
+                                 <Shield size={20} className="text-primary group-hover/info:scale-110 transition-transform" />
+                                 <div className="flex flex-col">
+                                   <span className="text-[8px] font-black text-primary uppercase tracking-[0.3em] italic mb-1">Fonte Info</span>
+                                   <span className="text-[11px] font-bold text-white uppercase tracking-wider truncate max-w-[120px]">{c.source}</span>
+                                 </div>
                               </div>
                             </div>
                           </motion.div>
@@ -396,11 +418,13 @@ const Desafios = () => {
         </div>
 
         {/* MEDICAL DISCLAIMER */}
-        <AppleCard variant="glass-dark" className="mt-16 p-10 rounded-[32px] border-white/5 text-center bg-transparent">
-           <Navigation size={28} className="text-emerald-400 mx-auto mb-4 animate-pulse" />
-           <p className="text-[10px] font-black text-gray-600 uppercase tracking-[0.4em] leading-relaxed italic">
-             Protocolos de Expansão de Consciência e Resiliência<br />
-             Bases: OMS • CDC • INCA • TCC v2.0
+        <AppleCard className="mt-20 p-12 rounded-[40px] border-border/20 text-center bg-transparent backdrop-blur-sm group hover:border-primary/20 transition-all duration-700">
+           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+             <Navigation size={32} className="text-primary animate-pulse shadow-glow" />
+           </div>
+           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.6em] leading-loose italic group-hover:text-white transition-colors">
+             Protocolos de Expansão de Consciência e Resiliência Neural<br />
+             <span className="text-primary/60 group-hover:text-primary transition-colors">Bases Globais: OMS • CDC • INCA • TCC v3.0</span>
            </p>
         </AppleCard>
       </div>

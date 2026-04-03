@@ -44,24 +44,24 @@ const AppContentSection = () => {
   ];
 
   return (
-    <section id="funcionalidades" className="py-32 bg-background overflow-hidden">
-      <div className="container mx-auto px-6 max-w-7xl">
+    <section id="funcionalidades" className="py-32 bg-background overflow-hidden stars-bg">
+      <div className="container mx-auto px-6 max-w-7xl relative z-10">
         <div className="flex flex-col items-center text-center mb-20">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted text-muted-foreground border border-border mb-6"
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 mb-6 backdrop-blur-md"
           >
             <Sparkles size={12} fill="currentColor" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Ecossistema Completo</span>
+            <span className="text-[10px] font-black uppercase tracking-widest leading-none">Ecossistema Completo</span>
           </motion.div>
           
-          <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-6">
+          <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-6 text-white leading-none">
             O que você encontra no <span className="text-primary italic">QuitBoost</span>
           </h2>
-          <p className="text-muted-foreground text-xl max-w-3xl font-medium italic">
-            Não é apenas um aplicativo. É o seu novo arsenal tecnológico para a liberdade definitiva.
+          <p className="text-muted-foreground text-xl max-w-3xl font-medium italic leading-relaxed">
+            Nós não construímos apenas um aplicativo. Criamos um <span className="text-white font-bold">arsenal tecnológico</span> de elite para a sua libertação definitiva.
           </p>
         </div>
 
@@ -72,26 +72,27 @@ const AppContentSection = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: i * 0.1, duration: 0.6 }}
               className={item.className}
             >
-              <AppleCard className="h-full group hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 flex flex-col p-8 bg-white dark:bg-zinc-900 border-border/50 overflow-hidden relative">
+              <AppleCard className="h-full group hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 flex flex-col p-8 bg-card/40 backdrop-blur-xl border-border/40 overflow-hidden relative">
                 {item.badge && (
-                  <div className="absolute top-6 right-6 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-black text-primary uppercase tracking-widest">
+                  <div className="absolute top-6 right-6 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black text-primary uppercase tracking-widest italic leading-none">
                     {item.badge}
                   </div>
                 )}
                 
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 bg-white shadow-xl ${item.iconColor}`}>
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 bg-black/40 border border-border/50 shadow-2xl ${item.iconColor}`}>
                   <item.icon size={28} strokeWidth={2.5} />
                 </div>
                 
-                <div className="mt-auto">
-                  <h3 className="text-2xl font-black tracking-tight mb-3 text-foreground italic">{item.title}</h3>
+                <div className="mt-auto relative z-10">
+                  <h3 className="text-2xl font-black tracking-tighter mb-3 text-white italic group-hover:text-primary transition-colors">{item.title}</h3>
                   <p className="text-muted-foreground text-sm font-medium leading-relaxed max-w-xs">{item.desc}</p>
                 </div>
 
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                {/* Nebula individual glow */}
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/10 blur-[60px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               </AppleCard>
             </motion.div>
           ))}
@@ -99,15 +100,22 @@ const AppContentSection = () => {
 
         <div className="mt-20 grid md:grid-cols-4 gap-8">
            {[
-             { title: "Nota 5.0", sub: "Avaliação App Store" },
-             { title: "+50k", sub: "Vidas transformadas" },
-             { title: "Seguro", sub: "Criptografia ponta a ponta" },
-             { title: "Científico", sub: "Baseado em TCC" }
+             { title: "Nota 5.0", sub: "Avaliação Global" },
+             { title: "+12k", sub: "Novos Sopros de Vida" },
+             { title: "Militar", sub: "Estandard de Segurança" },
+             { title: "Neural", sub: "Aprendizado em Tempo Real" }
            ].map((stat, i) => (
-             <div key={i} className="text-center p-6 rounded-[2rem] bg-secondary/10 border border-border/50">
-               <p className="text-2xl font-black tracking-tighter text-foreground">{stat.title}</p>
-               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">{stat.sub}</p>
-             </div>
+             <motion.div 
+               key={i} 
+               initial={{ opacity: 0, y: 20 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               viewport={{ once: true }}
+               transition={{ delay: 0.4 + (i * 0.1) }}
+               className="text-center p-8 rounded-[2.5rem] bg-card/20 border border-border/20 backdrop-blur-sm group hover:border-primary/30 transition-all"
+             >
+               <p className="text-3xl font-black tracking-tighter text-white italic group-hover:scale-110 transition-transform">{stat.title}</p>
+               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-2">{stat.sub}</p>
+             </motion.div>
            ))}
         </div>
       </div>

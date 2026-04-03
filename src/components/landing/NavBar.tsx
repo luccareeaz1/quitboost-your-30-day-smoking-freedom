@@ -12,7 +12,7 @@ const NavBar = () => {
     <motion.nav 
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 w-full z-50 border-b border-white/10 bg-white/50 dark:bg-black/50 backdrop-blur-3xl"
+      className="fixed top-0 w-full z-50 border-b border-border/40 bg-black/40 backdrop-blur-3xl"
     >
       <div className="container mx-auto px-6 h-20 flex items-center justify-between max-w-7xl">
         <div className="flex items-center gap-3 cursor-pointer group" onClick={() => navigate("/")}>
@@ -20,8 +20,8 @@ const NavBar = () => {
             <Zap className="w-6 h-6 text-primary group-hover:text-white transition-colors" fill="currentColor" />
           </div>
           <div className="flex flex-col -gap-1">
-             <span className="text-2xl font-black text-foreground tracking-tighter leading-none">Quit<span className="text-primary italic">Boost</span></span>
-             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-1">Sua nova vida</span>
+             <span className="text-2xl font-black text-white tracking-tighter leading-none italic">Quit<span className="text-primary">Boost</span></span>
+             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mt-1 italic">Sua nova vida</span>
           </div>
         </div>
 
@@ -30,7 +30,7 @@ const NavBar = () => {
             <a 
               key={item} 
               href={`#${item.toLowerCase().replace(" ", "-")}`}
-              className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors duration-300"
+              className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-white transition-colors duration-300 italic"
             >
               {item}
             </a>
@@ -42,7 +42,7 @@ const NavBar = () => {
             <Button 
               variant="default" 
               size="lg" 
-              className="rounded-full px-8 bg-foreground text-background font-black uppercase tracking-[0.2em] text-[10px] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-foreground/20" 
+              className="rounded-full px-8 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-white/20" 
               onClick={() => navigate("/dashboard")}
             >
                Dashboard
@@ -52,7 +52,7 @@ const NavBar = () => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="hidden sm:inline-flex text-muted-foreground hover:text-foreground font-black uppercase tracking-[0.2em] text-[10px]" 
+                className="hidden sm:inline-flex text-muted-foreground hover:text-white font-black uppercase tracking-[0.2em] text-[10px] italic" 
                 onClick={() => navigate("/auth")}
               >
                 Entrar

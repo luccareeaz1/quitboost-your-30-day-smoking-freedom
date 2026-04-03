@@ -5,7 +5,7 @@ import {
   Activity, Wallet, Cigarette, Target, Trophy, Flame,
   Sparkles, TrendingUp, Calendar, Heart, Wind, Timer,
   Zap, Users, Bot, ChevronRight, Shield, Clock,
-  Droplets, Brain, Eye
+  Droplets, Brain, Eye, ArrowRight
 } from "lucide-react";
 import {
   CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -18,6 +18,7 @@ import { AppleCard } from "@/components/ui/apple-card";
 import { useAuth } from "@/hooks/useAuth";
 import { streakService, progressService, challengeService } from "@/lib/services";
 import { toast } from "sonner";
+import AppLayout from "@/components/app/AppLayout";
 
 // ========== MEDICAL DATA (Fontes: OMS, CDC, INCA) ==========
 const HEALTH_MILESTONES = [
@@ -56,7 +57,7 @@ function AnimatedNumber({ value, prefix = "", suffix = "", decimals = 0 }: { val
     const ctrl = animate(0, value, { duration: 2.5, ease: "easeOut", onUpdate: (v) => setDisplay(v) });
     return () => ctrl.stop();
   }, [value]);
-  return <span>{prefix}{display.toLocaleString("pt-BR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</span>;
+  return <span className="font-black italic">{prefix}{display.toLocaleString("pt-BR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</span>;
 }
 
 interface Challenge {
@@ -84,9 +85,8 @@ export default function Dashboard() {
   const [dailyChallenge, setDailyChallenge] = useState<Challenge | null>(null);
 
   useEffect(() => {
-    if (!profile && !user) return; // Wait for auth/profile
+    if (!profile && !user) return;
     
-    // Check-in streak on mount
     if (user) {
       streakService.checkIn(user.id).then(() => {
         streakService.get(user.id).then(setStreakData);
@@ -95,7 +95,6 @@ export default function Dashboard() {
 
     const interval = setInterval(() => setNow(new Date()), 1000);
     
-    // Load daily challenge
     const loadDaily = async () => {
       try {
         const all = await challengeService.getAll();
@@ -119,11 +118,9 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [profile, user]);
 
-  // Derived stats
   const stats = useMemo(() => {
     if (!profile) return null;
     
-    // Use the central calculation engine
     const quitStats = calculateQuitStats({
       quit_date: profile.quit_date || new Date().toISOString(),
       cigarettes_per_day: profile.cigarettes_per_day || 0,
@@ -147,16 +144,18 @@ export default function Dashboard() {
     };
   }, [profile, now]);
 
-
   if (!profile || !stats) {
     return (
-       <div className="flex items-center justify-center min-h-[60vh]">
-          <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }} className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full" />
+       <div className="flex items-center justify-center min-h-screen bg-black">
+          <motion.div 
+            animate={{ rotate: 360, scale: [1, 1.1, 1] }} 
+            transition={{ repeat: Infinity, duration: 1.5 }} 
+            className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full shadow-glow" 
+          />
        </div>
     );
   }
 
-  // Chart data (last 7 days)
   const chartData = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(now);
     d.setDate(d.getDate() - (6 - i));
@@ -171,37 +170,37 @@ export default function Dashboard() {
   });
 
   const pieData = [
-    { name: "Recuperado", value: stats.healthPercentage, color: "#22c55e" },
-    { name: "Em progresso", value: 100 - stats.healthPercentage, color: "#e5e7eb" },
+    { name: "Recuperado", value: stats.healthPercentage, color: "#10b981" },
+    { name: "Em progresso", value: 100 - stats.healthPercentage, color: "rgba(255,255,255,0.1)" },
   ];
 
   const todayTip = DAILY_TIPS[stats.days % DAILY_TIPS.length];
   const greeting = now.getHours() < 12 ? "Bom dia" : now.getHours() < 18 ? "Boa tarde" : "Boa noite";
-  const comparisonPercent = stats.days > 12 ? 110 : Math.round((stats.days / 12) * 100);
 
   return (
-    <>
-      <div className="container max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-8 pb-24">
+    <AppLayout>
+      <div className="container max-w-6xl mx-auto px-4 sm:px-6 py-12 space-y-12 pb-32 relative z-10">
 
         {/* UPGRADE BANNER */}
         {subscription === "free" && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border border-primary/20 rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4"
+            className="bg-gradient-to-r from-primary/20 via-primary/5 to-primary/20 border border-primary/30 rounded-[2.5rem] p-8 flex flex-col sm:flex-row items-center justify-between gap-8 backdrop-blur-3xl shadow-glow overflow-hidden relative group"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
-                <Sparkles size={24} />
+            <div className="absolute inset-0 bg-primary/5 animate-pulse pointer-events-none" />
+            <div className="flex items-center gap-6 relative z-10">
+              <div className="w-16 h-16 rounded-[1.5rem] bg-primary text-white flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform">
+                <Sparkles size={32} />
               </div>
               <div>
-                <p className="text-sm font-bold">Desbloqueie o Coach Neural IA</p>
-                <p className="text-xs text-muted-foreground font-medium">Suporte 24/7, relatórios avançados e plano personalizado.</p>
+                <p className="text-xl font-black text-white italic tracking-tighter uppercase">Coach Neural <span className="text-primary">Ativo.</span></p>
+                <p className="text-xs text-muted-foreground font-black uppercase tracking-[0.2em] mt-1 opacity-60">Suporte 24/7 • Relatórios Avançados • Plano Personalizado</p>
               </div>
             </div>
             <Button
-              size="sm"
-              className="rounded-full bg-primary text-primary-foreground font-bold px-8 shadow-md"
+              size="lg"
+              className="rounded-[1.2rem] bg-white text-black font-black uppercase tracking-[0.2em] px-10 shadow-glow hover:scale-105 active:scale-95 transition-all text-[11px] italic"
               onClick={() => navigate("/checkout")}
             >
               Fazer Upgrade
@@ -213,80 +212,97 @@ export default function Dashboard() {
         <motion.header
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex justify-between items-end"
+          className="flex flex-col md:flex-row justify-between items-center md:items-end gap-6 text-center md:text-left"
         >
           <div>
-            <h1 className="text-3xl font-black tracking-tight">
-              {greeting}, <span className="text-primary">{profile.display_name || user?.email?.split("@")[0] || "Guerreiro"}</span>.
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white italic leading-none">
+              {greeting}, <span className="text-primary drop-shadow-glow">{profile.display_name?.split(" ")[0] || user?.email?.split("@")[0] || "Comandante"}</span>.
             </h1>
-            <p className="text-muted-foreground font-medium mt-1">Sua nova vida começa agora.</p>
+            <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.5em] leading-relaxed italic mt-4">
+              Status Operacional • Consciência em Expansão • Protokoll v3.0
+            </p>
           </div>
           {user && (
             <button
               onClick={signOut}
-              className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-destructive transition-colors hidden sm:block"
+              className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-rose-500 transition-all italic border border-border/20 px-6 py-2 rounded-full hover:border-rose-500/40"
             >
-              Sair
+              Finalizar Sessão
             </button>
           )}
         </motion.header>
 
-        {/* STREAK COUNTER - BIG HERO */}
+        {/* STREAK COUNTER - CORE REACTOR */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
+          className="relative group"
         >
-          <AppleCard className="p-8 sm:p-12 bg-foreground text-background text-center relative overflow-hidden">
-            <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-primary/20 blur-[100px] rounded-full" />
-            <div className="absolute bottom-[-20%] left-[-10%] w-48 h-48 bg-primary/10 blur-[80px] rounded-full" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Flame className="w-6 h-6 text-amber-400 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-amber-400">
-                  {streakData ? `Streak: ${streakData.current_streak} dias` : "Streak Ativo"}
-                </span>
-                <Flame className="w-6 h-6 text-amber-400 animate-pulse" />
+          <div className="absolute inset-0 bg-primary/10 rounded-[3rem] blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+          <AppleCard className="p-10 sm:p-20 bg-card/40 backdrop-blur-3xl border border-border/40 text-center relative overflow-hidden rounded-[3rem] shadow-elevated">
+            <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full animate-pulse" />
+            <div className="absolute bottom-[-20%] left-[-10%] w-[400px] h-[400px] bg-primary/10 blur-[100px] rounded-full animate-pulse duration-5000" />
+            
+            <div className="relative z-10 space-y-10">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-primary/40" />
+                <div className="flex items-center gap-3 px-6 py-2 rounded-full bg-black/40 border border-primary/20 shadow-glow">
+                  <Flame className="w-5 h-5 text-primary animate-pulse drop-shadow-glow" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white italic">
+                    {streakData ? `Streak: ${streakData.current_streak} dias` : "Reactor Ativo"}
+                  </span>
+                </div>
+                <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-primary/40" />
               </div>
 
-              <div className="text-7xl sm:text-9xl font-black tracking-tighter mb-2">
-                {stats.days}
+              <div className="relative inline-block">
+                <div className="text-[8rem] sm:text-[14rem] font-black tracking-tighter text-white italic leading-none drop-shadow-glow select-none">
+                  {stats.days}
+                </div>
+                <div className="absolute -top-4 -right-12 sm:-right-20">
+                  <span className="text-2xl sm:text-4xl font-black text-primary italic drop-shadow-glow">DIAS</span>
+                </div>
               </div>
-              <p className="text-xl font-medium opacity-80 mb-6">dias sem fumar</p>
+              
+              <p className="text-xl sm:text-2xl font-black text-white/60 italic uppercase tracking-[0.2em] select-none">
+                sem contaminação <span className="text-primary italic">química.</span>
+              </p>
 
-              {/* Live timer */}
-              <div className="flex items-center justify-center gap-3 sm:gap-6 text-lg font-mono">
+              {/* Live timer hub */}
+              <div className="flex items-center justify-center gap-6 sm:gap-12 py-10 border-y border-white/5 bg-white/2 max-w-2xl mx-auto rounded-[2rem]">
                 {[
                   { val: String(stats.hours).padStart(2, "0"), label: "horas" },
-                  { val: String(stats.minutes).padStart(2, "0"), label: "min" },
-                  { val: String(stats.seconds).padStart(2, "0"), label: "seg" },
+                  { val: String(stats.minutes).padStart(2, "0"), label: "minutos" },
+                  { val: String(stats.seconds).padStart(2, "0"), label: "segundos" },
                 ].map((t, i) => (
-                  <div key={t.label} className="text-center">
-                    <div className="text-3xl sm:text-4xl font-black tracking-tight">{t.val}</div>
-                    <div className="text-[10px] uppercase tracking-wider opacity-50">{t.label}</div>
+                  <div key={t.label} className="text-center group/timer">
+                    <div className="text-4xl sm:text-6xl font-black tracking-tighter text-white italic leading-none group-hover:text-primary transition-colors">
+                      {t.val}
+                    </div>
+                    <div className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground mt-4 italic opacity-40 group-hover:opacity-100 transition-opacity">
+                      {t.label}
+                    </div>
                   </div>
                 ))}
               </div>
 
-              {/* Motivational message */}
-              <p className="text-sm opacity-60 mt-6 max-w-md mx-auto">
-                {stats.days === 0 ? "Cada segundo conta. Você já começou sua transformação!" :
-                 stats.days <= 3 ? "A nicotina está sendo eliminada do seu corpo. Aguente firme!" :
-                 stats.days <= 7 ? "Seus pulmões já estão iniciando a regeneração. Incrível!" :
-                 stats.days <= 30 ? "Sua função pulmonar aumentou. Você é um guerreiro!" :
-                 "Você é uma inspiração. Seu corpo agradece cada dia!"}
-              </p>
+              <div className="flex items-center justify-center gap-4 text-[10px] sm:text-xs font-black uppercase tracking-[0.4em] text-primary italic animate-pulse">
+                <Zap size={14} className="fill-current shadow-glow" />
+                Sincronizando Sinais Neurais em Tempo Real
+                <Zap size={14} className="fill-current shadow-glow" />
+              </div>
             </div>
           </AppleCard>
         </motion.div>
 
-        {/* KEY METRICS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KEY METRICS GRID */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: "Cigarros Evitados", value: stats.avoidedCount, icon: Cigarette, color: "text-rose-500", bg: "bg-rose-50", suffix: "" },
-            { label: "Economizados", value: stats.moneySaved, icon: Wallet, color: "text-blue-600", bg: "bg-blue-50", prefix: "R$ ", decimals: 0 },
-            { label: "Vida Recuperada", value: stats.hoursRecovered, icon: Clock, color: "text-emerald-500", bg: "bg-emerald-50", suffix: "h" },
-            { label: "Saúde Geral", value: stats.healthPercentage, icon: Activity, color: "text-amber-500", bg: "bg-amber-50", suffix: "%" },
+            { label: "Sinais Evitados", value: stats.avoidedCount, icon: Cigarette, color: "text-rose-500", bg: "bg-rose-500/10", suffix: "" },
+            { label: "Recurso Salvo", value: stats.moneySaved, icon: Wallet, color: "text-blue-500", bg: "bg-blue-500/10", prefix: "R$ ", decimals: 0 },
+            { label: "Tempo de Órbita", value: stats.hoursRecovered, icon: Clock, color: "text-emerald-500", bg: "bg-emerald-500/10", suffix: "h" },
+            { label: "Integridade", value: stats.healthPercentage, icon: Activity, color: "text-primary", bg: "bg-primary/10", suffix: "%" },
           ].map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -294,12 +310,12 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.05 }}
             >
-              <AppleCard className="p-5 sm:p-6 bg-card border-border hover:shadow-md transition-all group">
-                <div className={`w-10 h-10 ${stat.bg} rounded-xl flex items-center justify-center mb-4 ${stat.color} group-hover:scale-110 transition-transform`}>
-                  <stat.icon size={20} />
+              <AppleCard className="p-8 bg-card/40 backdrop-blur-3xl border border-border/40 hover:border-primary/40 transition-all duration-500 group rounded-[2rem] shadow-elevated">
+                <div className={`w-14 h-14 ${stat.bg} rounded-2xl flex items-center justify-center mb-6 ${stat.color} group-hover:scale-110 transition-transform shadow-inner border border-white/5`}>
+                  <stat.icon size={28} />
                 </div>
-                <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wider font-bold mb-1">{stat.label}</p>
-                <p className={`text-2xl sm:text-3xl font-black tracking-tight ${stat.color}`}>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] italic mb-3">{stat.label}</p>
+                <p className={`text-3xl sm:text-4xl font-black italic tracking-tighter ${stat.color} drop-shadow-sm`}>
                   <AnimatedNumber value={stat.value} prefix={stat.prefix || ""} suffix={stat.suffix || ""} decimals={stat.decimals || 0} />
                 </p>
               </AppleCard>
@@ -307,40 +323,43 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* DAILY TIP + MISSION */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* DAILY PROTOCOLS */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <AnimatePresence>
             {showTip && (
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                <AppleCard className="p-6 bg-emerald-500/5 border-emerald-500/10 h-full">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
-                      <Sparkles size={16} />
+                <AppleCard className="p-10 bg-emerald-500/5 border border-emerald-500/20 rounded-[2.5rem] backdrop-blur-3xl h-full relative group overflow-hidden">
+                  <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-500/10 blur-[80px] rounded-full pointer-events-none" />
+                  <div className="flex items-center gap-4 mb-8">
+                    <div className="w-12 h-12 rounded-[1rem] bg-emerald-500 text-white flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform">
+                      <Sparkles size={24} />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold">Dica de Liberdade</h3>
-                      <p className="text-[10px] text-muted-foreground">Fonte: {todayTip.source}</p>
+                      <h3 className="text-xl font-black text-white italic tracking-tighter">Protocolo Neural</h3>
+                      <p className="text-[10px] text-emerald-500/60 font-black uppercase tracking-widest italic">Base de Dados: {todayTip.source}</p>
                     </div>
                   </div>
-                  <p className="text-sm text-foreground/80 leading-relaxed mb-4">{todayTip.tip}</p>
-                  <p className="text-[10px] text-muted-foreground italic">⚕️ Baseado em evidências oficiais (OMS/CDC).</p>
+                  <p className="text-lg font-bold italic text-white/80 leading-relaxed mb-8">{todayTip.tip}</p>
+                  <p className="text-[9px] font-black text-muted-foreground italic uppercase tracking-[0.2em] opacity-40">⚕️ Algoritmo de Suporte Baseado em Evidências Clínicas.</p>
                 </AppleCard>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <AppleCard className="p-6 h-full bg-primary text-primary-foreground border-transparent overflow-hidden relative group">
-            <div className="absolute top-[-10%] right-[-10%] w-32 h-32 bg-background/10 blur-3xl rounded-full" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-4 font-bold uppercase tracking-widest text-[10px] opacity-80">
-                <Target size={14} /> Missão do Dia
+          <AppleCard className="p-10 h-full bg-primary text-white border-transparent overflow-hidden relative group rounded-[2.5rem] shadow-glow flex flex-col justify-between">
+            <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-white/10 blur-[100px] rounded-full animate-pulse" />
+            <div className="relative z-10 flex flex-col justify-between h-full">
+              <div>
+                <div className="flex items-center gap-3 mb-8 font-black uppercase tracking-[0.4em] text-[10px] italic text-white/60">
+                  <Target size={16} className="text-white drop-shadow-glow" /> Missão Operacional
+                </div>
+                <h3 className="text-3xl font-black italic tracking-tighter mb-4 leading-none">
+                  {dailyChallenge?.title || "Sincronização Hídrica"}
+                </h3>
+                <p className="text-white/70 font-bold italic text-base leading-relaxed mb-10 max-w-sm">
+                  {dailyChallenge?.description || "Aumente a ingestão de H₂O para acelerar o processo de desintoxicação celular."}
+                </p>
               </div>
-              <h3 className="text-xl font-black mb-3 leading-tight">
-                {dailyChallenge?.title || "Mantenha-se Hidratado"}
-              </h3>
-              <p className="opacity-70 text-xs leading-relaxed mb-6">
-                {dailyChallenge?.description || "A hidratação acelera a eliminação de toxinas do seu sistema."}
-              </p>
               <Button
                 onClick={async () => {
                   if (user && dailyChallenge) {
@@ -348,97 +367,138 @@ export default function Dashboard() {
                       await challengeService.completeChallenge(user.id, dailyChallenge.id);
                       setMissionCompleted(true);
                       toast.success("Missão concluída! +PX");
-                    } catch (e) { toast.error("Erro ao salvar progresso."); }
+                    } catch (e) { toast.error("Erro no sinal."); }
                   }
                 }}
                 disabled={missionCompleted || !dailyChallenge}
-                className={`w-full h-12 rounded-full font-bold uppercase tracking-widest text-sm transition-all ${
-                  missionCompleted ? "bg-background/20 text-background/50" : "bg-background text-foreground shadow-lg"
+                className={`w-full h-16 rounded-[1.5rem] font-black uppercase tracking-[0.3em] text-[11px] transition-all italic border-none ${
+                  missionCompleted ? "bg-white/10 text-white/50 backdrop-blur-md" : "bg-white text-black shadow-glow hover:scale-[1.02] active:scale-95"
                 }`}
               >
-                {missionCompleted ? "✅ Missão Concluída" : "Concluir"}
+                {missionCompleted ? "✅ Missão Sincronizada" : "Confirmar Protocolo"}
               </Button>
             </div>
           </AppleCard>
         </div>
 
-        {/* CHARTS ROW */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ANALYTICS HUB */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-2">
-            <AppleCard className="p-6 sm:p-8 bg-card border-border">
-              <div className="flex justify-between items-center mb-8">
+            <AppleCard className="p-10 bg-card/40 backdrop-blur-3xl border border-border/40 rounded-[2.5rem] shadow-elevated">
+              <div className="flex justify-between items-center mb-12">
                 <div>
-                  <h3 className="text-lg font-bold tracking-tight mb-1">Tendência de Evolução</h3>
-                  <p className="text-xs text-muted-foreground font-medium">Saúde e Economia (Vida Real)</p>
+                  <h3 className="text-2xl font-black italic tracking-tighter text-white leading-none mb-2">Vetor de Progressão</h3>
+                  <p className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground italic">Monitoramento Biométrico e Financeiro</p>
                 </div>
-                <TrendingUp size={20} className="text-primary" />
+                <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 shadow-glow">
+                  <TrendingUp size={24} className="text-primary" />
+                </div>
               </div>
-              <div className="h-[240px] w-full">
+              <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>
-                      <linearGradient id="colorSaude" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#22C55E" stopOpacity={0.3} /><stop offset="95%" stopColor="#22C55E" stopOpacity={0} /></linearGradient>
-                      <linearGradient id="colorEconomia" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} /><stop offset="95%" stopColor="#3b82f6" stopOpacity={0} /></linearGradient>
+                      <linearGradient id="colorSaude" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" stopOpacity={0.4} /><stop offset="95%" stopColor="#10b981" stopOpacity={0} /></linearGradient>
+                      <linearGradient id="colorEconomia" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4} /><stop offset="95%" stopColor="#3b82f6" stopOpacity={0} /></linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#9CA3AF", fontSize: 12, fontWeight: 700 }} dy={10} />
-                    <Tooltip contentStyle={{ borderRadius: "20px", border: "none", boxShadow: "0 20px 50px rgba(0,0,0,0.1)" }} />
-                    <Area type="monotone" dataKey="saude" name="Saúde" stroke="#22C55E" strokeWidth={4} fill="url(#colorSaude)" />
-                    <Area type="monotone" dataKey="economia" name="Economia" stroke="#3b82f6" strokeWidth={3} fill="url(#colorEconomia)" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 10, fontWeight: 900 }} dy={15} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: "rgba(0,0,0,0.8)", borderRadius: "1.5rem", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(20px)", padding: "1.5rem" }}
+                      itemStyle={{ fontStyle: "italic", fontWeight: "bold" }}
+                    />
+                    <Area type="monotone" dataKey="saude" name="Status Vital" stroke="#10b981" strokeWidth={5} fill="url(#colorSaude)" />
+                    <Area type="monotone" dataKey="economia" name="Reservas Salvas" stroke="#3b82f6" strokeWidth={4} fill="url(#colorEconomia)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             </AppleCard>
           </motion.div>
 
-          <AppleCard className="p-6 sm:p-8 bg-card border-border h-full flex flex-col items-center">
-            <h3 className="text-lg font-bold tracking-tight mb-1 w-full text-left">Recuperação</h3>
-            <p className="text-xs text-muted-foreground font-medium mb-4 w-full text-left">Benefícios (OMS)</p>
-            <div className="relative w-44 h-44">
-              <ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={pieData} innerRadius={60} outerRadius={80} dataKey="value" startAngle={90} endAngle={-270}>{pieData.map((e, i) => <Cell key={i} fill={e.color} />)}</Pie></PieChart></ResponsiveContainer>
+          <AppleCard className="p-10 bg-card/40 backdrop-blur-3xl border border-border/40 rounded-[2.5rem] shadow-elevated h-full flex flex-col items-center">
+            <h3 className="text-2xl font-black italic tracking-tighter text-white leading-none mb-2 w-full text-left">Biofeedback</h3>
+            <p className="text-[9px] font-black uppercase tracking-[0.4em] text-muted-foreground italic mb-12 w-full text-left">Recuperação Sistêmica OMS</p>
+            <div className="relative w-64 h-64 group">
+              <div className="absolute inset-0 bg-primary/20 rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={pieData} innerRadius={85} outerRadius={110} dataKey="value" stroke="none" startAngle={90} endAngle={-270}>
+                    {pieData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
               <div className="absolute inset-0 flex items-center justify-center text-center">
-                <div><p className="text-4xl font-black text-primary">{stats.healthPercentage}%</p><p className="text-[10px] text-muted-foreground font-bold">STATUS</p></div>
+                <div className="space-y-1">
+                  <p className="text-6xl font-black text-white italic leading-none drop-shadow-glow">{stats.healthPercentage}%</p>
+                  <p className="text-[9px] font-black text-primary uppercase tracking-[0.5em] italic">Integridade</p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-12 w-full space-y-4">
+              <div className="flex items-center justify-between text-[10px] font-black italic text-white/40 uppercase tracking-[0.2em]">
+                <span>Sinal Vital</span>
+                <span className="text-emerald-500">Otimizado</span>
+              </div>
+              <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-emerald-500 shadow-glow w-[90%]" />
               </div>
             </div>
           </AppleCard>
         </div>
 
-        {/* QUICK ACCESS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <AppleCard onClick={() => navigate("/coach")} className="p-7 bg-card border-border md:col-span-2 lg:col-span-2 cursor-pointer group">
-            <div className="flex items-center gap-2 mb-4 text-primary font-bold tracking-widest text-[9px] uppercase">
-              <Sparkles size={14} /> Apoio do Especialista
+        {/* QUICK ACCESS HUB */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <AppleCard onClick={() => navigate("/coach")} className="p-10 bg-card/40 backdrop-blur-3xl border border-border/40 border-l-primary/40 md:col-span-2 lg:col-span-2 cursor-pointer group rounded-[2.5rem] shadow-elevated relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700">
+              <Bot size={80} className="text-primary drop-shadow-glow" />
             </div>
-            <h4 className="text-2xl font-black mb-3">Assistente de Liberdade</h4>
-            <p className="text-muted-foreground text-sm font-medium mb-5 whitespace-pre-line">
-               {stats.avoidedCount > 0 
-                 ? `Você já evitou ${stats.avoidedCount} cigarros hoje.\nIsso equivale a R$ ${stats.moneySaved.toFixed(2)} economizados.`
-                 : "Pronto para começar seu dia sem cigarro?"}
-            </p>
-            <Button className="w-full rounded-2xl h-11 font-bold group-hover:scale-[1.02] transition-transform">
-               Conversar <ChevronRight className="ml-2 w-4 h-4" />
-            </Button>
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-8 text-primary font-black tracking-[0.4em] text-[10px] uppercase italic">
+                <Sparkles size={16} /> Assistência Neural IA
+              </div>
+              <h4 className="text-4xl font-black italic tracking-tighter text-white mb-6">Expert Advisor.</h4>
+              <p className="text-white/60 text-lg font-bold italic mb-10 max-w-md leading-relaxed whitespace-pre-line">
+                 {stats.avoidedCount > 0 
+                   ? `Você já repeliu ${stats.avoidedCount} sinais tóxicos hoje.\nEficiência financeira: R$ ${stats.moneySaved.toFixed(2)} acumulados.`
+                   : "Reactor pronto para iniciar novo ciclo de limpeza celular. Iniciar?"}
+              </p>
+              <Button className="w-full sm:w-auto px-12 rounded-[1.2rem] h-14 font-black uppercase tracking-[0.3em] text-[11px] italic shadow-glow group-hover:scale-105 transition-all">
+                 Estabelecer Conexão <ArrowRight className="ml-3 w-5 h-5" />
+              </Button>
+            </div>
           </AppleCard>
 
-          <AppleCard onClick={() => navigate("/comunidade")} className="p-7 bg-card border-border cursor-pointer flex flex-col items-center justify-center gap-2 group transition-all">
-            <Users size={32} className="text-primary mb-2 group-hover:scale-110 transition-transform" />
-            <h4 className="font-bold">Comunidade</h4>
-            <p className="text-[10px] text-muted-foreground font-bold">REDE DE APOIO</p>
+          <AppleCard onClick={() => navigate("/comunidade")} className="p-10 bg-card/40 backdrop-blur-3xl border border-border/40 cursor-pointer flex flex-col items-center justify-center gap-6 group rounded-[2.5rem] shadow-elevated transition-all hover:border-primary/40">
+            <div className="p-6 rounded-[2rem] bg-primary/10 border border-primary/20 shadow-glow group-hover:scale-110 transition-transform">
+              <Users size={40} className="text-primary" />
+            </div>
+            <div className="text-center">
+              <h4 className="text-xl font-black text-white italic tracking-tighter uppercase mb-2">Comunidade</h4>
+              <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] italic opacity-40 group-hover:opacity-100 transition-opacity">Rede de Frota</p>
+            </div>
           </AppleCard>
 
-          <AppleCard onClick={() => navigate("/conquistas")} className="p-7 bg-card border-border cursor-pointer flex flex-col items-center justify-center gap-2 group transition-all">
-            <Trophy size={32} className="text-amber-500 mb-2 group-hover:scale-110 transition-transform" />
-            <h4 className="font-bold">Conquistas</h4>
-            <p className="text-[10px] text-muted-foreground font-bold">{stats.milestonesWithProgress.filter(m => m.achieved).length} BADGES</p>
+          <AppleCard onClick={() => navigate("/conquistas")} className="p-10 bg-card/40 backdrop-blur-3xl border border-border/40 cursor-pointer flex flex-col items-center justify-center gap-6 group rounded-[2.5rem] shadow-elevated transition-all hover:border-amber-500/40">
+            <div className="p-6 rounded-[2rem] bg-amber-500/10 border border-amber-500/20 shadow-glow group-hover:scale-110 transition-transform">
+              <Trophy size={40} className="text-amber-500" />
+            </div>
+            <div className="text-center">
+              <h4 className="text-xl font-black text-white italic tracking-tighter uppercase mb-2">Hangar</h4>
+              <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] italic opacity-40 group-hover:opacity-100 transition-opacity">{stats.milestonesWithProgress.filter(m => m.achieved).length} Medalhas</p>
+            </div>
           </AppleCard>
         </div>
 
-        <div className="rounded-2xl bg-muted/50 border border-border p-4 text-center">
-          <p className="text-[10px] text-muted-foreground leading-relaxed font-medium">
-            ⚕️ <strong>Aviso Legal:</strong> Dados sincronizados via Supabase Realtime. Baseado em diretrizes OMS/CDC/INCA 2026. Em emergências ligue 192 (SAMU) ou 188 (CVV).
+        {/* LEGAL DISCLAIMER */}
+        <div className="rounded-[2.5rem] bg-card/20 backdrop-blur-md border border-border/20 p-10 text-center relative group overflow-hidden">
+          <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+          <p className="text-[10px] text-muted-foreground leading-loose font-black uppercase tracking-[0.5em] italic max-w-3xl mx-auto relative z-10">
+            ⚕️ <strong>Aviso de Protocolo:</strong> Dados sincronizados via Rede Neural Supabase. 
+            Baseado em parâmetros globais OMS/CDC/INCA. 
+            Em caso de falha sistêmica vital: 192 (SAMU) ou Conexão 188 (CVV).
           </p>
         </div>
       </div>
-    </>
+    </AppLayout>
   );
 }
