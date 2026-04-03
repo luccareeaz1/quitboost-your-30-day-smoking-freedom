@@ -17,7 +17,7 @@ const DailyActivities = () => {
     const stored = localStorage.getItem("qb_activities_" + today);
     
     if (stored) {
-      setActivities(JSON.parse(stored));
+      setActivities(JSON.parse(stored) as Activity[]);
     } else {
       // Generate daily specific activities based on day of month
       const dayOfMonth = new Date().getDate();

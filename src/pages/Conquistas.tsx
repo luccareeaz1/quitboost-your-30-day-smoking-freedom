@@ -196,7 +196,7 @@ const Conquistas = () => {
            {['all', 'unlocked', 'locked'].map(f => (
              <button
                key={f}
-               onClick={() => setFilter(f as any)}
+               onClick={() => setFilter(f as 'all' | 'unlocked' | 'locked')}
                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider border transition-all ${
                  filter === f ? "bg-foreground text-background border-foreground shadow-lg" : "bg-card text-muted-foreground border-border hover:bg-muted"
                }`}

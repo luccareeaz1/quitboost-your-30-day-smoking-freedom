@@ -46,7 +46,7 @@ export default function AICoachInterface() {
         const conv = await coachService.getOrCreateConversation(user.id);
         setActiveConversationId(conv.id);
         const msgs = await coachService.getMessages(conv.id);
-        setMessages(msgs as any);
+        setMessages(msgs as Message[]);
       } catch (error) {
         console.error("Erro ao iniciar chat:", error);
       } finally {
@@ -68,12 +68,12 @@ export default function AICoachInterface() {
       setInput("");
       // Save user message to DB
       const userMsg = await coachService.addMessage(activeConversationId, "user", text);
-      setMessages(prev => [...prev, userMsg as any]);
+      setMessages(prev => [...prev, userMsg as Message]);
 
       // Build conversation history for AI
       const historyForAI = [...messages, userMsg].map(m => ({
-        role: (m as any).role as string,
-        content: (m as any).content as string,
+        role: m.role as string,
+        content: m.content as string,
       }));
 
       // Get session token for authentication
@@ -136,7 +136,7 @@ export default function AICoachInterface() {
       // Save final assistant message to DB
       if (assistantContent) {
         const savedMsg = await coachService.addMessage(activeConversationId, "assistant", assistantContent);
-        setMessages(prev => prev.map(m => m.id === tempId ? { id: savedMsg.id, role: savedMsg.role as "user" | "assistant", content: savedMsg.content } : m));
+        setMessages(prev => prev.map(m => m.id === tempId ? { id: savedMsg.id, role: savedMsg.role as "user" | "assistant", content: savedMsg.content, created_at: savedMsg.created_at } : m));
       }
     } catch (error) {
       console.error("Coach error:", error);

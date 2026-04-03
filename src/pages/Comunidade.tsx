@@ -81,7 +81,7 @@ const Comunidade = () => {
   const [showRules, setShowRules] = useState(false);
   
   // 1. Fetch Posts and Bookmarks
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const fetchedPosts = await communityService.getPosts({
@@ -100,7 +100,7 @@ const Comunidade = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, activeCategory, searchQuery]);
 
   useEffect(() => {
     loadData();
@@ -113,7 +113,7 @@ const Comunidade = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [activeCategory, searchQuery]);
+  }, [loadData]);
 
   // 3. Actions
   const handleCreatePost = async () => {

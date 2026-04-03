@@ -22,7 +22,7 @@ interface Challenge {
   technique: string;
   source: string;
   is_weekly: boolean;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 interface LeaderboardEntry {
