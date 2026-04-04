@@ -96,7 +96,7 @@ const Conquistas = () => {
     
     let progress = 0;
     if (nextAchievement) {
-       progress = Math.min(100, (diffDays / nextAchievement.requirement_value) * 100);
+       progress = Math.min(100, (diffDays / (nextAchievement.required_days || 1)) * 100);
     }
 
     const currentLevel = (() => {
