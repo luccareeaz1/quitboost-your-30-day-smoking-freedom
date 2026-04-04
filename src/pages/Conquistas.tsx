@@ -16,15 +16,16 @@ import { AppleCard } from "@/components/ui/apple-card";
 interface Achievement {
   id: string;
   title: string;
-  description: string;
-  points: number;
-  category: string;
-  rarity: "comum" | "raro" | "épico" | "lendário";
-  icon_url: string;
-  requirement_type: string;
-  requirement_value: number;
-  medical_fact?: string;
-  source?: string;
+  description: string | null;
+  points: number | null;
+  emoji: string | null;
+  icon: string | null;
+  color: string | null;
+  rarity: string | null;
+  required_days: number | null;
+  medical_fact?: string | null;
+  medical_source?: string | null;
+  story?: string | null;
 }
 
 interface RarityConfig {

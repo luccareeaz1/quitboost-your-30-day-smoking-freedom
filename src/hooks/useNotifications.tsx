@@ -10,7 +10,7 @@ interface AppNotification {
   type: string;
   title: string;
   body: string;
-  data: Record<string, unknown>;
+  data: Record<string, unknown> | null;
   read: boolean;
   created_at: string;
 }
