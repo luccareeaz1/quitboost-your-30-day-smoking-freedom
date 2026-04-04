@@ -88,35 +88,81 @@ export default function Dashboard() {
     <AppLayout>
       <div className="container max-w-6xl mx-auto px-6 space-y-12">
         
-        {/* Minimal Hero Dashboard */}
-        <section className="relative overflow-hidden bg-white/[0.02] border border-white/[0.05] rounded-[48px] py-20 px-8 text-center group">
-          <div className="absolute inset-0 bg-indigo-500/[0.02] blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* Minimal Hero Dashboard with Circular Component */}
+        <section className="relative overflow-hidden bg-card border border-border/50 rounded-[48px] py-16 px-8 text-center flex flex-col items-center group shadow-sm">
+          <div className="absolute inset-0 bg-primary/5 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity" />
+          
           <div className="relative z-10 flex flex-col items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className="text-[120px] md:text-[180px] font-extralight tracking-[-0.05em] text-white leading-none mb-6"
-            >
-              {stats.days}
-            </motion.div>
-            <div className="text-base font-medium font-bold tracking-widest text-white/20 uppercase mb-12">
-              DIAS DE LIBERDADE
-            </div>
+            <h2 className="text-sm font-semibold tracking-widest text-muted-foreground uppercase mb-10">Jornada de Liberdade</h2>
             
-            <div className="flex gap-12 font-bold tracking-widest text-base font-medium text-white/40">
-               <div className="flex flex-col gap-1 items-center">
-                 <span className="text-white text-base font-extralight tracking-normal">{String(stats.hours).padStart(2, '0')}</span>
-                 <span className="text-sm font-medium">HORAS</span>
-               </div>
-               <div className="w-px h-8 bg-white/5" />
-               <div className="flex flex-col gap-1 items-center">
-                 <span className="text-white text-base font-extralight tracking-normal">{String(stats.minutes).padStart(2, '0')}</span>
-                 <span className="text-sm font-medium">MINUTOS</span>
-               </div>
-               <div className="w-px h-8 bg-white/5" />
-               <div className="flex flex-col gap-1 items-center">
-                 <span className="text-white text-base font-extralight tracking-normal">{String(stats.seconds).padStart(2, '0')}</span>
-                 <span className="text-sm font-medium">SEGUNDOS</span>
-               </div>
+            <div className="relative flex items-center justify-center w-[300px] h-[300px] md:w-[360px] md:h-[360px]">
+              {/* SVG Circle Graph */}
+              <svg 
+                className="absolute inset-0 w-full h-full -rotate-90" 
+                viewBox="0 0 360 360"
+              >
+                {/* Background Track */}
+                <circle
+                  cx="180" cy="180" r="160"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  className="text-muted/20"
+                />
+                
+                {/* Progress Ring */}
+                <motion.circle
+                  cx="180" cy="180" r="160"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="12"
+                  strokeLinecap="round"
+                  className="text-primary"
+                  initial={{ strokeDashoffset: 2 * Math.PI * 160 }}
+                  animate={{ strokeDashoffset: (2 * Math.PI * 160) - (((stats.days % 365) / 365) * 100 / 100) * (2 * Math.PI * 160) }}
+                  transition={{ duration: 2, ease: "easeOut" }}
+                  style={{ strokeDasharray: 2 * Math.PI * 160 }}
+                />
+              </svg>
+
+              {/* Inner Content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center pt-3">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }} 
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="text-[90px] md:text-[110px] font-semibold tracking-tight text-foreground leading-none"
+                >
+                  {stats.days}
+                </motion.div>
+                <div className="text-base font-medium text-muted-foreground uppercase mt-2">
+                  Dias sem Fumar
+                </div>
+
+                <div className="flex gap-4 items-center mt-6 text-sm font-semibold text-foreground/70">
+                   <div className="flex flex-col items-center">
+                     <span className="text-xl text-foreground font-medium">{String(stats.hours).padStart(2, '0')}</span>
+                     <span className="text-xs text-muted-foreground uppercase">Horas</span>
+                   </div>
+                   <div className="text-muted-foreground/30 text-xl font-light mb-4">:</div>
+                   <div className="flex flex-col items-center">
+                     <span className="text-xl text-foreground font-medium">{String(stats.minutes).padStart(2, '0')}</span>
+                     <span className="text-xs text-muted-foreground uppercase">Min</span>
+                   </div>
+                   <div className="text-muted-foreground/30 text-xl font-light mb-4">:</div>
+                   <div className="flex flex-col items-center">
+                     <span className="text-xl text-foreground font-medium">{String(stats.seconds).padStart(2, '0')}</span>
+                     <span className="text-xs text-muted-foreground uppercase">Seg</span>
+                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-12 flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 border border-primary/20">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">
+                Ano {Math.floor(stats.days / 365) + 1} em andamento ({((stats.days % 365) / 365 * 100).toFixed(1)}% concluído)
+              </span>
             </div>
           </div>
         </section>
