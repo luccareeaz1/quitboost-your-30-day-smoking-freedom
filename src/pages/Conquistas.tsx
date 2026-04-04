@@ -258,7 +258,7 @@ const Conquistas = () => {
                     <div className={`w-24 h-24 rounded-[1.8rem] mb-6 flex items-center justify-center text-5xl transition-all duration-500 shadow-inner ${
                       unlocked ? `bg-black/40 border ${rarity.border} ${rarity.glow}` : "bg-white/5 border border-white/5"
                     } group-hover:scale-110 group-hover:rotate-6`}>
-                      {unlocked ? (badge.icon_url || "🏅") : <Lock className="w-10 h-10 text-white/20" />}
+                      {unlocked ? (badge.emoji || badge.icon || "🏅") : <Lock className="w-10 h-10 text-white/20" />}
                     </div>
                     <div className="mb-4">
                        <span className={`text-[8px] font-black uppercase px-3 py-1 rounded-full border mb-3 inline-block italic ${rarity.bg} ${rarity.color} ${rarity.border}`}>
