@@ -1,127 +1,99 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, TrendingUp, Target, Users, Trophy, User, Bot, AlertTriangle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import CravingModal from "@/components/dashboard/CravingModal";
-import { useState } from "react";
-import { motion } from "framer-motion";
+"use client"
 
-const navItems = [
-  { label: "Dashboard",   path: "/dashboard",   icon: LayoutDashboard },
-  { label: "Progresso",   path: "/progresso",   icon: TrendingUp },
-  { label: "Desafios",    path: "/desafios",    icon: Target },
-  { label: "Coach IA",    path: "/coach",       icon: Bot },
-  { label: "Comunidade",  path: "/comunidade",  icon: Users },
-  { label: "Conquistas",  path: "/conquistas",  icon: Trophy },
-  { label: "Perfil",      path: "/perfil",      icon: User },
+import { useLocation, useNavigate } from "react-router-dom";
+import { 
+  LayoutDashboard, 
+  Trophy, 
+  Users, 
+  Bot, 
+  Settings,
+  Flame,
+  Zap
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const NAV_ITEMS = [
+  { id: "dashboard", label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+  { id: "comunidade", label: "Equipe", path: "/comunidade", icon: Users },
+  { id: "conquistas", label: "Missões", path: "/conquistas", icon: Trophy },
+  { id: "ai-coach", label: "Deep AI", path: "/ai-coach", icon: Bot },
 ];
 
-const AppToolbar = () => {
+export default function AppToolbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [showCravingModal, setShowCravingModal] = useState(false);
 
   return (
-    <>
-      <CravingModal open={showCravingModal} onClose={() => setShowCravingModal(false)} />
-
-      <motion.div
-        initial={{ y: -16, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] px-4 w-full max-w-fit"
-      >
-        <nav
-          style={{
-            background: "rgba(10,10,10,0.85)",
-            backdropFilter: "blur(24px)",
-            WebkitBackdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: "2rem",
-            padding: "6px",
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-          }}
+    <div className="fixed top-0 left-0 right-0 z-50 pt-8 pointer-events-none">
+      <div className="container mx-auto px-6 flex justify-center">
+        <header 
+          className="flex items-center gap-10 px-8 py-4 rounded-full border border-white/[0.04] bg-[#050a18]/60 backdrop-blur-2xl pointer-events-auto shadow-2xl shadow-indigo-900/10"
         >
-          {navItems.map((item) => {
-            const active = location.pathname === item.path;
-            return (
-              <button
-                key={item.path}
-                onClick={() => navigate(item.path)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "10px 16px",
-                  borderRadius: "1.4rem",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  letterSpacing: "-0.01em",
-                  fontFamily: "'Geist', sans-serif",
-                  border: "none",
-                  cursor: "pointer",
-                  transition: "all 0.2s cubic-bezier(0.4,0,0.2,1)",
-                  background: active ? "#FFFFFF" : "transparent",
-                  color: active ? "#050505" : "rgba(255,255,255,0.4)",
-                  boxShadow: active ? "0 2px 12px rgba(255,255,255,0.15)" : "none",
-                }}
-                onMouseEnter={e => {
-                  if (!active) {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                    e.currentTarget.style.color = "rgba(255,255,255,0.9)";
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!active) {
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.color = "rgba(255,255,255,0.4)";
-                  }
-                }}
-              >
-                <item.icon
-                  size={15}
-                  style={{ color: active ? "#050505" : "rgba(255,255,255,0.45)" }}
-                />
-                <span className="hidden lg:inline">{item.label}</span>
-              </button>
-            );
-          })}
-
-          <div style={{ width: "1px", height: "24px", background: "rgba(255,255,255,0.08)", margin: "0 4px" }} />
-
-          <button
-            onClick={() => setShowCravingModal(true)}
-            title="Estou com fissura"
-            style={{
-              width: "44px",
-              height: "44px",
-              borderRadius: "1.4rem",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "rgba(239,68,68,0.06)",
-              border: "1px solid rgba(239,68,68,0.2)",
-              color: "rgb(239,68,68)",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = "rgba(239,68,68,0.15)";
-              e.currentTarget.style.borderColor = "rgba(239,68,68,0.5)";
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = "rgba(239,68,68,0.06)";
-              e.currentTarget.style.borderColor = "rgba(239,68,68,0.2)";
-            }}
+          {/* Logo with matching indigo pulse */}
+          <div 
+             onClick={() => navigate("/")}
+             className="cursor-pointer group relative flex items-center gap-3 pr-6 border-r border-white/5"
           >
-            <AlertTriangle size={17} strokeWidth={2} />
-          </button>
-        </nav>
-      </motion.div>
-    </>
-  );
-};
+            <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
+            <Zap size={22} className="relative z-10 text-white" />
+            <span className="relative z-10 text-[13px] font-black tracking-[0.2em] text-white uppercase select-none">
+              QUIT<span className="text-white/40">BOOST</span>
+            </span>
+          </div>
 
-export default AppToolbar;
+          <nav className="flex items-center gap-6">
+            {NAV_ITEMS.map((item) => {
+              const isActive = location.pathname === item.path;
+              const Icon = item.icon;
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => navigate(item.path)}
+                  className="relative group px-3 py-1.5 transition-all duration-300"
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon 
+                      size={18} 
+                      className={`transition-colors duration-300 ${
+                        isActive ? "text-indigo-400" : "text-white/30 group-hover:text-white/60"
+                      }`} 
+                    />
+                    <span 
+                      className={`text-[12px] font-bold tracking-[0.1em] uppercase transition-all duration-300 ${
+                        isActive ? "text-white" : "text-white/30 group-hover:text-white/60"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute bottom-[-10px] left-0 right-0 h-[2px] bg-indigo-500 rounded-full"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      style={{
+                        boxShadow: "0 0 12px rgba(99, 102, 241, 0.8), 0 0 20px rgba(99, 102, 241, 0.4)"
+                      }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
+          <div className="pl-6 border-l border-white/5">
+             <button
+                onClick={() => navigate("/settings")}
+                className="p-2 rounded-xl text-white/30 hover:text-white hover:bg-white/[0.03] transition-all"
+             >
+                <Settings size={18} />
+             </button>
+          </div>
+        </header>
+      </div>
+    </div>
+  );
+}

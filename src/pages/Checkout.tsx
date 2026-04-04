@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 const PLANS = [
   {
     id: "standard",
-    name: "Standard",
+    name: "STANDARD",
     price: "39,90",
     priceId: "price_1TDaiH2N0nzreyfm7NzaopPG",
     desc: "Para começar sua jornada",
@@ -25,16 +25,16 @@ const PLANS = [
   },
   {
     id: "elite",
-    name: "Elite",
+    name: "ELITE",
     price: "197,90",
     priceId: "price_1TDaj82N0nzreyfmstYsVMTI",
-    desc: "Para resultados definitivos",
-    badge: "Mais popular",
+    desc: "Resultados definitivos",
+    badge: "MAIS POPULAR",
     icon: Target,
     features: [
       "Tudo do Standard",
       "Coach IA ilimitado",
-      "Previsão de gatilhos com IA",
+      "Previsão de gatilhos",
       "Comunidade VIP",
       "Suporte prioritário 24/7",
       "Relatórios em PDF",
@@ -43,19 +43,19 @@ const PLANS = [
   },
 ];
 
-const cardStyle = (selected: boolean): React.CSSProperties => ({
-  position: "relative",
-  borderRadius: "24px",
-  padding: "32px",
-  border: selected ? "1px solid rgba(255,255,255,0.3)" : "1px solid rgba(255,255,255,0.07)",
-  background: selected ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
+const cardStyle = (selected: boolean) => ({
+  position: "relative" as const,
+  borderRadius: "32px",
+  padding: "40px",
+  border: selected ? "2px solid rgba(99, 102, 241, 0.4)" : "1px solid rgba(255,255,255,0.05)",
+  background: selected ? "rgba(99, 102, 241, 0.05)" : "rgba(255,255,255,0.02)",
   cursor: "pointer",
-  transition: "all 0.25s ease",
+  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
   height: "100%",
   display: "flex",
-  flexDirection: "column",
-  transform: selected ? "scale(1.015)" : "scale(1)",
-  boxShadow: selected ? "0 20px 40px rgba(0,0,0,0.4)" : "none",
+  flexDirection: "column" as const,
+  transform: selected ? "scale(1.02)" : "scale(1)",
+  boxShadow: selected ? "0 20px 80px rgba(99, 102, 241, 0.2)" : "none",
 });
 
 export default function Checkout() {
@@ -80,11 +80,7 @@ export default function Checkout() {
       });
 
       if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      } else {
-        throw new Error("URL de checkout não recebida");
-      }
+      if (data?.url) window.open(data.url, "_blank");
     } catch (error) {
       console.error("Erro no pagamento:", error);
       toast.error("Erro ao abrir checkout. Tente novamente.");
@@ -94,71 +90,41 @@ export default function Checkout() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4 py-16 relative overflow-hidden"
-      style={{ background: "#050505" }}
-    >
-      {/* Ambient */}
-      <div
-        className="absolute top-[-5%] left-1/2 -translate-x-1/2 pointer-events-none"
-        style={{
-          width: "800px", height: "300px",
-          background: "radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 70%)",
-        }}
-      />
+    <div className="min-h-screen bg-[#050a18] flex items-center justify-center px-4 py-20 relative overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-500/10 blur-[140px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="w-full max-w-5xl relative z-10">
+      <div className="w-full max-w-6xl relative z-10">
         {/* Back button */}
         <motion.button
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
           onClick={() => navigate(-1)}
-          style={{
-            display: "flex", alignItems: "center", gap: "8px",
-            fontSize: "13px", fontWeight: 500, fontFamily: "'Geist', sans-serif",
-            color: "rgba(255,255,255,0.35)", background: "none", border: "none", cursor: "pointer",
-            marginBottom: "48px", transition: "color 0.2s",
-          }}
-          onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.7)"}
-          onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}
+          className="flex items-center gap-2 text-[10px] font-bold tracking-[0.4em] text-white/20 uppercase mb-16 hover:text-white transition-colors"
         >
-          <ArrowLeft size={15} />
-          Voltar
+          <ArrowLeft size={14} /> VOLTAR AO SISTEMA
         </motion.button>
 
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-14"
+          className="text-center mb-20"
         >
-          <div
-            style={{
-              display: "inline-flex", alignItems: "center", gap: "6px",
-              padding: "6px 14px", borderRadius: "99px",
-              border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)",
-              fontSize: "12px", fontWeight: 600, color: "rgba(255,255,255,0.5)",
-              marginBottom: "20px",
-            }}
-          >
-            <ShieldCheck size={12} /> Pagamento seguro
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/5 bg-white/[0.03] text-[10px] font-bold tracking-[0.2em] text-indigo-400 uppercase mb-8">
+            <ShieldCheck size={12} /> PAGAMENTO CRIPTOGRAFADO
           </div>
-          <h1
-            style={{
-              fontFamily: "'Geist', sans-serif", fontWeight: 900,
-              fontSize: "clamp(40px, 8vw, 72px)", color: "#FFFFFF",
-              letterSpacing: "-0.05em", lineHeight: 1, margin: "0 0 16px",
-            }}
-          >
-            Escolha seu plano.
+          <h1 className="text-6xl md:text-8xl font-extralight tracking-tight text-white mb-6">
+            ESCOLHA SEU PLANO
           </h1>
-          <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.4)", fontWeight: 400, maxWidth: "400px", margin: "0 auto" }}>
-            Pare de fumar de uma vez. Garantia de 7 dias.
+          <p className="text-white/30 text-base tracking-widest font-bold uppercase max-w-md mx-auto">
+            A CIÊNCIA DA SUA LIBERDADE
           </p>
         </motion.div>
 
         {/* Plans */}
-        <div className="grid lg:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
+        <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto mb-20">
           {PLANS.map((p, i) => {
             const isSelected = selectedPlan === p.id;
             const Icon = p.icon;
@@ -169,77 +135,50 @@ export default function Checkout() {
                 initial={{ opacity: 0, y: 32 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                style={{ height: "100%" }}
                 onClick={() => setSelectedPlan(p.id)}
               >
                 <div style={cardStyle(isSelected)}>
                   {p.badge && (
-                    <div style={{
-                      position: "absolute", top: "-12px", left: "50%", transform: "translateX(-50%)",
-                      background: "#FFFFFF", color: "#050505",
-                      padding: "4px 16px", borderRadius: "99px",
-                      fontSize: "11px", fontWeight: 700, fontFamily: "'Geist', sans-serif",
-                      display: "flex", alignItems: "center", gap: "5px",
-                      boxShadow: "0 4px 16px rgba(255,255,255,0.15)",
-                    }}>
-                      <Star size={10} fill="currentColor" /> {p.badge}
+                    <div className="absolute top-[-14px] left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full bg-indigo-500 text-white text-[9px] font-black tracking-[0.3em] uppercase shadow-[0_0_20px_rgba(99,102,241,0.6)]">
+                      {p.badge}
                     </div>
                   )}
 
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "24px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                      <div style={{
-                        width: "48px", height: "48px", borderRadius: "14px",
-                        background: isSelected ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.04)",
-                        border: `1px solid ${isSelected ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.08)"}`,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                      }}>
-                        <Icon size={22} style={{ color: isSelected ? "#FFFFFF" : "rgba(255,255,255,0.35)" }} />
+                  <div className="flex items-start justify-between mb-12">
+                    <div className="flex items-center gap-5">
+                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all ${isSelected ? "bg-white text-[#050a18]" : "bg-white/5 text-white/30"}`}>
+                        <Icon size={28} />
                       </div>
                       <div>
-                        <h3 style={{ fontFamily: "'Geist', sans-serif", fontWeight: 800, fontSize: "20px", letterSpacing: "-0.04em", color: "#FFFFFF", margin: "0 0 4px" }}>
+                        <h3 className="text-2xl font-extralight tracking-tight text-white mb-1">
                           {p.name}
                         </h3>
-                        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.35)", fontWeight: 400 }}>{p.desc}</p>
+                        <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase">{p.desc}</p>
                       </div>
-                    </div>
-                    <div style={{
-                      width: "24px", height: "24px", borderRadius: "50%",
-                      border: isSelected ? "2px solid #FFFFFF" : "2px solid rgba(255,255,255,0.15)",
-                      background: isSelected ? "#FFFFFF" : "transparent",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      flexShrink: 0, transition: "all 0.2s",
-                    }}>
-                      {isSelected && <Check size={13} strokeWidth={3} style={{ color: "#050505" }} />}
                     </div>
                   </div>
 
-                  <div style={{ marginBottom: "24px" }}>
-                    <div style={{ display: "flex", alignItems: "baseline", gap: "2px" }}>
-                      <span style={{ fontSize: "13px", fontWeight: 600, color: "rgba(255,255,255,0.4)" }}>R$</span>
-                      <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 900, fontSize: "52px", letterSpacing: "-0.05em", color: "#FFFFFF" }}>
+                  <div className="mb-12">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-[14px] font-black text-white/20">R$</span>
+                      <span className="text-7xl font-extralight tracking-tight text-white">
                         {p.price.split(",")[0]}
                       </span>
-                      <span style={{ fontFamily: "'Geist', sans-serif", fontWeight: 700, fontSize: "24px", color: "rgba(255,255,255,0.5)", letterSpacing: "-0.03em" }}>
+                      <span className="text-2xl font-extralight text-white/40">
                         ,{p.price.split(",")[1]}
                       </span>
                     </div>
-                    <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)", marginTop: "2px" }}>pagamento único</p>
                   </div>
 
-                  <div style={{ height: "1px", background: "rgba(255,255,255,0.06)", marginBottom: "20px" }} />
+                  <div className="h-px bg-white/5 mb-10" />
 
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>
+                  <ul className="space-y-4 mb-12 flex-1">
                     {p.features.map(f => (
-                      <li key={f} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <div style={{
-                          width: "18px", height: "18px", borderRadius: "6px", flexShrink: 0,
-                          background: isSelected ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.04)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                        }}>
-                          <Check size={11} strokeWidth={3} style={{ color: isSelected ? "#FFFFFF" : "rgba(255,255,255,0.25)" }} />
+                      <li key={f} className="flex items-center gap-4">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${isSelected ? "bg-indigo-400 text-[#050a18]" : "bg-white/5 text-white/20"}`}>
+                          <Check size={12} strokeWidth={3} />
                         </div>
-                        <span style={{ fontSize: "13px", fontWeight: 500, color: isSelected ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.35)" }}>
+                        <span className={`text-[12px] font-bold tracking-[0.05em] uppercase ${isSelected ? "text-white/80" : "text-white/30"}`}>
                           {f}
                         </span>
                       </li>
@@ -256,39 +195,24 @@ export default function Checkout() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="max-w-md mx-auto"
+          className="max-w-md mx-auto text-center"
         >
           <button
             onClick={handlePayment}
             disabled={loading}
-            style={{
-              width: "100%", height: "64px", borderRadius: "20px",
-              background: "#FFFFFF", color: "#050505",
-              fontFamily: "'Geist', sans-serif", fontWeight: 700, fontSize: "15px",
-              letterSpacing: "-0.01em", border: "none", cursor: loading ? "not-allowed" : "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
-              boxShadow: "0 8px 32px rgba(255,255,255,0.18)",
-              transition: "all 0.25s ease",
-              opacity: loading ? 0.6 : 1,
-            }}
-            onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(255,255,255,0.25)"; }}}
-            onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(255,255,255,0.18)"; }}
+            className="w-full h-20 rounded-2xl bg-white text-[#050a18] font-bold text-lg tracking-tight transition-all hover:scale-[1.03] active:scale-[0.98] shadow-2xl shadow-indigo-500/10 flex items-center justify-center gap-4 disabled:opacity-50"
           >
-            {loading ? <Loader2 size={20} className="animate-spin" /> : (
+            {loading ? <Loader2 className="animate-spin" /> : (
               <>
-                <CreditCard size={18} />
-                Assinar plano {plan.name} — R${plan.price}
+                <CreditCard size={20} />
+                ASSINAR {plan.name} — R${plan.price}
               </>
             )}
           </button>
-
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "20px", marginTop: "20px" }}>
-            {["💳 Stripe Secure", "🔒 Criptografado", "↩ 7 dias garantia"].map(item => (
-              <span key={item} style={{ fontSize: "11px", color: "rgba(255,255,255,0.25)", fontWeight: 500 }}>
-                {item}
-              </span>
-            ))}
-          </div>
+          
+          <p className="mt-8 text-[9px] font-bold tracking-[0.4em] text-white/10 uppercase">
+             7 DIAS DE GARANTIA TOTAL — SATISFAÇÃO OU REEMBOLSO
+          </p>
         </motion.div>
       </div>
     </div>

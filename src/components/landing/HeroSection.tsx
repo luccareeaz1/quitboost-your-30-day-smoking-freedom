@@ -1,173 +1,77 @@
-import { useEffect, useRef } from "react";
+"use client"
+
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-
-// Clean particle canvas (white dots)
-const ParticleCanvas = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let animId: number;
-    const resize = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const PARTICLE_COUNT = 60;
-    interface Particle {
-      x: number; y: number; size: number;
-      speedX: number; speedY: number;
-      opacity: number; life: number; maxLife: number;
-    }
-    const particles: Particle[] = [];
-    const rand = (min: number, max: number) => Math.random() * (max - min) + min;
-
-    const spawn = (): Particle => ({
-      x: rand(0, canvas.width),
-      y: rand(canvas.height * 0.1, canvas.height),
-      size: rand(0.5, 1.5),
-      speedX: rand(-0.1, 0.1),
-      speedY: rand(-0.3, -0.1),
-      opacity: 0,
-      life: 0,
-      maxLife: rand(200, 400),
-    });
-
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const p = spawn();
-      p.life = rand(0, p.maxLife);
-      particles.push(p);
-    }
-
-    const loop = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (const p of particles) {
-        p.life++;
-        if (p.life > p.maxLife) {
-          Object.assign(p, spawn(), { life: 0 });
-          continue;
-        }
-        const progress = p.life / p.maxLife;
-        p.opacity = progress < 0.1 ? progress / 0.1 : progress > 0.8 ? (1 - progress) / 0.2 : 1;
-        p.x += p.speedX; p.y += p.speedY;
-        ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity * 0.2})`;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
-      }
-      animId = requestAnimationFrame(loop);
-    };
-
-    loop();
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }} />;
-};
+import { NeonOrbs } from "@/components/ui/neon-orbs";
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section style={{
-      position: "relative",
-      minHeight: "100vh",
-      background: "#050505",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      overflow: "hidden",
-      padding: "80px 24px",
-    }}>
-      {/* Ambient glow top */}
-      <div style={{
-        position: "absolute", top: "-10%", left: "50%", transform: "translateX(-50%)",
-        width: "1000px", height: "400px",
-        background: "radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%)",
-        pointerEvents: "none", zIndex: 0,
-      }} />
-
-      <ParticleCanvas />
-
-      <div style={{ position: "relative", zIndex: 2, textAlign: "center", maxWidth: "900px", width: "100%" }}>
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{
-            fontFamily: "'Geist', sans-serif",
-            fontWeight: 900,
-            fontSize: "clamp(64px, 12vw, 150px)",
-            color: "#FFFFFF",
-            letterSpacing: "-0.06em",
-            lineHeight: 0.9,
-            margin: "0 0 32px",
-          }}
-        >
-          QuitBoost
-        </motion.h1>
-
-        <motion.div
-            initial={{ scaleX: 0, opacity: 0 }}
-            animate={{ scaleX: 1, opacity: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            style={{ position: "relative", width: "100%", maxWidth: "600px", height: "1px", background: "rgba(255,255,255,0.1)", margin: "0 auto 48px" }}
+    <section className="relative min-h-screen bg-[#050a18] flex items-center justify-center overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute inset-0 z-0">
+        <NeonOrbs 
+          title="QUIT BOOST" 
+          subtitle="O FUTURO É AGORA" 
         />
+      </div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          style={{
-            fontSize: "clamp(18px, 2.5vw, 24px)",
-            color: "rgba(255,255,255,0.45)",
-            fontWeight: 400,
-            lineHeight: 1.4,
-            margin: "0 auto 56px",
-            maxWidth: "500px",
-          }}
-        >
-          A tecnologia definitiva para parar de fumar. <br /> Clean, moderno e feito para durar.
-        </motion.p>
-
+      <div className="relative z-30 flex flex-col items-center mt-[120px] md:mt-[180px]">
+        {/* CTA Button with matching glow */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+           initial={{ opacity: 0, scale: 0.95 }}
+           animate={{ opacity: 1, scale: 1 }}
+           transition={{ duration: 0.8, delay: 2.2 }}
         >
           <button
             onClick={() => navigate("/onboarding")}
+            className="group relative overflow-hidden px-14 py-5 rounded-[18px] bg-white text-[#050a18] font-bold text-lg tracking-tight transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
             style={{
-              fontFamily: "'Geist', sans-serif", fontWeight: 700, fontSize: "16px",
-              color: "#050505", background: "#FFFFFF",
-              border: "none", borderRadius: "14px", padding: "18px 48px",
-              cursor: "pointer", letterSpacing: "-0.01em",
-              boxShadow: "0 10px 40px rgba(255,255,255,0.15)",
-              transition: "all 0.25s ease",
+              boxShadow: "0 0 40px rgba(99, 102, 241, 0.4), 0 0 80px rgba(99, 102, 241, 0.2)"
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px) scale(1.02)"; e.currentTarget.style.boxShadow = "0 15px 50px rgba(255,255,255,0.25)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 10px 40px rgba(255,255,255,0.15)"; }}
           >
-            Começar agora
+            <div className="relative z-10 flex items-center gap-2">
+              Começar jornada
+              <motion.span 
+                animate={{ x: [0, 5, 0] }} 
+                transition={{ repeat: Infinity, duration: 2 }}
+              >
+                →
+              </motion.span>
+            </div>
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-gradient-to-r from-indigo-500 to-blue-400" />
           </button>
         </motion.div>
 
         <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-          style={{ fontSize: "12px", color: "rgba(255,255,255,0.2)", marginTop: "32px", fontWeight: 500 }}
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          transition={{ delay: 2.8, duration: 1 }}
+          className="mt-8 text-[11px] font-bold tracking-[0.4em] text-white/20 uppercase"
         >
-          +87.000 pessoas já transformaram suas vidas.
+          A tecnologia definitiva para parar de fumar
         </motion.p>
       </div>
+
+      {/* Social Proof */}
+      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 3, duration: 1 }}
+          className="flex items-center gap-4 text-white/20 text-[10px] tracking-[0.2em] font-medium"
+        >
+          <span>ESTADO DA ARTE</span>
+          <div className="w-1 h-1 rounded-full bg-white/20" />
+          <span>PROVEN RESULTS</span>
+          <div className="w-1 h-1 rounded-full bg-white/20" />
+          <span>JOIN +87K USERS</span>
+        </motion.div>
+      </div>
+
+      {/* Subtle overlay gradients for depth */}
+      <div className="absolute inset-0 pointer-events-none z-10 bg-[radial-gradient(circle_at_50%_50%,transparent_0%,rgba(5,10,24,0.4)_100%)]" />
     </section>
   );
 };

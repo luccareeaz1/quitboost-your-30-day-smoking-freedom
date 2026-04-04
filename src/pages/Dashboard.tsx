@@ -5,54 +5,37 @@ import {
   Activity, Wallet, Cigarette, Target, Trophy, Flame,
   Sparkles, TrendingUp, Heart, Wind, Timer,
   Zap, Users, Bot, Shield, Clock,
-  Droplets, Brain, ArrowRight
+  Droplets, ArrowRight
 } from "lucide-react";
 import {
   CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  AreaChart, Area, PieChart, Pie, Cell
+  AreaChart, Area
 } from "recharts";
 import { calculateQuitStats, calculateHealthProgress } from "@/lib/calculations";
 
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { streakService, progressService, challengeService } from "@/lib/services";
+import { streakService, challengeService } from "@/lib/services";
 import { toast } from "sonner";
 import AppLayout from "@/components/app/AppLayout";
 
-const HEALTH_MILESTONES = [
-  { minutes: 20, label: "20 min", benefit: "Pressão arterial normaliza", icon: Heart, color: "#FFFFFF", progress: 0 },
-  { minutes: 480, label: "8 horas", benefit: "O₂ no sangue normaliza", icon: Wind, color: "#FFFFFF", progress: 0 },
-  { minutes: 1440, label: "24 horas", benefit: "Risco de infarto reduz", icon: Activity, color: "#FFFFFF", progress: 0 },
-  { minutes: 2880, label: "48 horas", benefit: "Paladar e olfato melhoram", icon: Droplets, color: "#FFFFFF", progress: 0 },
-  { minutes: 4320, label: "72 horas", benefit: "Nicotina eliminada", icon: Zap, color: "#FFFFFF", progress: 0 },
-  { minutes: 10080, label: "1 semana", benefit: "Pulmões em regeneração", icon: Shield, color: "#FFFFFF", progress: 0 },
-  { minutes: 20160, label: "2 semanas", benefit: "Circulação melhora 30%", icon: TrendingUp, color: "#FFFFFF", progress: 0 },
-  { minutes: 43200, label: "1 mês", benefit: "Função pulmonar +30%", icon: Activity, color: "#FFFFFF", progress: 0 },
-];
-
-const DAILY_TIPS = [
-  { tip: "Beba pelo menos 2 litros de água hoje. A hidratação acelera a desintoxicação.", source: "OMS" },
-  { tip: "30 min de caminhada reduzem a vontade de fumar em até 60%.", source: "CDC" },
-  { tip: "Evite gatilhos como café ou álcool nestas primeiras semanas.", source: "INCA" },
-];
-
 function StatCard({ label, value, icon: Icon, suffix = "", prefix = "" }: any) {
   return (
-    <div style={{
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.08)",
-      borderRadius: "20px",
-      padding: "24px",
-      display: "flex",
-      flexDirection: "column",
-      gap: "12px"
-    }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", color: "rgba(255,255,255,0.4)" }}>
-        <Icon size={16} />
-        <span style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.02em" }}>{label}</span>
-      </div>
-      <div style={{ fontSize: "32px", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.04em" }}>
-        {prefix}{value}{suffix}
+    <div className="group relative overflow-hidden bg-white/[0.02] border border-white/[0.05] rounded-[32px] p-8 transition-all hover:bg-white/[0.04]">
+      <div className="absolute inset-0 bg-indigo-500/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="relative z-10 flex flex-col gap-4">
+        <div className="flex items-center gap-3 text-white/30">
+          <div className="p-2 rounded-xl bg-white/[0.03] border border-white/5">
+             <Icon size={16} />
+          </div>
+          <span className="text-[11px] font-bold tracking-[0.2em] uppercase">{label}</span>
+        </div>
+        <div className="flex items-baseline gap-1">
+          <span className="text-[12px] font-bold text-white/40 mb-1">{prefix}</span>
+          <span className="text-4xl font-extralight tracking-tight text-white mb-1">
+            {value}
+          </span>
+          <span className="text-[12px] font-bold text-white/40 mb-1">{suffix}</span>
+        </div>
       </div>
     </div>
   );
@@ -60,19 +43,13 @@ function StatCard({ label, value, icon: Icon, suffix = "", prefix = "" }: any) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { user, profile, subscription, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const [now, setNow] = useState(new Date());
   const [missionCompleted, setMissionCompleted] = useState(false);
-  const [streakData, setStreakData] = useState<any>(null);
   const [dailyChallenge, setDailyChallenge] = useState<any>(null);
 
   useEffect(() => {
     if (!profile && !user) return;
-    if (user) {
-      streakService.checkIn(user.id).then(() => {
-        streakService.get(user.id).then(setStreakData);
-      });
-    }
     const interval = setInterval(() => setNow(new Date()), 1000);
     const loadDaily = async () => {
       try {
@@ -81,12 +58,6 @@ export default function Dashboard() {
         if (dailyOnes.length > 0) {
           const seed = parseInt(new Date().toISOString().split('T')[0].replace(/-/g, ''));
           setDailyChallenge(dailyOnes[seed % dailyOnes.length]);
-          if (user) {
-            const completed = await challengeService.getUserChallenges(user.id);
-            if (completed.some(c => c.challenge_id === dailyOnes[seed % dailyOnes.length].id)) {
-              setMissionCompleted(true);
-            }
-          }
         }
       } catch (err) { console.error(err); }
     };
@@ -102,147 +73,115 @@ export default function Dashboard() {
       price_per_cigarette: Number(profile.price_per_cigarette) || 0,
     }, now);
     const milestones = calculateHealthProgress(quitStats.totalSeconds);
-    const healthPercentage = Math.min(100, Math.round(milestones.filter(m => m.achieved).length / HEALTH_MILESTONES.length * 100));
+    const healthPercentage = Math.min(100, Math.round(milestones.filter(m => m.achieved).length / 8 * 100));
     return { ...quitStats, healthPercentage };
   }, [profile, now]);
 
-  if (!profile || !stats) return <div className="min-h-screen bg-[#050505] flex items-center justify-center"><div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin" /></div>;
+  if (!profile || !stats) return <div className="min-h-screen bg-[#050a18] flex items-center justify-center"><div className="w-8 h-8 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" /></div>;
 
-  const chartData = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(); d.setDate(d.getDate() - (6 - i));
-    return {
-      name: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"][d.getDay()],
-      saude: Math.min(100, (i + 1) * 12),
-      economia: Math.round((i + 1) * profile.cigarettes_per_day * Number(profile.price_per_cigarette))
-    };
-  });
+  const chartData = Array.from({ length: 7 }, (_, i) => ({
+    name: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"][i],
+    value: Math.min(100, (i + 1) * 12),
+  }));
 
   return (
     <AppLayout>
-      <div className="container max-w-5xl mx-auto px-6 py-10 space-y-8">
+      <div className="container max-w-6xl mx-auto px-6 space-y-12">
         
-        {/* Header */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-          <div>
-            <h1 style={{ fontSize: "48px", fontWeight: 900, letterSpacing: "-0.05em", color: "#FFFFFF" }}>
-              Olá, {profile.display_name?.split(" ")[0] || "User"}.
-            </h1>
-            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "14px", fontWeight: 500 }}>
-              Você está no caminho certo. Continue firme.
-            </p>
-          </div>
-          <button onClick={signOut} style={{ fontSize: "12px", fontWeight: 600, color: "rgba(255,255,255,0.3)", background: "none", border: "1px solid rgba(255,255,255,0.08)", padding: "8px 16px", borderRadius: "10px", cursor: "pointer" }}>
-            Sair
-          </button>
-        </header>
-
-        {/* Hero Stats */}
-        <div style={{
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "32px",
-          padding: "60px 20px",
-          textAlign: "center",
-          position: "relative",
-          overflow: "hidden"
-        }}>
-          <div style={{ fontSize: "140px", fontWeight: 900, color: "#FFFFFF", letterSpacing: "-0.08em", lineHeight: 0.8 }}>
-            {stats.days}
-          </div>
-          <div style={{ fontSize: "14px", fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.2em", marginTop: "20px" }}>
-            Dias sem fumar
-          </div>
-          
-          <div className="flex justify-center gap-8 mt-12 pt-8 border-t border-white/5">
-            <div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "#FFFFFF" }}>{String(stats.hours).padStart(2, '0')}h</div>
-              <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", fontWeight: 600 }}>HORAS</div>
+        {/* Minimal Hero Dashboard */}
+        <section className="relative overflow-hidden bg-white/[0.02] border border-white/[0.05] rounded-[48px] py-20 px-8 text-center group">
+          <div className="absolute inset-0 bg-indigo-500/[0.02] blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative z-10 flex flex-col items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className="text-[120px] md:text-[180px] font-extralight tracking-[-0.05em] text-white leading-none mb-6"
+            >
+              {stats.days}
+            </motion.div>
+            <div className="text-[12px] font-bold tracking-[0.6em] text-white/20 uppercase mb-12">
+              DIAS DE LIBERDADE
             </div>
-            <div style={{ width: "1px", background: "rgba(255,255,255,0.05)" }} />
-            <div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "#FFFFFF" }}>{String(stats.minutes).padStart(2, '0')}m</div>
-              <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", fontWeight: 600 }}>MINUTOS</div>
-            </div>
-            <div style={{ width: "1px", background: "rgba(255,255,255,0.05)" }} />
-            <div>
-              <div style={{ fontSize: "24px", fontWeight: 800, color: "#FFFFFF" }}>{String(stats.seconds).padStart(2, '0')}s</div>
-              <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)", fontWeight: 600 }}>SEGUNDOS</div>
+            
+            <div className="flex gap-12 font-bold tracking-[0.2em] text-[12px] text-white/40">
+               <div className="flex flex-col gap-1 items-center">
+                 <span className="text-white text-base font-extralight tracking-normal">{String(stats.hours).padStart(2, '0')}</span>
+                 <span className="text-[9px]">HORAS</span>
+               </div>
+               <div className="w-px h-8 bg-white/5" />
+               <div className="flex flex-col gap-1 items-center">
+                 <span className="text-white text-base font-extralight tracking-normal">{String(stats.minutes).padStart(2, '0')}</span>
+                 <span className="text-[9px]">MINUTOS</span>
+               </div>
+               <div className="w-px h-8 bg-white/5" />
+               <div className="flex flex-col gap-1 items-center">
+                 <span className="text-white text-base font-extralight tracking-normal">{String(stats.seconds).padStart(2, '0')}</span>
+                 <span className="text-[9px]">SEGUNDOS</span>
+               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard label="Cigarros evitados" value={stats.avoidedCount} icon={Cigarette} />
-          <StatCard label="Economia" value={stats.moneySaved} icon={Wallet} prefix="R$" />
-          <StatCard label="Tempo recuperado" value={stats.hoursRecovered} icon={Clock} suffix="h" />
-          <StatCard label="Saúde" value={stats.healthPercentage} icon={Activity} suffix="%" />
+          <StatCard label="Economia gerada" value={stats.moneySaved} icon={Wallet} prefix="R$" />
+          <StatCard label="Vida recuperada" value={stats.hoursRecovered} icon={Clock} suffix="h" />
+          <StatCard label="Nível de Saúde" value={stats.healthPercentage} icon={Activity} suffix="%" />
         </div>
 
-        {/* Content Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            {/* Chart */}
-            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "24px", padding: "24px" }}>
-              <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#FFFFFF", marginBottom: "24px" }}>Sua Evolução</h3>
-              <div className="h-[240px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData}>
-                    <defs>
-                      <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#FFFFFF" stopOpacity={0.1} />
-                        <stop offset="95%" stopColor="#FFFFFF" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "rgba(255,255,255,0.3)", fontSize: 10 }} />
-                    <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: "12px" }} />
-                    <Area type="monotone" dataKey="saude" stroke="#FFFFFF" strokeWidth={2} fill="url(#colorVal)" />
-                  </AreaChart>
-                </ResponsiveContainer>
+        {/* Action Center */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+           <div className="lg:col-span-2 space-y-8">
+              <div className="bg-white/[0.02] border border-white/[0.05] rounded-[32px] p-10 h-full">
+                 <div className="flex items-center justify-between mb-12">
+                    <h3 className="text-xl font-extralight tracking-[0.1em] text-white">EVOLUÇÃO DOS TECIDOS</h3>
+                    <div className="text-[10px] font-bold text-white/20 tracking-[0.2em]">ÚLTIMOS 7 DIAS</div>
+                 </div>
+                 <div className="h-[300px]">
+                   <ResponsiveContainer width="100%" height="100%">
+                     <AreaChart data={chartData}>
+                       <defs>
+                         <linearGradient id="neonGradient" x1="0" y1="0" x2="0" y2="1">
+                           <stop offset="5%" stopColor="rgb(99, 102, 241)" stopOpacity={0.2}/>
+                           <stop offset="95%" stopColor="rgb(99, 102, 241)" stopOpacity={0}/>
+                         </linearGradient>
+                       </defs>
+                       <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'rgba(255,255,255,0.1)', fontSize: 10}} dy={10} />
+                       <Tooltip contentStyle={{background: '#050a18', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', fontSize: '12px'}} />
+                       <Area type="monotone" dataKey="value" stroke="rgb(99, 102, 241)" strokeWidth={2} fill="url(#neonGradient)" />
+                     </AreaChart>
+                   </ResponsiveContainer>
+                 </div>
               </div>
-            </div>
+           </div>
 
-            {/* Daily Challenge */}
-            <div style={{ background: "#FFFFFF", color: "#050505", borderRadius: "24px", padding: "32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <div className="space-y-2">
-                <div style={{ fontSize: "12px", fontWeight: 700, opacity: 0.5, textTransform: "uppercase" }}>Desafio de hoje</div>
-                <h4 style={{ fontSize: "22px", fontWeight: 800 }}>{dailyChallenge?.title || "Hidratação"}</h4>
-                <p style={{ fontSize: "14px", fontWeight: 500, opacity: 0.7 }}>Beba 2L de água para desintoxicar.</p>
+           <div className="space-y-8">
+              <div className="bg-indigo-600 rounded-[32px] p-10 text-white relative overflow-hidden group">
+                 <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                 <h4 className="text-[10px] font-bold tracking-[0.2em] mb-4 opacity-70">DEEP MISSÃO</h4>
+                 <p className="text-2xl font-light tracking-tight mb-8 leading-tight">
+                   {dailyChallenge?.title || "Sessão Intensiva de Foco"}
+                 </p>
+                 <button className="flex items-center gap-3 text-sm font-bold tracking-tight">
+                    ATUALIZAR STATUS <ArrowRight size={16} />
+                 </button>
               </div>
-              <button 
-                disabled={missionCompleted}
-                style={{
-                  background: missionCompleted ? "rgba(0,0,0,0.1)" : "#050505",
-                  color: "#FFFFFF",
-                  padding: "12px 24px",
-                  borderRadius: "12px",
-                  fontWeight: 700,
-                  fontSize: "14px",
-                  border: "none",
-                  cursor: missionCompleted ? "default" : "pointer"
-                }}
-              >
-                {missionCompleted ? "Concluído" : "Concluir"}
-              </button>
-            </div>
-          </div>
 
-          {/* Sidebar / Tips */}
-          <div className="space-y-6">
-             <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "24px", padding: "24px", height: "100%" }}>
-                <h3 style={{ fontSize: "18px", fontWeight: 700, color: "#FFFFFF", marginBottom: "20px" }}>Dica Útil</h3>
-                <p style={{ fontSize: "15px", color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>
-                  {DAILY_TIPS[stats.days % DAILY_TIPS.length].tip}
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "24px" }}>
-                   <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Bot size={16} />
-                   </div>
-                   <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)" }}>Dica da IA Coach</span>
-                </div>
-             </div>
-          </div>
+              <div className="bg-white/[0.02] border border-white/[0.05] rounded-[32px] p-10 flex flex-col justify-between">
+                 <div>
+                    <h4 className="text-[10px] font-bold tracking-[0.2em] mb-4 text-white/20">AI QUOTE</h4>
+                    <p className="text-lg font-light italic text-white/60 leading-relaxed">
+                      "A consistência supera a motivação em 99% das vezes."
+                    </p>
+                 </div>
+                 <div className="mt-8 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                       <Bot size={14} className="text-indigo-400" />
+                    </div>
+                    <span className="text-[11px] font-bold text-white/20 tracking-[0.1em]">ANALISTA IA</span>
+                 </div>
+              </div>
+           </div>
         </div>
 
       </div>
