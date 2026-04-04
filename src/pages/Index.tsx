@@ -8,7 +8,7 @@ import FaqSection from "@/components/landing/FaqSection";
 import FooterSection from "@/components/landing/FooterSection";
 
 const Index = () => (
-  <div style={{ minHeight: "100vh", background: "#050505" }}>
+  <div style={{ minHeight: "100vh", background: "#050a18" }}>
     <NavBar />
     <HeroSection />
     <TrustBar />

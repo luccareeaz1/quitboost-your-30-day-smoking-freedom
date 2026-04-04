@@ -10,7 +10,7 @@ const stats = [
 const TrustBar = () => (
   <section style={{
     padding: "80px 24px",
-    background: "#050505",
+    background: "#050a18",
     borderTop: "1px solid rgba(255,255,255,0.05)",
     borderBottom: "1px solid rgba(255,255,255,0.05)",
   }}>
@@ -29,7 +29,7 @@ const TrustBar = () => (
           fontFamily: "'Geist', sans-serif",
           fontWeight: 600,
           fontSize: "13px",
-          color: "#00D1FF",
+          color: "#6366f1",
           letterSpacing: "0.15em",
           textTransform: "uppercase",
           margin: 0,
@@ -68,7 +68,7 @@ const TrustBar = () => (
             transition={{ delay: i * 0.1, duration: 0.5 }}
             style={{
               padding: "48px 32px",
-              background: "#050505",
+              background: "#050a18",
               textAlign: "center",
               display: "flex",
               flexDirection: "column",
@@ -80,7 +80,7 @@ const TrustBar = () => (
               fontFamily: "'Geist Mono', monospace",
               fontWeight: 700,
               fontSize: "clamp(32px, 5vw, 52px)",
-              color: "#00D1FF",
+              color: "#6366f1",
               letterSpacing: "-0.04em",
               lineHeight: 1,
               display: "block",

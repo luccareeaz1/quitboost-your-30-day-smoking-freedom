@@ -31,7 +31,7 @@ const features = [
 ];
 
 const FeaturesSection = () => (
-  <section id="recursos" style={{ padding: "100px 24px", background: "#050505" }}>
+  <section id="recursos" style={{ padding: "100px 24px", background: "#050a18" }}>
     <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
       {/* Header */}
       <motion.div
@@ -44,7 +44,7 @@ const FeaturesSection = () => (
           fontFamily: "'Geist', sans-serif",
           fontWeight: 600,
           fontSize: "13px",
-          color: "#00D1FF",
+          color: "#6366f1",
           letterSpacing: "0.15em",
           textTransform: "uppercase",
           margin: 0,
@@ -103,10 +103,10 @@ const FeatureCard = ({ feature }: { feature: typeof features[0] }) => {
         height: "100%",
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.borderColor = "rgba(0,209,255,0.3)";
-        e.currentTarget.style.background = "rgba(0,209,255,0.04)";
+        e.currentTarget.style.borderColor = "rgba(99,102,241,0.3)";
+        e.currentTarget.style.background = "rgba(99,102,241,0.04)";
         e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 0 40px -8px rgba(0,209,255,0.2), 0 20px 40px -10px rgba(0,0,0,0.5)";
+        e.currentTarget.style.boxShadow = "0 0 40px -8px rgba(99,102,241,0.2), 0 20px 40px -10px rgba(0,0,0,0.5)";
       }}
       onMouseLeave={e => {
         e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
@@ -119,12 +119,12 @@ const FeatureCard = ({ feature }: { feature: typeof features[0] }) => {
         width: "52px",
         height: "52px",
         borderRadius: "12px",
-        background: "rgba(0,209,255,0.08)",
-        border: "1px solid rgba(0,209,255,0.15)",
+        background: "rgba(99,102,241,0.08)",
+        border: "1px solid rgba(99,102,241,0.15)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        color: "#00D1FF",
+        color: "#6366f1",
         flexShrink: 0,
       }}>
         {feature.icon}

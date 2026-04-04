@@ -27,7 +27,7 @@ const NavBar = () => {
         width: "100%",
         zIndex: 50,
         borderBottom: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(5,5,5,0.85)",
+        background: "rgba(5,10,24,0.85)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
       }}
@@ -46,7 +46,7 @@ const NavBar = () => {
             letterSpacing: "-0.04em",
             lineHeight: 1,
           }}>
-            Quit<span style={{ color: "#00D1FF" }}>Boost</span>
+            Quit<span style={{ color: "#6366f1" }}>Boost</span>
           </span>
         </div>
 
@@ -124,18 +124,18 @@ const NavBar = () => {
                   fontFamily: "'Geist', sans-serif",
                   fontWeight: 700,
                   fontSize: "13px",
-                  color: "#050505",
-                  background: "#00D1FF",
+                  color: "#050a18",
+                  background: "#FFFFFF",
                   border: "none",
                   borderRadius: "8px",
                   padding: "10px 20px",
                   cursor: "pointer",
                   letterSpacing: "-0.01em",
-                  boxShadow: "0 0 24px -4px rgba(0,209,255,0.5)",
+                  boxShadow: "0 0 24px -4px rgba(99,102,241,0.5)",
                   transition: "all 0.2s ease",
                 }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 40px -4px rgba(0,209,255,0.7)"; e.currentTarget.style.transform = "scale(1.02)"; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 24px -4px rgba(0,209,255,0.5)"; e.currentTarget.style.transform = "scale(1)"; }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 40px -4px rgba(99,102,241,0.7)"; e.currentTarget.style.transform = "scale(1.02)"; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 24px -4px rgba(99,102,241,0.5)"; e.currentTarget.style.transform = "scale(1)"; }}
               >
                 Começar agora
               </button>
@@ -155,7 +155,7 @@ const NavBar = () => {
       {/* Mobile Menu */}
       {mobileOpen && (
         <div style={{
-          background: "rgba(5,5,5,0.98)",
+          background: "rgba(5,10,24,0.98)",
           borderTop: "1px solid rgba(255,255,255,0.06)",
           padding: "20px 24px",
           display: "flex",

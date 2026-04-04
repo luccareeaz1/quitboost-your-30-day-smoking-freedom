@@ -26,7 +26,7 @@ const FaqSection = () => {
   const toggle = (i: number) => setOpen(open === i ? null : i);
 
   return (
-    <section id="faq" style={{ padding: "100px 24px", background: "#050505" }}>
+    <section id="faq" style={{ padding: "100px 24px", background: "#050a18" }}>
       <div style={{ maxWidth: "700px", margin: "0 auto" }}>
         {/* Header */}
         <motion.div
@@ -39,7 +39,7 @@ const FaqSection = () => {
             fontFamily: "'Geist', sans-serif",
             fontWeight: 600,
             fontSize: "13px",
-            color: "#00D1FF",
+            color: "#6366f1",
             letterSpacing: "0.15em",
             textTransform: "uppercase",
             margin: 0,
@@ -109,11 +109,11 @@ const FaqSection = () => {
                     width: "24px",
                     height: "24px",
                     borderRadius: "50%",
-                    border: `1px solid ${open === i ? "rgba(0,209,255,0.3)" : "rgba(255,255,255,0.1)"}`,
+                    border: `1px solid ${open === i ? "rgba(99,102,241,0.3)" : "rgba(255,255,255,0.1)"}`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    color: open === i ? "#00D1FF" : "#A1A1AA",
+                    color: open === i ? "#6366f1" : "#A1A1AA",
                     transition: "all 0.25s ease",
                     transform: open === i ? "rotate(45deg)" : "rotate(0deg)",
                   }}>

@@ -7,7 +7,7 @@ const CtaSection = () => {
   return (
     <section style={{
       padding: "120px 24px",
-      background: "#050505",
+      background: "#050a18",
       borderTop: "1px solid rgba(255,255,255,0.05)",
     }}>
       <div style={{ maxWidth: "700px", margin: "0 auto", textAlign: "center" }}>
@@ -24,7 +24,7 @@ const CtaSection = () => {
             transform: "translate(-50%, -60%)",
             width: "500px",
             height: "300px",
-            background: "radial-gradient(ellipse at center, rgba(0,209,255,0.07) 0%, transparent 70%)",
+            background: "radial-gradient(ellipse at center, rgba(99,102,241,0.1) 0%, transparent 70%)",
             pointerEvents: "none",
             zIndex: 0,
           }} />
@@ -40,7 +40,7 @@ const CtaSection = () => {
               fontFamily: "'Geist', sans-serif",
               fontWeight: 600,
               fontSize: "13px",
-              color: "#00D1FF",
+              color: "#6366f1",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
               margin: 0,
@@ -83,25 +83,25 @@ const CtaSection = () => {
                 fontFamily: "'Geist', sans-serif",
                 fontWeight: 700,
                 fontSize: "17px",
-                color: "#050505",
-                background: "#00D1FF",
+                color: "#050a18",
+                background: "#FFFFFF",
                 border: "none",
                 borderRadius: "12px",
                 padding: "20px 56px",
                 cursor: "pointer",
                 letterSpacing: "-0.02em",
-                boxShadow: "0 0 50px -4px rgba(0,209,255,0.6), 0 0 0 1px rgba(0,209,255,0.2)",
+                boxShadow: "0 0 50px -4px rgba(99,102,241,0.6), 0 0 0 1px rgba(99,102,241,0.2)",
                 transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "8px",
               }}
               onMouseEnter={e => {
-                e.currentTarget.style.boxShadow = "0 0 80px -4px rgba(0,209,255,0.9), 0 0 0 1px rgba(0,209,255,0.5)";
+                e.currentTarget.style.boxShadow = "0 0 80px -4px rgba(99,102,241,0.9), 0 0 0 1px rgba(99,102,241,0.5)";
                 e.currentTarget.style.transform = "translateY(-3px) scale(1.03)";
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.boxShadow = "0 0 50px -4px rgba(0,209,255,0.6), 0 0 0 1px rgba(0,209,255,0.2)";
+                e.currentTarget.style.boxShadow = "0 0 50px -4px rgba(99,102,241,0.6), 0 0 0 1px rgba(99,102,241,0.2)";
                 e.currentTarget.style.transform = "translateY(0) scale(1)";
               }}
             >

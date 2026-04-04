@@ -33,7 +33,7 @@ const TestimonialsSection = () => {
   const t = testimonials[active];
 
   return (
-    <section id="depoimentos" style={{ padding: "100px 24px", background: "#050505" }}>
+    <section id="depoimentos" style={{ padding: "100px 24px", background: "#050a18" }}>
       <div style={{ maxWidth: "800px", margin: "0 auto" }}>
         {/* Header */}
         <motion.div
@@ -46,7 +46,7 @@ const TestimonialsSection = () => {
             fontFamily: "'Geist', sans-serif",
             fontWeight: 600,
             fontSize: "13px",
-            color: "#00D1FF",
+            color: "#6366f1",
             letterSpacing: "0.15em",
             textTransform: "uppercase",
             margin: 0,
@@ -90,7 +90,7 @@ const TestimonialsSection = () => {
             fontFamily: "'Geist', sans-serif",
             fontSize: "60px",
             lineHeight: 1,
-            color: "rgba(0,209,255,0.12)",
+            color: "rgba(99,102,241,0.12)",
             fontWeight: 900,
             userSelect: "none",
           }}>
@@ -117,15 +117,15 @@ const TestimonialsSection = () => {
               width: "44px",
               height: "44px",
               borderRadius: "50%",
-              background: "rgba(0,209,255,0.1)",
-              border: "1px solid rgba(0,209,255,0.2)",
+              background: "rgba(99,102,241,0.1)",
+              border: "1px solid rgba(99,102,241,0.2)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               fontFamily: "'Geist', sans-serif",
               fontWeight: 700,
               fontSize: "13px",
-              color: "#00D1FF",
+              color: "#6366f1",
               letterSpacing: "0.02em",
               flexShrink: 0,
             }}>
@@ -148,7 +148,7 @@ const TestimonialsSection = () => {
                 fontFamily: "'Geist Mono', monospace",
                 fontWeight: 400,
                 fontSize: "12px",
-                color: "#00D1FF",
+                color: "#6366f1",
                 letterSpacing: "0.02em",
                 margin: 0,
                 lineHeight: 1,

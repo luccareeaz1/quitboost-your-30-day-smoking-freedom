@@ -6,7 +6,7 @@ const FooterSection = () => {
 
   return (
     <footer style={{
-      background: "#050505",
+      background: "#050a18",
       borderTop: "1px solid rgba(255,255,255,0.06)",
       padding: "60px 24px 40px",
     }}>
@@ -32,7 +32,7 @@ const FooterSection = () => {
                 color: "#FFFFFF",
                 letterSpacing: "-0.04em",
               }}>
-                Quit<span style={{ color: "#00D1FF" }}>Boost</span>
+                Quit<span style={{ color: "#6366f1" }}>Boost</span>
               </span>
             </div>
             <p style={{
