@@ -60,7 +60,7 @@ export default function Onboarding() {
       });
 
       toast.success("Plano personalizado gerado com sucesso!");
-      navigate("/checkout");
+      navigate("/onboarding-motivo");
     } catch (error) {
       console.error("Erro no onboarding:", error);
       toast.error("Ocorreu um erro ao salvar seus dados. Tente novamente.");

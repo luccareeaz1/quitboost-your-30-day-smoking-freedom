@@ -8,6 +8,7 @@ import { useEffect } from "react";
 
 import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
+import OnboardingMotivo from "./pages/OnboardingMotivo";
 import Dashboard from "./pages/Dashboard";
 import Progresso from "./pages/Progresso";
 import Desafios from "./pages/Desafios";
@@ -40,6 +41,7 @@ const AnimatedRoutes = () => {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/onboarding" element={<PageTransition><Onboarding /></PageTransition>} />
+        <Route path="/onboarding-motivo" element={<PageTransition><OnboardingMotivo /></PageTransition>} />
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
         <Route path="/progresso" element={<PageTransition><Progresso /></PageTransition>} />
         <Route path="/desafios" element={<PageTransition><Desafios /></PageTransition>} />
