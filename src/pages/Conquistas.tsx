@@ -313,8 +313,8 @@ const Conquistas = () => {
                     <p className="text-sm font-bold text-white/80 leading-relaxed italic relative z-10">
                       "{selectedAchievement.medical_fact}"
                     </p>
-                    {selectedAchievement.source && (
-                      <p className="text-[10px] text-muted-foreground font-black mt-6 uppercase tracking-[0.2em] italic relative z-10 opacity-40">Fonte: {selectedAchievement.source}</p>
+                     {selectedAchievement.medical_source && (
+                       <p className="text-[10px] text-muted-foreground font-black mt-6 uppercase tracking-[0.2em] italic relative z-10 opacity-40">Fonte: {selectedAchievement.medical_source}</p>
                     )}
                   </div>
                 )}

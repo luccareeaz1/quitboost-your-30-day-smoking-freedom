@@ -37,7 +37,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       try {
         const data = await notificationService.getAll(user.id);
         const count = await notificationService.getUnreadCount(user.id);
-        setNotifications(data);
+        setNotifications(data as unknown as AppNotification[]);
         setUnreadCount(count);
       } catch (error) {
         console.error("Failed to load notifications", error);
