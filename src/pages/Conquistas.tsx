@@ -92,7 +92,7 @@ const Conquistas = () => {
     const totalPoints = unlockedList.reduce((sum, a) => sum + (a.points || 0), 0);
     
     const lockedList = achievements.filter(a => !unlockedIds.has(a.id));
-    const nextAchievement = lockedList.find(a => a.requirement_type === 'days') || null;
+    const nextAchievement = lockedList.find(a => a.required_days != null) || null;
     
     let progress = 0;
     if (nextAchievement) {
