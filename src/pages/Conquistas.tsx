@@ -197,7 +197,7 @@ const Conquistas = () => {
                  </div>
                </div>
                <div className="text-center sm:text-right">
-                  <p className="text-xl font-black text-primary italic tracking-tight italic">-{stats.nextAchievement.requirement_value - stats.diffDays} dias</p>
+                  <p className="text-xl font-black text-primary italic tracking-tight italic">-{(stats.nextAchievement.required_days || 0) - stats.diffDays} dias</p>
                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-40">Para Sincronização</p>
                </div>
             </div>
