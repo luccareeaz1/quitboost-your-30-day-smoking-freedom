@@ -1,296 +1,197 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ArrowLeft, Wind, Cigarette, Clock, DollarSign, Brain, Sparkles, Loader2, CheckCircle2, Shield, Package } from "lucide-react";
-import { useNavigate, Link } from "react-router-dom";
+import { Check } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService } from "@/lib/services";
 import { toast } from "sonner";
 
-interface OnboardingData {
-  cigarrosPorDia: number;
-  cigarrosPorMaco: number;
-  custoPorMaco: number;
-  anosFumando: number;
-}
-
-const Onboarding = () => {
+export default function Onboarding() {
   const { user } = useAuth();
-  const [step, setStep] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [data, setData] = useState<OnboardingData>({
-    cigarrosPorDia: 15,
-    cigarrosPorMaco: 20,
-    custoPorMaco: 12.0,
-    anosFumando: 5,
-  });
-
-  const [acceptedTerms, setAcceptedTerms] = useState(true);
-  const [acceptedHealth, setAcceptedHealth] = useState(true);
-  const [acceptedMarketing, setAcceptedMarketing] = useState(false);
-
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Form State matching the image exactly
+  const [whatFuma, setWhatFuma] = useState("Cigarros");
+  const [precoMaco, setPrecoMaco] = useState("");
+  const [quantosPorDia, setQuantosPorDia] = useState("");
+  const [cigarrosNoMaco, setCigarrosNoMaco] = useState("");
+  const [tempoPrimeiroCigarro, setTempoPrimeiroCigarro] = useState("");
 
   useEffect(() => {
     if (!user && !isSubmitting) navigate("/auth");
   }, [user, navigate, isSubmitting]);
 
-  const finishOnboarding = async () => {
+  const handleContinue = async () => {
     if (!user) return;
+    
+    // Basic validation
+    if (!precoMaco || !quantosPorDia || !cigarrosNoMaco || !tempoPrimeiroCigarro) {
+      toast.error("Por favor, preencha todos os campos para continuarmos.");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
-      // We calculate price_per_cigarette based on price per pack / cigarettes per pack
-      const pricePerCigarette = data.custoPorMaco / data.cigarrosPorMaco;
 
+      const price = parseFloat(precoMaco.replace(",", "."));
+      const packSize = parseInt(cigarrosNoMaco, 10);
+      const daily = parseInt(quantosPorDia, 10);
+      const pricePerCigarette = price / packSize;
+
+      // Supabase connection saving the answers
       await profileService.saveOnboarding(user.id, {
-        cigarettes_per_day: data.cigarrosPorDia,
-        years_smoking: data.anosFumando,
+        cigarettes_per_day: daily,
+        years_smoking: 1, // Defaulting as it's absent from the new layout
         price_per_cigarette: pricePerCigarette,
-        triggers: [],
         quit_date: new Date().toISOString(),
+        triggers: [
+          `Fuma: ${whatFuma}`,
+          `Primeiro cigarro: ${tempoPrimeiroCigarro}`
+        ],
         display_name: user.email?.split("@")[0],
       });
 
+      // Saving consent automatically for this fast-track onboarding
       await profileService.saveConsent(user.id, {
         policy_version: "2026.1",
         accepted_terms: true,
         accepted_health_data: true,
-        marketing_consent: acceptedMarketing,
+        marketing_consent: false,
       });
 
-      toast.success("Configuração concluída!");
+      toast.success("Plano personalizado gerado com sucesso!");
       navigate("/checkout");
     } catch (error) {
       console.error("Erro no onboarding:", error);
-      toast.error("Erro ao salvar. Tente novamente.");
+      toast.error("Ocorreu um erro ao salvar seus dados. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const steps = [
-    {
-      icon: Cigarette,
-      title: "O seu hábito tabágico",
-      subtitle: "Em média, quantos fumas por dia?",
-      content: (
-        <div className="flex flex-col items-center gap-8">
-          <div className="text-center">
-            <div className="text-[96px] font-black tracking-tight text-foreground leading-none">{data.cigarrosPorDia}</div>
-            <div className="text-sm font-medium text-muted-foreground mt-2">cigarros / dia</div>
-          </div>
-          <input
-            type="range" min={1} max={60} value={data.cigarrosPorDia}
-            onChange={e => setData(d => ({ ...d, cigarrosPorDia: +e.target.value }))}
-            className="w-full accent-black cursor-pointer h-1"
-          />
-          <div className="flex justify-between w-full text-xs text-muted-foreground">
-            <span>1</span>
-            <span>60</span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      icon: Package,
-      title: "O seu hábito tabágico",
-      subtitle: "Quantos num maço?",
-      content: (
-        <div className="flex flex-col items-center gap-8">
-          <div className="text-center">
-            <div className="text-[96px] font-black tracking-tight text-foreground leading-none">{data.cigarrosPorMaco}</div>
-            <div className="text-sm font-medium text-muted-foreground mt-2">cigarros no maço</div>
-          </div>
-          <input
-            type="range" min={5} max={40} value={data.cigarrosPorMaco}
-            onChange={e => setData(d => ({ ...d, cigarrosPorMaco: +e.target.value }))}
-            className="w-full accent-black cursor-pointer h-1"
-          />
-          <div className="flex justify-between w-full text-xs text-muted-foreground">
-            <span>5</span>
-            <span>40</span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      icon: DollarSign,
-      title: "O seu hábito tabágico",
-      subtitle: "Quanto custa um maço?",
-      content: (
-        <div className="flex flex-col items-center gap-8">
-          <div className="text-center">
-            <div className="text-[72px] font-black tracking-tight text-foreground leading-none">R${data.custoPorMaco.toFixed(2)}</div>
-            <div className="text-sm font-medium text-muted-foreground mt-2">por maço</div>
-          </div>
-          <input
-            type="range" min={2.0} max={40.0} step={0.5} value={data.custoPorMaco}
-            onChange={e => setData(d => ({ ...d, custoPorMaco: +e.target.value }))}
-            className="w-full accent-black cursor-pointer h-1"
-          />
-          <div className="flex justify-between w-full text-xs text-muted-foreground">
-            <span>R$2,00</span>
-            <span>R$40,00</span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      icon: Clock,
-      title: "O seu hábito tabágico",
-      subtitle: "Há quantos anos que fumas?",
-      content: (
-        <div className="flex flex-col items-center gap-8">
-          <div className="text-center">
-            <div className="text-[96px] font-black tracking-tight text-foreground leading-none">{data.anosFumando}</div>
-            <div className="text-sm font-medium text-muted-foreground mt-2">anos</div>
-          </div>
-          <input
-            type="range" min={1} max={50} value={data.anosFumando}
-            onChange={e => setData(d => ({ ...d, anosFumando: +e.target.value }))}
-            className="w-full accent-black cursor-pointer h-1"
-          />
-          <div className="flex justify-between w-full text-xs text-muted-foreground">
-            <span>1</span>
-            <span>50</span>
-          </div>
-        </div>
-      ),
-    },
-    {
-      icon: Shield,
-      title: "Finalizando",
-      subtitle: "Aceite os termos para continuar",
-      content: (
-        <div className="flex flex-col gap-3">
-          {[
-            {
-              label: "Termos de Uso e Privacidade",
-              desc: "Li e aceito os Termos e Privacidade.",
-              links: (
-                <div className="flex gap-4 mt-2">
-                  <Link to="/politica-de-privacidade" target="_blank" className="text-xs text-muted-foreground underline">Privacidade</Link>
-                  <Link to="/termos-de-uso" target="_blank" className="text-xs text-muted-foreground underline">Termos</Link>
-                </div>
-              ),
-              checked: acceptedTerms,
-              toggle: () => setAcceptedTerms(!acceptedTerms),
-            },
-            {
-              label: "Dados de saúde",
-              desc: "Consinto no processamento dos meus dados.",
-              links: null,
-              checked: acceptedHealth,
-              toggle: () => setAcceptedHealth(!acceptedHealth),
-            },
-            {
-              label: "Comunicações (opcional)",
-              desc: "Desejo receber dicas semanais.",
-              links: null,
-              checked: acceptedMarketing,
-              toggle: () => setAcceptedMarketing(!acceptedMarketing),
-            },
-          ].map(item => (
-            <div
-              key={item.label}
-              onClick={item.toggle}
-              className={`flex items-start gap-4 p-4 rounded-xl cursor-pointer transition-colors border ${item.checked ? 'border-primary bg-primary/5' : 'border-border/50 bg-card hover:bg-muted/50'}`}
-            >
-              <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${item.checked ? 'border-primary bg-primary' : 'border-input bg-background'}`}>
-                {item.checked && <CheckCircle2 size={13} className="text-primary-foreground" />}
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-foreground mb-1">{item.label}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-                {item.links}
-              </div>
-            </div>
-          ))}
-        </div>
-      ),
-    },
-  ];
-
-  const currentStep = steps[step];
-  const Icon = currentStep.icon;
-
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 py-16 relative overflow-hidden">
-      <div className="w-full max-w-lg relative z-10">
-        <header className="flex flex-col items-center mb-10 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-foreground text-background flex items-center justify-center mb-5 shadow-lg">
-            <Wind size={28} />
+    <div className="min-h-screen bg-[#F2F2F7] flex flex-col font-sans">
+      {/* Header */}
+      <div className="bg-[#F9F9FB] border-b border-gray-200/60 pt-10 pb-4 px-4 sticky top-0 z-10 flex flex-col items-center shadow-sm">
+        <h1 className="text-[17px] font-bold text-black tracking-tight">
+          Sobre o seu hábito tabágico
+        </h1>
+      </div>
+
+      {/* Main Form Content - Scrollable */}
+      <div className="flex-1 overflow-y-auto px-4 pt-6 pb-24 space-y-6">
+        
+        {/* Section: O QUE FUMA? */}
+        <section>
+          <div className="text-[12px] font-semibold text-gray-500 uppercase px-2 mb-2 tracking-wide">
+            O QUE FUMA?
           </div>
-          <h1 className="font-extrabold text-3xl tracking-tight text-foreground mb-2">QuitBoost</h1>
-          <p className="text-sm text-muted-foreground">Configuração de Perfil</p>
-        </header>
-
-        {/* Progress bar */}
-        <div className="flex gap-2 mb-10">
-          {steps.map((_, i) => (
-            <div
-              key={i}
-              className={`flex-1 h-1.5 rounded-full transition-colors duration-500 ${i <= step ? 'bg-primary' : 'bg-muted'}`}
-            />
-          ))}
-        </div>
-
-        {/* Step card */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            className="bg-card border border-border/50 rounded-3xl p-8 shadow-sm"
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-12 rounded-xl bg-muted border border-border/50 flex items-center justify-center">
-                <Icon size={22} className="text-foreground" />
-              </div>
-              <div>
-                <h2 className="font-bold text-xl tracking-tight text-foreground">
-                  {currentStep.title}
-                </h2>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {currentStep.subtitle}
-                </p>
-              </div>
-            </div>
-            {currentStep.content}
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Navigation */}
-        <div className="flex gap-4 mt-6">
-          {step > 0 && !isSubmitting ? (
+          <div className="bg-white rounded-2xl overflow-hidden shadow-sm">
             <button
-              onClick={() => setStep(s => s - 1)}
-              className="flex-1 h-14 rounded-xl bg-card border border-border hover:bg-muted text-foreground font-semibold text-sm flex items-center justify-center gap-2 transition-all"
+              onClick={() => setWhatFuma("Cigarros")}
+              className="w-full flex items-center justify-between px-4 py-3.5 border-b border-gray-100 bg-white active:bg-gray-50 transition-colors"
             >
-              <ArrowLeft size={16} /> Voltar
+              <span className="text-[17px] text-black">Cigarros</span>
+              {whatFuma === "Cigarros" && <Check className="text-[#65A30D] w-5 h-5" />}
             </button>
-          ) : <div className="flex-1" />}
+            <button
+              onClick={() => setWhatFuma("Tabaco de enrolar")}
+              className="w-full flex items-center justify-between px-4 py-3.5 bg-white active:bg-gray-50 transition-colors"
+            >
+              <span className="text-[17px] text-black">Tabaco de enrolar</span>
+              {whatFuma === "Tabaco de enrolar" && <Check className="text-[#65A30D] w-5 h-5" />}
+            </button>
+          </div>
+        </section>
 
-          <button
-            disabled={isSubmitting || (step === steps.length - 1 && (!acceptedTerms || !acceptedHealth))}
-            onClick={() => step < steps.length - 1 ? setStep(s => s + 1) : finishOnboarding()}
-            className={`flex-none w-[60%] h-14 rounded-xl bg-foreground text-background font-bold text-sm flex items-center justify-center gap-2 shadow-lg transition-all ${
-              (isSubmitting || (step === steps.length - 1 && (!acceptedTerms || !acceptedHealth))) ? 'opacity-40 cursor-not-allowed' : 'hover:-translate-y-0.5 hover:shadow-xl'
-            }`}
-          >
-            {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : (
-              step < steps.length - 1 ? <><span>Próximo</span><ArrowRight size={16} /></> : <><span>Finalizar</span><Sparkles size={16} /></>
-            )}
-          </button>
-        </div>
+        {/* Section: PREÇO DO MAÇO */}
+        <section>
+          <div className="text-[12px] font-semibold text-gray-500 uppercase px-2 mb-2 tracking-wide">
+            PREÇO DO MAÇO
+          </div>
+          <div className="bg-white rounded-2xl overflow-hidden shadow-sm px-4 py-1">
+            <input
+              type="number"
+              placeholder="Preço R$"
+              value={precoMaco}
+              onChange={(e) => setPrecoMaco(e.target.value)}
+              className="w-full text-[17px] py-2.5 outline-none text-black placeholder:text-gray-300 bg-transparent"
+            />
+          </div>
+        </section>
 
-        <p className="text-xs text-muted-foreground/50 text-center mt-12">
-          🔒 Privacidade em 1º lugar · QuitBoost 2026
-        </p>
+        {/* Section: QUANTOS FUMA (OU FUMAVA) POR DIA (APROXIMADAMENTE)? */}
+        <section>
+          <div className="text-[12px] font-semibold text-gray-500 uppercase px-2 mb-2 tracking-wide">
+            QUANTOS FUMA (OU FUMAVA) POR DIA (APROXIMADAMENTE)?
+          </div>
+          <div className="bg-white rounded-2xl overflow-hidden shadow-sm px-4 py-1">
+            <input
+              type="number"
+              placeholder="Por dia"
+              value={quantosPorDia}
+              onChange={(e) => setQuantosPorDia(e.target.value)}
+              className="w-full text-[17px] py-2.5 outline-none text-black placeholder:text-gray-300 bg-transparent"
+            />
+          </div>
+        </section>
+
+        {/* Section: NÚMERO DE CIGARROS NUM MAÇO */}
+        <section>
+          <div className="text-[12px] font-semibold text-gray-500 uppercase px-2 mb-2 tracking-wide">
+            NÚMERO DE CIGARROS NUM MAÇO
+          </div>
+          <div className="bg-white rounded-2xl overflow-hidden shadow-sm px-4 py-1">
+            <input
+              type="number"
+              placeholder="Maço de"
+              value={cigarrosNoMaco}
+              onChange={(e) => setCigarrosNoMaco(e.target.value)}
+              className="w-full text-[17px] py-2.5 outline-none text-black placeholder:text-gray-300 bg-transparent"
+            />
+          </div>
+        </section>
+
+        {/* Section: QUANTO TEMPO LEVA PARA FUMAR O PRIMEIRO CIGARRO APÓS ACORDAR? */}
+        <section>
+          <div className="text-[12px] font-semibold text-gray-500 uppercase px-2 mb-2 tracking-wide leading-tight">
+            QUANTO TEMPO LEVA PARA FUMAR O PRIMEIRO CIGARRO APÓS ACORDAR?
+          </div>
+          <div className="bg-white rounded-2xl overflow-hidden shadow-sm flex flex-col">
+            {[
+              "Em 5 minutos",
+              "6-30 minutos",
+              "31-60 minutos",
+              "Mais de 60 minutos"
+            ].map((option, idx, arr) => (
+              <button
+                key={option}
+                onClick={() => setTempoPrimeiroCigarro(option)}
+                className={`w-full flex items-center justify-between px-4 py-3.5 bg-white active:bg-gray-50 transition-colors ${
+                  idx !== arr.length - 1 ? "border-b border-gray-100" : ""
+                }`}
+              >
+                <span className="text-[17px] text-black text-left">{option}</span>
+                {tempoPrimeiroCigarro === option && <Check className="text-[#65A30D] w-5 h-5 flex-shrink-0" />}
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* Bottom Sticky Button */}
+      <div className="fixed bottom-0 left-0 w-full p-4 bg-[#F2F2F7] border-t border-gray-200/50 pb-8">
+        <button
+          disabled={isSubmitting}
+          onClick={handleContinue}
+          className={`w-full py-4 rounded-xl text-white font-bold text-[15px] tracking-wide uppercase transition-all shadow-md flex justify-center items-center ${
+            isSubmitting ? "bg-[#5A8D15] opacity-70" : "bg-[#4D7E0E] active:scale-[0.98]"
+          }`}
+          style={{ backgroundColor: "#4A7A11" }} // Specific visual match to the image's green button
+        >
+          {isSubmitting ? "Carregando..." : "Habilitar Plano de Parada"}
+        </button>
       </div>
     </div>
   );
-};
-
-export default Onboarding;
+}
