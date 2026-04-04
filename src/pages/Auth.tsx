@@ -50,39 +50,35 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050a18] flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Background Glimmer */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-500/5 blur-[100px] rounded-full pointer-events-none" />
-
+    <div className="min-h-screen bg-[#F2F2F7] flex items-center justify-center p-6 relative overflow-hidden">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-[440px] relative z-10"
       >
-        <div className="bg-white/[0.03] border border-white/[0.05] backdrop-blur-3xl rounded-[40px] p-10 md:p-14 shadow-2xl shadow-black/50">
+        <div className="bg-white border border-gray-100 rounded-[40px] p-10 md:p-14 shadow-lg">
           <div className="flex flex-col items-center mb-12">
-            <div className="w-16 h-16 bg-white flex items-center justify-center rounded-2xl mb-8 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-              <Zap size={32} className="text-[#050a18]" />
+            <div className="w-16 h-16 bg-[#528114] flex items-center justify-center rounded-2xl mb-8 shadow-md">
+              <Zap size={32} className="text-white" />
             </div>
-            <h1 className="text-4xl font-extralight tracking-tight text-white mb-2 text-center">
+            <h1 className="text-3xl font-bold tracking-tight text-black mb-2 text-center">
               {isLogin ? "Bem-vindo de volta" : "Crie sua conta"}
             </h1>
-            <p className="text-white/30 text-sm tracking-widest uppercase font-bold text-center">
+            <p className="text-gray-500 text-sm tracking-wide font-medium text-center">
               A ciência da sua liberdade
             </p>
           </div>
 
-          <form onSubmit={handleAuth} className="space-y-6">
+          <form onSubmit={handleAuth} className="space-y-4">
             {!isLogin && (
               <div className="space-y-2">
                 <div className="relative group">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-400 transition-colors" size={18} />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#528114] transition-colors" size={18} />
                   <Input
                     placeholder="Nome completo"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="bg-white/[0.03] border-white/10 h-14 pl-12 rounded-2xl focus:border-indigo-400/50 transition-all text-white placeholder:text-white/10"
+                    className="bg-[#F2F2F7] border-transparent h-14 pl-12 rounded-2xl focus:border-[#528114] transition-all text-black placeholder:text-gray-400"
                     required
                   />
                 </div>
@@ -91,13 +87,13 @@ export default function Auth() {
 
             <div className="space-y-2">
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-400 transition-colors" size={18} />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#528114] transition-colors" size={18} />
                 <Input
                   type="email"
                   placeholder="Seu melhor e-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white/[0.03] border-white/10 h-14 pl-12 rounded-2xl focus:border-indigo-400/50 transition-all text-white placeholder:text-white/10"
+                  className="bg-[#F2F2F7] border-transparent h-14 pl-12 rounded-2xl focus:border-[#528114] transition-all text-black placeholder:text-gray-400"
                   required
                 />
               </div>
@@ -105,13 +101,13 @@ export default function Auth() {
 
             <div className="space-y-2">
               <div className="relative group">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-indigo-400 transition-colors" size={18} />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#528114] transition-colors" size={18} />
                 <Input
                   type="password"
                   placeholder="Sua senha secreta"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-white/[0.03] border-white/10 h-14 pl-12 rounded-2xl focus:border-indigo-400/50 transition-all text-white placeholder:text-white/10"
+                  className="bg-[#F2F2F7] border-transparent h-14 pl-12 rounded-2xl focus:border-[#528114] transition-all text-black placeholder:text-gray-400"
                   required
                 />
               </div>
@@ -120,23 +116,23 @@ export default function Auth() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-16 bg-white hover:bg-white/90 text-[#050a18] font-bold text-lg rounded-2xl transition-all shadow-xl shadow-indigo-500/10 active:scale-[0.98]"
+              className="w-full h-14 mt-4 bg-[#528114] hover:bg-green-700 text-white font-bold text-[15px] rounded-2xl transition-transform active:scale-[0.98]"
             >
-              {loading ? <Loader2 className="animate-spin" /> : (
-                <div className="flex items-center gap-3">
-                  {isLogin ? "Acessar Sistema" : "Finalizar Cadastro"}
-                  <ArrowRight size={20} />
+              {loading ? <Loader2 className="animate-spin w-5 h-5" /> : (
+                <div className="flex items-center justify-center gap-2">
+                  {isLogin ? "Acessar Plataforma" : "Finalizar Cadastro"}
+                  <ArrowRight size={18} />
                 </div>
               )}
             </Button>
           </form>
 
-          <div className="mt-12 text-center">
+          <div className="mt-10 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-white/30 text-sm font-bold tracking-widest uppercase hover:text-white transition-colors"
+              className="text-gray-500 text-sm font-semibold hover:text-[#528114] transition-colors"
             >
-              {isLogin ? "Ainda não tem conta? Clique aqui" : "Já tem conta? Clique aqui"}
+              {isLogin ? "Não possui conta? Cadastre-se" : "Já possui conta? Faça login"}
             </button>
           </div>
         </div>

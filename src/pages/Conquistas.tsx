@@ -7,11 +7,8 @@ import {
 } from "lucide-react";
 import AppLayout from "@/components/app/AppLayout";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { achievementService } from "@/lib/services";
-import { toast } from "sonner";
-import { AppleCard } from "@/components/ui/apple-card";
 
 interface Achievement {
   id: string;
@@ -25,7 +22,6 @@ interface Achievement {
   required_days: number | null;
   medical_fact?: string | null;
   medical_source?: string | null;
-  story?: string | null;
 }
 
 interface RarityConfig {
@@ -33,14 +29,13 @@ interface RarityConfig {
   color: string;
   bg: string;
   border: string;
-  glow: string;
 }
 
 const RARITY_MAP: Record<string, RarityConfig> = {
-  "comum": { label: "Comum", color: "text-slate-400", bg: "bg-slate-500/10", border: "border-slate-500/20", glow: "" },
-  "raro": { label: "Raro", color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", glow: "shadow-[0_0_15px_rgba(59,130,246,0.2)]" },
-  "épico": { label: "Épico", color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", glow: "shadow-[0_0_20px_rgba(168,85,247,0.3)]" },
-  "lendário": { label: "Lendário", color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", glow: "shadow-glow" },
+  "comum": { label: "Comum", color: "text-gray-500", bg: "bg-gray-100", border: "border-gray-200" },
+  "raro": { label: "Raro", color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100" },
+  "épico": { label: "Épico", color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-100" },
+  "lendário": { label: "Lendário", color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
 };
 
 function AnimatedCounter({ value }: { value: number }) {
@@ -96,15 +91,15 @@ const Conquistas = () => {
     
     let progress = 0;
     if (nextAchievement) {
-       progress = Math.min(100, (diffDays / (nextAchievement.required_days || 1)) * 100);
+       progress = Math.min(100, Math.max(0, (diffDays / (nextAchievement.required_days || 1)) * 100));
     }
 
     const currentLevel = (() => {
-      if (totalPoints >= 1000) return { level: 6, name: "Lenda Galáctica", icon: "🌌" };
-      if (totalPoints >= 500) return { level: 5, name: "Almirante", icon: "👑" };
+      if (totalPoints >= 1000) return { level: 6, name: "Lenda", icon: "💎" };
+      if (totalPoints >= 500) return { level: 5, name: "Mestre", icon: "👑" };
       if (totalPoints >= 300) return { level: 4, name: "Veterano", icon: "⚔️" };
-      if (totalPoints >= 150) return { level: 3, name: "Explorador", icon: "🔥" };
-      if (totalPoints >= 50) return { level: 2, name: "Cadete", icon: "💪" };
+      if (totalPoints >= 150) return { level: 3, name: "Guerreiro", icon: "🔥" };
+      if (totalPoints >= 50) return { level: 2, name: "Iniciante", icon: "💪" };
       return { level: 1, name: "Recruta", icon: "🌱" };
     })();
 
@@ -120,13 +115,8 @@ const Conquistas = () => {
   if (loading || !stats) {
     return (
       <AppLayout>
-        <div className="flex flex-col items-center justify-center min-h-screen gap-6">
-          <motion.div 
-            animate={{ rotate: 360, scale: [1, 1.1, 1] }} 
-            transition={{ repeat: Infinity, duration: 1.5 }} 
-            className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full shadow-glow" 
-          />
-          <p className="text-muted-foreground font-black uppercase tracking-widest text-sm font-medium italic animate-pulse text-center">Sincronizando Hall da Fama...</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
+          <Loader2 className="w-8 h-8 text-[#528114] animate-spin" />
         </div>
       </AppLayout>
     );
@@ -134,217 +124,154 @@ const Conquistas = () => {
 
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 sm:px-6 max-w-4xl pb-32 pt-12 relative z-10">
-        <header className="mb-16 text-center">
-           <motion.div 
-             initial={{ scale: 0 }} 
-             animate={{ scale: 1 }} 
-             className="inline-block p-6 rounded-[2rem] bg-primary/10 mb-6 border border-primary/20 shadow-glow relative group"
-           >
-             <div className="absolute inset-0 bg-primary/5 blur-xl group-hover:bg-primary/20 transition-all rounded-full" />
-             <Crown className="w-10 h-10 text-primary relative z-10" />
-           </motion.div>
-           <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 italic text-white leading-none">
-             Hall da <span className="text-primary drop-shadow-glow">Fama</span>
-           </h1>
-           <p className="text-muted-foreground text-sm font-medium font-black uppercase tracking-widest italic">
-             {stats.unlockedCount} de {achievements.length} Protokollos Sincronizados
-           </p>
-        </header>
+      <div className="bg-white min-h-screen pb-32">
+        <div className="bg-[#528114] text-white pt-10 pb-8 px-4 flex flex-col items-center rounded-b-3xl">
+          <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-4xl mb-4 border border-white/20 shadow-sm">
+            {stats.currentLevel.icon}
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight mb-1">{stats.currentLevel.name}</h1>
+          <p className="text-white/80 font-medium">{stats.unlockedCount} de {achievements.length} conquistas</p>
+        </div>
 
-        {/* LEVEL CARD - PREMIUM GLASS */}
-        <motion.div
-           initial={{ opacity: 0, y: 30 }}
-           animate={{ opacity: 1, y: 0 }}
-           className="relative group mb-12"
-        >
-          <div className="absolute inset-0 bg-primary/10 rounded-[2.5rem] blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity" />
-          <AppleCard className="bg-card/40 backdrop-blur-3xl p-10 relative overflow-hidden rounded-[2.5rem] border border-border/40 shadow-elevated">
-            <div className="absolute top-[-40%] right-[-10%] w-96 h-96 bg-primary/10 blur-[100px] rounded-full animate-pulse" />
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="flex items-center gap-8">
-                <div className="w-24 h-24 rounded-[1.5rem] bg-black/40 border border-primary/20 flex items-center justify-center text-6xl shadow-glow">
-                  {stats.currentLevel.icon}
-                </div>
-                <div>
-                  <p className="text-sm font-medium font-black uppercase tracking-widest opacity-40 text-primary italic mb-2">Classificação de Frota</p>
-                  <p className="text-4xl font-black tracking-tighter italic text-white uppercase">{stats.currentLevel.name}</p>
-                </div>
-              </div>
-              <div className="text-center md:text-right">
-                <p className="text-6xl font-black text-primary drop-shadow-glow italic tracking-tighter leading-none">
-                  <AnimatedCounter value={stats.totalPoints} />
-                </p>
-                <p className="text-sm font-medium font-black uppercase tracking-widest opacity-40 text-white italic mt-2">PX Acumulados</p>
-              </div>
-            </div>
-          </AppleCard>
-        </motion.div>
+        <div className="px-4 py-8 max-w-lg mx-auto space-y-8">
+          
+          <div className="bg-[#F2F2F7] rounded-[24px] p-6 text-center shadow-sm">
+            <p className="text-sm font-semibold uppercase text-gray-400 tracking-widest mb-1">Total de Pontos</p>
+            <p className="text-5xl font-light text-[#528114] tracking-tight">
+              <AnimatedCounter value={stats.totalPoints} /> 
+              <span className="text-lg font-bold ml-1">PX</span>
+            </p>
+          </div>
 
-        {/* PROGRESS TRACKER */}
-        {stats.nextAchievement && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            className="bg-card/20 backdrop-blur-md border border-border/20 rounded-[2.5rem] p-8 mb-12 shadow-inner"
-          >
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8">
-               <div className="flex items-center gap-4">
-                 <div className="p-4 rounded-[1rem] bg-primary/10 border border-primary/20"><Target className="w-6 h-6 text-primary" /></div>
+          {stats.nextAchievement && (
+            <div className="bg-white rounded-[24px] p-6 border border-gray-100 shadow-sm">
+              <div className="flex items-center gap-4 mb-4">
+                 <div className="p-3 bg-[#528114]/10 rounded-xl">
+                   <Target className="w-6 h-6 text-[#528114]" />
+                 </div>
                  <div>
-                   <p className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground italic">Próximo Marco Neuronal</p>
-                   <p className="text-xl font-black italic text-white">{stats.nextAchievement.title}</p>
+                   <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Próximo Marco</p>
+                   <p className="text-lg font-bold text-black">{stats.nextAchievement.title}</p>
                  </div>
-               </div>
-               <div className="text-center sm:text-right">
-                  <p className="text-xl font-black text-primary italic tracking-tight italic">-{(stats.nextAchievement.required_days || 0) - stats.diffDays} dias</p>
-                  <p className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground opacity-40">Para Sincronização</p>
-               </div>
+              </div>
+              <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden mb-2">
+                 <motion.div
+                   initial={{ width: 0 }}
+                   animate={{ width: `${stats.progress}%` }}
+                   transition={{ duration: 1.5, ease: "easeOut" }}
+                   className="h-full bg-[#528114]"
+                 />
+              </div>
+              <p className="text-sm font-medium text-gray-500 text-right">
+                Restam {(stats.nextAchievement.required_days || 0) - stats.diffDays} dias
+              </p>
             </div>
-            <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
-               <motion.div
-                 initial={{ width: 0 }}
-                 animate={{ width: `${stats.progress}%` }}
-                 transition={{ duration: 2, ease: "circOut" }}
-                 className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full shadow-glow relative"
-               >
-                 <div className="absolute inset-0 bg-white/20 animate-pulse opacity-50" />
-               </motion.div>
-            </div>
-          </motion.div>
-        )}
-
-        {/* FILTERS - NEUMORPHIC DARK */}
-        <div className="flex flex-wrap gap-4 mb-12 justify-center">
-           {['all', 'unlocked', 'locked'].map(f => (
-             <button
-               key={f}
-               onClick={() => setFilter(f as 'all' | 'unlocked' | 'locked')}
-               className={`px-8 py-4 rounded-[1.2rem] text-sm font-medium font-black uppercase tracking-widest border transition-all italic hover:scale-105 active:scale-95 ${
-                 filter === f 
-                 ? "bg-primary text-white border-primary shadow-glow" 
-                 : "bg-card/40 text-muted-foreground border-border/40 hover:bg-card/60 backdrop-blur-xl"
-               }`}
-             >
-               {f === 'all' ? "Arsenal Completo" : f === 'unlocked' ? "Sincronizados" : "Bloqueados"}
-             </button>
-           ))}
-        </div>
-
-        {/* ACHIEVEMENT GRID */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-           {filteredList.map((badge, i) => {
-             const unlocked = unlockedIds.has(badge.id);
-             const rarity = RARITY_MAP[badge.rarity] || RARITY_MAP.comum;
-             
-             return (
-               <motion.div
-                 key={badge.id}
-                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                 viewport={{ once: true }}
-                 transition={{ delay: i * 0.05 }}
-                 onClick={() => unlocked && setSelectedAchievement(badge)}
-                 className={`group rounded-[2.5rem] p-8 border transition-all duration-500 relative overflow-hidden ${
-                   unlocked 
-                   ? `bg-card/40 backdrop-blur-xl border-border/40 cursor-pointer hover:border-primary/40 hover:shadow-elevated hover:scale-[1.03]`
-                   : "bg-white/5 border-transparent opacity-30 grayscale cursor-not-allowed"
-                 }`}
-               >
-                 {unlocked && (
-                    <div className={`absolute -top-10 -right-10 w-24 h-24 ${rarity.color.replace('text-', 'bg-')}/5 blur-[40px] rounded-full group-hover:scale-150 transition-transform`} />
-                 )}
-                 <div className="flex flex-col items-center text-center relative z-10">
-                    <div className={`w-24 h-24 rounded-[1.8rem] mb-6 flex items-center justify-center text-5xl transition-all duration-500 shadow-inner ${
-                      unlocked ? `bg-black/40 border ${rarity.border} ${rarity.glow}` : "bg-white/5 border border-white/5"
-                    } group-hover:scale-110 group-hover:rotate-6`}>
-                      {unlocked ? (badge.emoji || badge.icon || "🏅") : <Lock className="w-10 h-10 text-white/20" />}
-                    </div>
-                    <div className="mb-4">
-                       <span className={`text-sm font-medium font-black uppercase px-3 py-1 rounded-full border mb-3 inline-block italic ${rarity.bg} ${rarity.color} ${rarity.border}`}>
-                         {rarity.label}
-                       </span>
-                       <h4 className="text-lg font-black tracking-tighter text-white italic line-clamp-1 group-hover:text-primary transition-colors">{badge.title}</h4>
-                    </div>
-                    <p className="text-xs text-muted-foreground font-bold leading-relaxed mb-6 line-clamp-2 italic opacity-60">
-                       {badge.description}
-                    </p>
-                    <div className="flex items-center justify-between w-full mt-auto pt-6 border-t border-white/5">
-                       <span className="text-sm font-medium font-black text-primary italic uppercase tracking-widest">+{badge.points} PX</span>
-                       {unlocked && <Share2 className="w-4 h-4 text-muted-foreground hover:text-white transition-colors" />}
-                    </div>
-                 </div>
-               </motion.div>
-             );
-           })}
-        </div>
-
-        {/* MODAL - ULTRA PREMIUM OVERLAY */}
-        <AnimatePresence>
-          {selectedAchievement && (
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-2xl flex items-center justify-center p-4"
-              onClick={() => setSelectedAchievement(null)}
-            >
-              <motion.div
-                initial={{ scale: 0.9, y: 30, opacity: 0 }}
-                animate={{ scale: 1, y: 0, opacity: 1 }}
-                exit={{ scale: 0.9, y: 30, opacity: 0 }}
-                className="bg-card w-full max-w-xl rounded-[3rem] border border-primary/20 p-10 shadow-glow relative overflow-hidden text-center"
-                onClick={e => e.stopPropagation()}
-              >
-                <div className="absolute inset-0 bg-primary/2 pointer-events-none" />
-                <div className="w-40 h-40 rounded-[2.5rem] bg-black/60 border border-primary/30 flex items-center justify-center text-8xl mx-auto mb-10 shadow-glow rotate-3">
-                  {selectedAchievement.emoji || selectedAchievement.icon || "🏅"}
-                </div>
-                <h3 className="text-4xl font-black italic text-white tracking-tighter mb-4 leading-none">{selectedAchievement.title}</h3>
-                <p className="text-xl font-bold italic text-white/60 mb-10 leading-relaxed px-4">
-                  {selectedAchievement.description}
-                </p>
-
-                {selectedAchievement.medical_fact && (
-                  <div className="bg-primary/5 rounded-[2rem] p-8 text-left mb-10 border border-primary/20 relative group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="flex items-center gap-3 mb-4 relative z-10">
-                       <Shield className="w-5 h-5 text-primary drop-shadow-glow" />
-                       <h4 className="text-sm font-medium font-black uppercase tracking-widest text-primary italic leading-none">Dados de Biocontrole</h4>
-                    </div>
-                    <p className="text-sm font-bold text-white/80 leading-relaxed italic relative z-10">
-                      "{selectedAchievement.medical_fact}"
-                    </p>
-                     {selectedAchievement.medical_source && (
-                       <p className="text-sm font-medium text-muted-foreground font-black mt-6 uppercase tracking-widest italic relative z-10 opacity-40">Fonte: {selectedAchievement.medical_source}</p>
-                    )}
-                  </div>
-                )}
-
-                <div className="flex gap-4">
-                  <Button 
-                    className="flex-1 h-16 rounded-[1.5rem] bg-white text-black font-black italic uppercase tracking-widest text-base font-medium transition-all hover:scale-105 active:scale-95 shadow-glow" 
-                    onClick={() => setSelectedAchievement(null)}
-                  >
-                     Cerrar Protokollo
-                  </Button>
-                  <Button variant="outline" className="h-16 w-16 rounded-[1.5rem] border-white/10 bg-white/5 hover:bg-white/10 transition-all active:scale-90 border-none">
-                     <Share2 className="w-6 h-6 text-white" />
-                  </Button>
-                </div>
-              </motion.div>
-            </motion.div>
           )}
-        </AnimatePresence>
 
-        {/* COMMAND FOOTER */}
-        <div className="mt-24 p-12 rounded-[2.5rem] bg-card/20 backdrop-blur-md border border-border/20 text-center relative overflow-hidden group">
-           <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-           <AlertCircle className="w-8 h-8 text-primary/40 mx-auto mb-6 group-hover:animate-bounce" />
-           <p className="text-sm font-medium font-black text-muted-foreground uppercase tracking-widest leading-loose italic max-w-2xl mx-auto">
-             Marcos Evolutivos Sincronizados com Dados de Saúde Real.<br />
-             Cada emblema representa a reconquista de autonomia celular.
-           </p>
+          <div className="flex gap-2">
+            {['all', 'unlocked', 'locked'].map(f => (
+              <button
+                key={f}
+                onClick={() => setFilter(f as 'all' | 'unlocked' | 'locked')}
+                className={`flex-1 py-3 px-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors ${
+                  filter === f 
+                  ? "bg-[#528114] text-white" 
+                  : "bg-[#F2F2F7] text-gray-500 hover:bg-gray-200"
+                }`}
+              >
+                {f === 'all' ? "Tudo" : f === 'unlocked' ? "Desbloqueado" : "Bloqueado"}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-4">
+             {filteredList.map((badge, i) => {
+               const unlocked = unlockedIds.has(badge.id);
+               const rarity = RARITY_MAP[badge.rarity] || RARITY_MAP.comum;
+               
+               return (
+                 <div
+                   key={badge.id}
+                   onClick={() => unlocked && setSelectedAchievement(badge)}
+                   className={`flex items-center gap-4 p-4 rounded-[20px] transition-all bg-white border ${
+                     unlocked ? "border-gray-200 active:scale-95 cursor-pointer shadow-sm" : "border-transparent opacity-60 grayscale cursor-not-allowed bg-gray-50"
+                   }`}
+                 >
+                   <div className={`w-16 h-16 shrink-0 rounded-[14px] flex items-center justify-center text-3xl ${unlocked ? "bg-[#F2F2F7]" : "bg-gray-200"}`}>
+                     {unlocked ? (badge.emoji || badge.icon || "🏅") : <Lock className="w-6 h-6 text-gray-400" />}
+                   </div>
+                   
+                   <div className="flex-1 min-w-0">
+                     <div className="flex items-center gap-2 mb-1">
+                        <h4 className={`text-base font-bold truncate ${unlocked ? "text-black" : "text-gray-500"}`}>{badge.title}</h4>
+                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${rarity.bg} ${rarity.color}`}>
+                          {rarity.label}
+                        </span>
+                     </div>
+                     <p className="text-sm font-medium text-gray-500 line-clamp-1">{badge.description}</p>
+                   </div>
+                   
+                   <div className="text-sm font-bold text-[#528114]">
+                     {unlocked && (
+                        <span>+{badge.points} XP</span>
+                     )}
+                   </div>
+                 </div>
+               );
+             })}
+          </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {selectedAchievement && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
+            onClick={() => setSelectedAchievement(null)}
+          >
+            <motion.div
+              initial={{ y: "100%", opacity: 0.5 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="bg-white w-full max-w-sm rounded-t-[32px] sm:rounded-[32px] p-8 pb-12 shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8 sm:hidden" />
+              
+              <div className="w-24 h-24 rounded-2xl bg-[#F2F2F7] flex items-center justify-center text-5xl mx-auto mb-6">
+                {selectedAchievement.emoji || selectedAchievement.icon || "🏅"}
+              </div>
+              
+              <h3 className="text-2xl font-bold text-center text-black mb-2">{selectedAchievement.title}</h3>
+              <p className="text-[15px] text-center text-gray-500 mb-8 leading-relaxed">
+                {selectedAchievement.description}
+              </p>
+
+              {selectedAchievement.medical_fact && (
+                <div className="bg-[#528114]/5 rounded-2xl p-5 mb-8 border border-[#528114]/10">
+                  <div className="flex items-center gap-2 mb-2">
+                     <Shield className="w-4 h-4 text-[#528114]" />
+                     <h4 className="text-xs font-bold uppercase tracking-widest text-[#528114]">Fato Médico</h4>
+                  </div>
+                  <p className="text-[13px] text-gray-700 font-medium leading-relaxed">
+                    {selectedAchievement.medical_fact}
+                  </p>
+                </div>
+              )}
+
+              <button 
+                className="w-full bg-[#528114] text-white font-bold h-14 rounded-[16px] text-[15px] active:scale-95 transition-transform" 
+                onClick={() => setSelectedAchievement(null)}
+              >
+                 Fechar
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </AppLayout>
   );
 };
