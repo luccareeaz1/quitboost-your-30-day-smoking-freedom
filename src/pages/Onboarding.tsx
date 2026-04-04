@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Wind, Cigarette, Clock, DollarSign, Brain, Sparkles, Loader2, CheckCircle2, ShieldCheck, FileText, Zap, Shield, Target } from "lucide-react";
+import { ArrowRight, ArrowLeft, Wind, Cigarette, Clock, DollarSign, Brain, Sparkles, Loader2, CheckCircle2, Shield, Zap } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService } from "@/lib/services";
 import { toast } from "sonner";
-import { AppleCard } from "@/components/ui/apple-card";
 
 interface OnboardingData {
   cigarrosPorDia: number;
@@ -19,6 +17,13 @@ const gatilhoOptions = [
   "Estresse", "Após refeições", "Café", "Álcool", "Socialização", "Tédio", "Ansiedade", "Ao dirigir",
 ];
 
+const card: React.CSSProperties = {
+  background: "rgba(255,255,255,0.03)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  borderRadius: "24px",
+  padding: "40px",
+};
+
 const Onboarding = () => {
   const { user } = useAuth();
   const [step, setStep] = useState(0);
@@ -29,7 +34,7 @@ const Onboarding = () => {
     custoPorCigarro: 1.5,
     gatilhos: [],
   });
-  
+
   const [acceptedTerms, setAcceptedTerms] = useState(true);
   const [acceptedHealth, setAcceptedHealth] = useState(true);
   const [acceptedMarketing, setAcceptedMarketing] = useState(false);
@@ -37,17 +42,13 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!user && !isSubmitting) {
-      navigate("/auth");
-    }
+    if (!user && !isSubmitting) navigate("/auth");
   }, [user, navigate, isSubmitting]);
 
   const toggleGatilho = (g: string) => {
     setData(prev => ({
       ...prev,
-      gatilhos: prev.gatilhos.includes(g)
-        ? prev.gatilhos.filter(x => x !== g)
-        : [...prev.gatilhos, g],
+      gatilhos: prev.gatilhos.includes(g) ? prev.gatilhos.filter(x => x !== g) : [...prev.gatilhos, g],
     }));
   };
 
@@ -65,250 +66,329 @@ const Onboarding = () => {
       });
 
       await profileService.saveConsent(user.id, {
-        policy_version: '2026.1',
+        policy_version: "2026.1",
         accepted_terms: true,
         accepted_health_data: true,
-        marketing_consent: acceptedMarketing
+        marketing_consent: acceptedMarketing,
       });
 
-      toast.success("Sincronização concluída! Iniciando protocolo.");
+      toast.success("Configuração concluída!");
       navigate("/checkout");
     } catch (error) {
-       console.error("Erro no onboarding:", error);
-       toast.error("Falha na sincronização neuronal. Tente novamente.");
+      console.error("Erro no onboarding:", error);
+      toast.error("Erro ao salvar. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const numStyle: React.CSSProperties = {
+    fontFamily: "'Geist', sans-serif",
+    fontWeight: 900,
+    fontSize: "96px",
+    color: "#FFFFFF",
+    letterSpacing: "-0.06em",
+    lineHeight: 1,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: "12px",
+    fontWeight: 500,
+    color: "rgba(255,255,255,0.35)",
+    letterSpacing: "0.02em",
+    marginTop: "8px",
+  };
+
   const steps = [
     {
       icon: Cigarette,
-      title: "Carga Operacional",
-      subtitle: "Quantos sinais tóxicos por ciclo solar?",
+      title: "Cigarros por dia",
+      subtitle: "Quantos cigarros você fuma por dia?",
       content: (
-        <div className="space-y-12">
-          <div className="flex flex-col items-center">
-             <div className="text-9xl font-black text-primary italic tracking-tighter drop-shadow-glow leading-none">{data.cigarrosPorDia}</div>
-             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mt-4 italic">Unidades / Dia</p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "32px" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={numStyle}>{data.cigarrosPorDia}</div>
+            <div style={labelStyle}>cigarros / dia</div>
           </div>
-          <div className="relative pt-6">
-            <input
-              type="range" min={1} max={60} value={data.cigarrosPorDia}
-              onChange={e => setData(d => ({ ...d, cigarrosPorDia: +e.target.value }))}
-              className="w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-primary"
-            />
-            <div className="absolute top-0 left-0 w-full flex justify-between text-[8px] font-black uppercase tracking-widest text-white/20 italic">
-              <span>Nível Mínimo</span>
-              <span>Alinhamento Crítico</span>
-            </div>
+          <input
+            type="range" min={1} max={60} value={data.cigarrosPorDia}
+            onChange={e => setData(d => ({ ...d, cigarrosPorDia: +e.target.value }))}
+            style={{ width: "100%", accentColor: "#FFFFFF", cursor: "pointer", height: "4px" }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)" }}>1</span>
+            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)" }}>60</span>
           </div>
         </div>
       ),
     },
     {
       icon: Clock,
-      title: "Vetor de Tempo",
-      subtitle: "Tempo total de exposição em órbitas?",
+      title: "Tempo fumando",
+      subtitle: "Há quantos anos você fuma?",
       content: (
-        <div className="space-y-12">
-          <div className="flex flex-col items-center">
-             <div className="text-9xl font-black text-primary italic tracking-tighter drop-shadow-glow leading-none">{data.anosFumando}</div>
-             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mt-4 italic">Anos de Acúmulo</p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "32px" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={numStyle}>{data.anosFumando}</div>
+            <div style={labelStyle}>anos fumando</div>
           </div>
-          <div className="relative pt-6">
-            <input
-              type="range" min={1} max={50} value={data.anosFumando}
-              onChange={e => setData(d => ({ ...d, anosFumando: +e.target.value }))}
-              className="w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-primary"
-            />
-            <div className="absolute top-0 left-0 w-full flex justify-between text-[8px] font-black uppercase tracking-widest text-white/20 italic">
-              <span>1 Órbita</span>
-              <span>50 Órbitas</span>
-            </div>
+          <input
+            type="range" min={1} max={50} value={data.anosFumando}
+            onChange={e => setData(d => ({ ...d, anosFumando: +e.target.value }))}
+            style={{ width: "100%", accentColor: "#FFFFFF", cursor: "pointer", height: "4px" }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)" }}>1 ano</span>
+            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)" }}>50 anos</span>
           </div>
         </div>
       ),
     },
     {
       icon: DollarSign,
-      title: "Alocação de Recurso",
-      subtitle: "Investimento por unidade individual?",
+      title: "Custo por cigarro",
+      subtitle: "Quanto custa cada cigarro?",
       content: (
-        <div className="space-y-12">
-          <div className="flex flex-col items-center">
-             <div className="text-7xl font-black text-primary italic tracking-tighter drop-shadow-glow leading-none">R${data.custoPorCigarro.toFixed(2)}</div>
-             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 mt-4 italic">Preço Individual</p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "32px" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ ...numStyle, fontSize: "72px" }}>R${data.custoPorCigarro.toFixed(2)}</div>
+            <div style={labelStyle}>por cigarro</div>
           </div>
-          <div className="relative pt-6">
-            <input
-              type="range" min={0.2} max={10} step={0.1} value={data.custoPorCigarro}
-              onChange={e => setData(d => ({ ...d, custoPorCigarro: +e.target.value }))}
-              className="w-full h-2 bg-white/5 rounded-full appearance-none cursor-pointer accent-primary"
-            />
-            <div className="absolute top-0 left-0 w-full flex justify-between text-[8px] font-black uppercase tracking-widest text-white/20 italic">
-              <span>Econômico</span>
-              <span>Premium</span>
-            </div>
+          <input
+            type="range" min={0.2} max={10} step={0.1} value={data.custoPorCigarro}
+            onChange={e => setData(d => ({ ...d, custoPorCigarro: +e.target.value }))}
+            style={{ width: "100%", accentColor: "#FFFFFF", cursor: "pointer", height: "4px" }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)" }}>R$0,20</span>
+            <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)" }}>R$10,00</span>
           </div>
         </div>
       ),
     },
     {
       icon: Brain,
-      title: "Sinais de Gatilho",
-      subtitle: "Mapeie seus pontos de falha sistêmica.",
+      title: "Seus gatilhos",
+      subtitle: "O que costuma te dar vontade de fumar?",
       content: (
-        <div className="grid grid-cols-2 gap-4">
-          {gatilhoOptions.map(g => (
-            <button
-              key={g}
-              onClick={() => toggleGatilho(g)}
-              className={`h-16 rounded-[1.2rem] text-[10px] font-black uppercase tracking-[0.2em] border-2 transition-all flex items-center justify-center px-4 text-center italic ${
-                data.gatilhos.includes(g)
-                  ? "bg-primary text-white border-primary shadow-glow scale-105"
-                  : "bg-white/5 text-white/40 border-white/10 hover:border-primary/40 hover:text-white"
-              }`}
-            >
-              {g}
-            </button>
-          ))}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+          {gatilhoOptions.map(g => {
+            const selected = data.gatilhos.includes(g);
+            return (
+              <button
+                key={g}
+                onClick={() => toggleGatilho(g)}
+                style={{
+                  height: "52px",
+                  borderRadius: "14px",
+                  fontSize: "13px",
+                  fontFamily: "'Geist', sans-serif",
+                  fontWeight: 600,
+                  border: selected ? "1px solid rgba(255,255,255,0.4)" : "1px solid rgba(255,255,255,0.08)",
+                  background: selected ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.03)",
+                  color: selected ? "#FFFFFF" : "rgba(255,255,255,0.45)",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  transform: selected ? "scale(1.02)" : "scale(1)",
+                }}
+              >
+                {g}
+              </button>
+            );
+          })}
         </div>
       ),
     },
     {
       icon: Shield,
-      title: "Protocolo de Segurança",
-      subtitle: "Ative seus módulos de proteção e privacidade.",
+      title: "Privacidade",
+      subtitle: "Leia e aceite nossos termos para continuar.",
       content: (
-        <div className="space-y-4">
-           <div 
-             onClick={() => setAcceptedTerms(!acceptedTerms)}
-             className={`p-6 rounded-[1.5rem] border transition-all flex items-start gap-4 backdrop-blur-xl cursor-pointer ${acceptedTerms ? "bg-primary/10 border-primary/40 shadow-glow" : "bg-white/5 border-white/10 opacity-60 hover:opacity-100"}`}
-           >
-              <div className={`mt-1 w-6 h-6 rounded-lg border flex items-center justify-center ${acceptedTerms ? "bg-primary border-primary text-white" : "border-white/20"}`}>
-                 {acceptedTerms && <CheckCircle2 size={14} />}
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {[
+            {
+              label: "Termos de Uso e Privacidade",
+              desc: "Li e aceito os Termos de Uso e a Política de Privacidade.",
+              links: (
+                <div style={{ display: "flex", gap: "16px", marginTop: "4px" }}>
+                  <Link to="/politica-de-privacidade" target="_blank" style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", textDecoration: "underline" }}>Privacidade</Link>
+                  <Link to="/termos-de-uso" target="_blank" style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", textDecoration: "underline" }}>Termos</Link>
+                </div>
+              ),
+              checked: acceptedTerms,
+              toggle: () => setAcceptedTerms(!acceptedTerms),
+            },
+            {
+              label: "Dados de saúde",
+              desc: "Consinto no processamento dos meus dados de saúde para personalização do plano.",
+              links: null,
+              checked: acceptedHealth,
+              toggle: () => setAcceptedHealth(!acceptedHealth),
+            },
+            {
+              label: "Comunicações (opcional)",
+              desc: "Desejo receber dicas semanais por e-mail.",
+              links: null,
+              checked: acceptedMarketing,
+              toggle: () => setAcceptedMarketing(!acceptedMarketing),
+            },
+          ].map(item => (
+            <div
+              key={item.label}
+              onClick={item.toggle}
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "14px",
+                padding: "16px",
+                borderRadius: "16px",
+                border: item.checked ? "1px solid rgba(255,255,255,0.18)" : "1px solid rgba(255,255,255,0.06)",
+                background: item.checked ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <div style={{
+                width: "22px", height: "22px", borderRadius: "8px", flexShrink: 0, marginTop: "2px",
+                border: item.checked ? "1px solid rgba(255,255,255,0.6)" : "1px solid rgba(255,255,255,0.15)",
+                background: item.checked ? "rgba(255,255,255,0.15)" : "transparent",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                {item.checked && <CheckCircle2 size={13} style={{ color: "#FFFFFF" }} />}
               </div>
-              <div className="flex-1">
-                 <p className="text-sm font-black text-white italic tracking-tight mb-2 uppercase">Protokollo Alpha v1.0</p>
-                 <p className="text-[10px] font-bold text-white/60 mb-2 leading-tight">Li e aceito os Termos de Uso e a Política de Privacidade.</p>
-                 <div className="flex gap-4 text-[9px] font-black uppercase tracking-widest text-primary italic">
-                    <Link to="/politica-de-privacidade" target="_blank" className="hover:underline underline-offset-4">Privacidade</Link>
-                    <Link to="/termos-de-uso" target="_blank" className="hover:underline underline-offset-4">Licença</Link>
-                 </div>
+              <div>
+                <p style={{ fontSize: "13px", fontWeight: 600, color: "#FFFFFF", marginBottom: "4px" }}>{item.label}</p>
+                <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", lineHeight: 1.5 }}>{item.desc}</p>
+                {item.links}
               </div>
-           </div>
-
-           <div 
-             onClick={() => setAcceptedHealth(!acceptedHealth)}
-             className={`p-6 rounded-[1.5rem] border transition-all flex items-start gap-4 backdrop-blur-xl cursor-pointer ${acceptedHealth ? "bg-emerald-500/10 border-emerald-500/40 shadow-glow" : "bg-white/5 border-white/10 opacity-60 hover:opacity-100"}`}
-           >
-              <div className={`mt-1 w-6 h-6 rounded-lg border flex items-center justify-center ${acceptedHealth ? "bg-emerald-500 border-emerald-500 text-white" : "border-white/20"}`}>
-                 {acceptedHealth && <CheckCircle2 size={14} />}
-              </div>
-              <div className="flex-1">
-                 <p className="text-sm font-black text-white italic tracking-tight mb-2 uppercase">Dados Biométricos</p>
-                 <p className="text-[10px] font-bold text-white/60 leading-tight">Consinto no processamento de meus dados sensíveis de saúde para otimização do plano.</p>
-              </div>
-           </div>
-
-           <div 
-             onClick={() => setAcceptedMarketing(!acceptedMarketing)}
-             className={`p-6 rounded-[1.5rem] border transition-all flex items-start gap-4 backdrop-blur-xl cursor-pointer ${acceptedMarketing ? "bg-blue-500/10 border-blue-500/40 shadow-glow" : "bg-white/5 border-white/10 opacity-40 hover:opacity-100"}`}
-           >
-              <div className={`mt-1 w-6 h-6 rounded-lg border flex items-center justify-center ${acceptedMarketing ? "bg-blue-500 border-blue-500 text-white" : "border-white/20"}`}>
-                 {acceptedMarketing && <CheckCircle2 size={14} />}
-              </div>
-              <div className="flex-1">
-                 <p className="text-sm font-black text-white italic tracking-tight mb-2 uppercase">Transmissão de Inteligência</p>
-                 <p className="text-[10px] font-bold text-white/60 leading-tight">Desejo receber dicas semanais de alta performance por e-mail.</p>
-              </div>
-           </div>
+            </div>
+          ))}
         </div>
       ),
     },
   ];
 
   const currentStep = steps[step];
+  const Icon = currentStep.icon;
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
-      {/* Background Decor */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none animate-pulse" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-primary/10 blur-[100px] rounded-full pointer-events-none animate-pulse duration-5000" />
-      
-      <div className="w-full max-w-xl relative z-10">
-        <header className="flex flex-col items-center mb-12">
-           <motion.div 
-             initial={{ scale: 0 }} animate={{ scale: 1 }}
-             className="w-16 h-16 rounded-[1.5rem] bg-primary flex items-center justify-center text-white mb-6 shadow-glow"
-           >
-              <Wind size={32} className="animate-pulse" />
-           </motion.div>
-           <h1 className="text-5xl font-black tracking-tighter text-white italic uppercase leading-none">Recrutamento.</h1>
-           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-primary mt-4 italic">Sincronizando Perfil de Comandante</p>
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-6 py-16 relative overflow-hidden"
+      style={{ background: "#050505" }}
+    >
+      <div
+        className="absolute top-[-10%] left-1/2 -translate-x-1/2 pointer-events-none"
+        style={{
+          width: "700px", height: "300px",
+          background: "radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%)",
+        }}
+      />
+
+      <div className="w-full max-w-lg relative z-10">
+        {/* Header */}
+        <header className="flex flex-col items-center mb-10 text-center">
+          <div
+            style={{
+              width: "56px", height: "56px", borderRadius: "16px",
+              background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px",
+              boxShadow: "0 0 24px rgba(255,255,255,0.15)",
+            }}
+          >
+            <Wind size={28} style={{ color: "#050505" }} />
+          </div>
+          <h1 style={{ fontFamily: "'Geist', sans-serif", fontWeight: 900, fontSize: "32px", letterSpacing: "-0.05em", color: "#FFFFFF", margin: 0, marginBottom: "8px" }}>
+            QuitBoost
+          </h1>
+          <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.35)", fontWeight: 400 }}>Configure seu perfil</p>
         </header>
 
-        {/* Progress System */}
-        <div className="flex gap-3 mb-12 px-2">
+        {/* Progress bar */}
+        <div style={{ display: "flex", gap: "6px", marginBottom: "32px" }}>
           {steps.map((_, i) => (
-            <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-700 ${i <= step ? "bg-primary shadow-glow" : "bg-white/5"}`} />
+            <div
+              key={i}
+              style={{
+                flex: 1, height: "3px", borderRadius: "99px",
+                background: i <= step ? "#FFFFFF" : "rgba(255,255,255,0.08)",
+                transition: "background 0.4s ease",
+              }}
+            />
           ))}
         </div>
 
-        <section className="relative min-h-[550px]">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1.05, y: -20 }}
-              transition={{ duration: 0.5, ease: "anticipate" }}
-              className="h-full"
-            >
-              <AppleCard className="bg-card/40 backdrop-blur-3xl p-10 sm:p-16 border border-white/10 shadow-elevated h-full flex flex-col justify-center rounded-[3rem]">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="w-14 h-14 rounded-[1rem] bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <currentStep.icon className="w-7 h-7 text-primary drop-shadow-glow" />
-                  </div>
-                  <div>
-                    <h2 className="text-3xl font-black text-white italic tracking-tighter uppercase leading-none">{currentStep.title}</h2>
-                    <p className="text-[10px] font-black tracking-[0.2em] text-white/40 uppercase mt-2 italic">{currentStep.subtitle}</p>
-                  </div>
-                </div>
-                {currentStep.content}
-              </AppleCard>
-            </motion.div>
-          </AnimatePresence>
-        </section>
-
-        <footer className="flex gap-4 mt-12 px-2">
-          {step > 0 && !isSubmitting ? (
-            <Button 
-              variant="outline" 
-              className="flex-1 h-16 rounded-[1.5rem] font-black uppercase tracking-widest text-[11px] border-white/10 bg-white/5 hover:bg-white/10 text-white italic transition-all active:scale-95 border-none" 
-              onClick={() => setStep(s => s - 1)}
-            >
-              <ArrowLeft size={16} className="mr-3" /> Regressar
-            </Button>
-          ) : (
-            <div className="flex-1" />
-          )}
-          <Button disabled={isSubmitting || (step === steps.length - 1 && (!acceptedTerms || !acceptedHealth))} 
-            className="flex-[1.5] h-16 rounded-[1.5rem] bg-white text-black font-black uppercase tracking-widest text-[11px] shadow-glow hover:scale-[1.02] active:scale-[0.98] transition-all italic"
-            onClick={() => step < steps.length - 1 ? setStep(s => s + 1) : finishOnboarding()}
+        {/* Step card */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -16 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            style={card}
           >
-            {isSubmitting ? <Loader2 className="animate-spin" /> : step < steps.length - 1 ? <>Próxima Fase <ArrowRight className="ml-3 w-5 h-5" /></> : <>Finalizar Conexão <Sparkles className="ml-3 w-5 h-5" /></>}
-          </Button>
-        </footer>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
+              <div style={{
+                width: "48px", height: "48px", borderRadius: "14px",
+                background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <Icon size={22} style={{ color: "rgba(255,255,255,0.7)" }} />
+              </div>
+              <div>
+                <h2 style={{ fontFamily: "'Geist', sans-serif", fontWeight: 800, fontSize: "22px", letterSpacing: "-0.04em", color: "#FFFFFF", margin: 0 }}>
+                  {currentStep.title}
+                </h2>
+                <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.35)", marginTop: "4px", fontWeight: 400 }}>
+                  {currentStep.subtitle}
+                </p>
+              </div>
+            </div>
+            {currentStep.content}
+          </motion.div>
+        </AnimatePresence>
 
-        {/* Tactical Footer */}
-        <div className="mt-16 text-center">
-          <p className="text-[9px] font-black text-white/20 uppercase tracking-[0.4em] italic leading-loose">
-            🔒 Protocolo de Criptografia Ativo • LGPD Compliant 2026<br />
-            Sistema de Automação QuitBoost v4.0.0
-          </p>
+        {/* Navigation */}
+        <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
+          {step > 0 && !isSubmitting ? (
+            <button
+              onClick={() => setStep(s => s - 1)}
+              style={{
+                flex: 1, height: "56px", borderRadius: "16px",
+                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                color: "rgba(255,255,255,0.6)", fontFamily: "'Geist', sans-serif", fontWeight: 600, fontSize: "14px",
+                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", transition: "all 0.2s",
+              }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"}
+              onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"}
+            >
+              <ArrowLeft size={16} /> Voltar
+            </button>
+          ) : <div style={{ flex: 1 }} />}
+
+          <button
+            disabled={isSubmitting || (step === steps.length - 1 && (!acceptedTerms || !acceptedHealth))}
+            onClick={() => step < steps.length - 1 ? setStep(s => s + 1) : finishOnboarding()}
+            style={{
+              flex: 1.5, height: "56px", borderRadius: "16px",
+              background: "#FFFFFF", color: "#050505",
+              fontFamily: "'Geist', sans-serif", fontWeight: 700, fontSize: "14px",
+              border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+              boxShadow: "0 4px 20px rgba(255,255,255,0.15)",
+              transition: "all 0.2s", opacity: (isSubmitting || (step === steps.length - 1 && (!acceptedTerms || !acceptedHealth))) ? 0.4 : 1,
+            }}
+            onMouseEnter={e => { if (!isSubmitting) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 8px 28px rgba(255,255,255,0.2)"; }}}
+            onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(255,255,255,0.15)"; }}
+          >
+            {isSubmitting ? <Loader2 size={18} className="animate-spin" /> : (
+              step < steps.length - 1 ? <><span>Próximo</span><ArrowRight size={16} /></> : <><span>Finalizar</span><Sparkles size={16} /></>
+            )}
+          </button>
         </div>
+
+        <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.2)", textAlign: "center", marginTop: "20px" }}>
+          🔒 Dados protegidos · LGPD 2026
+        </p>
       </div>
     </div>
   );

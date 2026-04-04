@@ -1,18 +1,18 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, TrendingUp, Target, Users, Trophy, User, Bot, AlertTriangle, Zap, Shield } from "lucide-react";
+import { LayoutDashboard, TrendingUp, Target, Users, Trophy, User, Bot, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CravingModal from "@/components/dashboard/CravingModal";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const navItems = [
-  { label: "Reactor", path: "/dashboard", icon: LayoutDashboard },
-  { label: "Biológico", path: "/progresso", icon: TrendingUp },
-  { label: "Missões", path: "/desafios", icon: Target },
-  { label: "IA Neural", path: "/coach", icon: Bot },
-  { label: "Esquadrão", path: "/comunidade", icon: Users },
-  { label: "Hangar", path: "/conquistas", icon: Trophy },
-  { label: "Comandante", path: "/perfil", icon: User },
+  { label: "Dashboard",   path: "/dashboard",   icon: LayoutDashboard },
+  { label: "Progresso",   path: "/progresso",   icon: TrendingUp },
+  { label: "Desafios",    path: "/desafios",    icon: Target },
+  { label: "Coach IA",    path: "/coach",       icon: Bot },
+  { label: "Comunidade",  path: "/comunidade",  icon: Users },
+  { label: "Conquistas",  path: "/conquistas",  icon: Trophy },
+  { label: "Perfil",      path: "/perfil",      icon: User },
 ];
 
 const AppToolbar = () => {
@@ -23,52 +23,100 @@ const AppToolbar = () => {
   return (
     <>
       <CravingModal open={showCravingModal} onClose={() => setShowCravingModal(false)} />
-      
-      <motion.div 
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-[100] px-4 w-full max-w-fit"
-      >
-        <nav className="bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-2 flex items-center gap-1.5 shadow-elevated relative overflow-hidden group">
-          {/* Subtle Scanning Line Effect */}
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-3000 pointer-events-none" />
 
+      <motion.div
+        initial={{ y: -16, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] px-4 w-full max-w-fit"
+      >
+        <nav
+          style={{
+            background: "rgba(10,10,10,0.85)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "2rem",
+            padding: "6px",
+            display: "flex",
+            alignItems: "center",
+            gap: "4px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+          }}
+        >
           {navItems.map((item) => {
             const active = location.pathname === item.path;
             return (
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className={cn(
-                  "relative flex items-center gap-2.5 px-5 py-3 rounded-[1.2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 italic overflow-hidden",
-                  active
-                    ? "bg-white text-black shadow-glow scale-[1.02]"
-                    : "text-white/40 hover:text-white hover:bg-white/5 active:scale-95"
-                )}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "10px 16px",
+                  borderRadius: "1.4rem",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  letterSpacing: "-0.01em",
+                  fontFamily: "'Geist', sans-serif",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.2s cubic-bezier(0.4,0,0.2,1)",
+                  background: active ? "#FFFFFF" : "transparent",
+                  color: active ? "#050505" : "rgba(255,255,255,0.4)",
+                  boxShadow: active ? "0 2px 12px rgba(255,255,255,0.15)" : "none",
+                }}
+                onMouseEnter={e => {
+                  if (!active) {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                    e.currentTarget.style.color = "rgba(255,255,255,0.9)";
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!active) {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = "rgba(255,255,255,0.4)";
+                  }
+                }}
               >
-                <item.icon className={cn("w-4 h-4", active ? "text-black" : "text-primary/60")} />
+                <item.icon
+                  size={15}
+                  style={{ color: active ? "#050505" : "rgba(255,255,255,0.45)" }}
+                />
                 <span className="hidden lg:inline">{item.label}</span>
-                
-                {/* Active Indicator Pulse */}
-                {active && (
-                  <motion.div 
-                    layoutId="nav-active"
-                    className="absolute inset-0 bg-white -z-10"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
               </button>
             );
           })}
 
-          <div className="w-[1px] h-8 bg-white/10 mx-2" />
+          <div style={{ width: "1px", height: "24px", background: "rgba(255,255,255,0.08)", margin: "0 4px" }} />
 
-          <button 
+          <button
             onClick={() => setShowCravingModal(true)}
-            className="w-12 h-12 rounded-[1.2rem] flex items-center justify-center text-red-500 bg-red-500/5 hover:bg-red-500 hover:text-white transition-all border border-red-500/20 shadow-glow group/sos active:scale-90"
-            title="SINAL DE FISSURA: ATIVAR PROTOCOLO DE EMERGÊNCIA"
+            title="Estou com fissura"
+            style={{
+              width: "44px",
+              height: "44px",
+              borderRadius: "1.4rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "rgba(239,68,68,0.06)",
+              border: "1px solid rgba(239,68,68,0.2)",
+              color: "rgb(239,68,68)",
+              cursor: "pointer",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = "rgba(239,68,68,0.15)";
+              e.currentTarget.style.borderColor = "rgba(239,68,68,0.5)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = "rgba(239,68,68,0.06)";
+              e.currentTarget.style.borderColor = "rgba(239,68,68,0.2)";
+            }}
           >
-            <AlertTriangle size={20} className="group-hover/sos:animate-bounce" strokeWidth={3} />
+            <AlertTriangle size={17} strokeWidth={2} />
           </button>
         </nav>
       </motion.div>
