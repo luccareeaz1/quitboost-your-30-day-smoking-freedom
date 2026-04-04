@@ -88,7 +88,7 @@ const Comunidade = () => {
         category: activeCategory === "all" ? undefined : activeCategory,
         search: searchQuery || undefined
       });
-      setPosts(fetchedPosts as PostWithData[]);
+      setPosts(fetchedPosts as unknown as PostWithData[]);
 
       if (user) {
         const userBookmarks = await communityService.getBookmarks(user.id);

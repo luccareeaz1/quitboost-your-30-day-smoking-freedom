@@ -16,15 +16,16 @@ import { AppleCard } from "@/components/ui/apple-card";
 interface Achievement {
   id: string;
   title: string;
-  description: string;
-  points: number;
-  category: string;
-  rarity: "comum" | "raro" | "épico" | "lendário";
-  icon_url: string;
-  requirement_type: string;
-  requirement_value: number;
-  medical_fact?: string;
-  source?: string;
+  description: string | null;
+  points: number | null;
+  emoji: string | null;
+  icon: string | null;
+  color: string | null;
+  rarity: string | null;
+  required_days: number | null;
+  medical_fact?: string | null;
+  medical_source?: string | null;
+  story?: string | null;
 }
 
 interface RarityConfig {
@@ -88,14 +89,14 @@ const Conquistas = () => {
     const diffDays = Math.floor((Date.now() - quitDate.getTime()) / (1000 * 60 * 60 * 24));
     
     const unlockedList = achievements.filter(a => unlockedIds.has(a.id));
-    const totalPoints = unlockedList.reduce((sum, a) => sum + a.points, 0);
+    const totalPoints = unlockedList.reduce((sum, a) => sum + (a.points || 0), 0);
     
     const lockedList = achievements.filter(a => !unlockedIds.has(a.id));
-    const nextAchievement = lockedList.find(a => a.requirement_type === 'days') || null;
+    const nextAchievement = lockedList.find(a => a.required_days != null) || null;
     
     let progress = 0;
     if (nextAchievement) {
-       progress = Math.min(100, (diffDays / nextAchievement.requirement_value) * 100);
+       progress = Math.min(100, (diffDays / (nextAchievement.required_days || 1)) * 100);
     }
 
     const currentLevel = (() => {
@@ -196,7 +197,7 @@ const Conquistas = () => {
                  </div>
                </div>
                <div className="text-center sm:text-right">
-                  <p className="text-xl font-black text-primary italic tracking-tight italic">-{stats.nextAchievement.requirement_value - stats.diffDays} dias</p>
+                  <p className="text-xl font-black text-primary italic tracking-tight italic">-{(stats.nextAchievement.required_days || 0) - stats.diffDays} dias</p>
                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-40">Para Sincronização</p>
                </div>
             </div>
@@ -257,7 +258,7 @@ const Conquistas = () => {
                     <div className={`w-24 h-24 rounded-[1.8rem] mb-6 flex items-center justify-center text-5xl transition-all duration-500 shadow-inner ${
                       unlocked ? `bg-black/40 border ${rarity.border} ${rarity.glow}` : "bg-white/5 border border-white/5"
                     } group-hover:scale-110 group-hover:rotate-6`}>
-                      {unlocked ? (badge.icon_url || "🏅") : <Lock className="w-10 h-10 text-white/20" />}
+                      {unlocked ? (badge.emoji || badge.icon || "🏅") : <Lock className="w-10 h-10 text-white/20" />}
                     </div>
                     <div className="mb-4">
                        <span className={`text-[8px] font-black uppercase px-3 py-1 rounded-full border mb-3 inline-block italic ${rarity.bg} ${rarity.color} ${rarity.border}`}>
@@ -295,7 +296,7 @@ const Conquistas = () => {
               >
                 <div className="absolute inset-0 bg-primary/2 pointer-events-none" />
                 <div className="w-40 h-40 rounded-[2.5rem] bg-black/60 border border-primary/30 flex items-center justify-center text-8xl mx-auto mb-10 shadow-glow rotate-3">
-                  {selectedAchievement.icon_url || "🏅"}
+                  {selectedAchievement.emoji || selectedAchievement.icon || "🏅"}
                 </div>
                 <h3 className="text-4xl font-black italic text-white tracking-tighter mb-4 leading-none">{selectedAchievement.title}</h3>
                 <p className="text-xl font-bold italic text-white/60 mb-10 leading-relaxed px-4">
@@ -312,8 +313,8 @@ const Conquistas = () => {
                     <p className="text-sm font-bold text-white/80 leading-relaxed italic relative z-10">
                       "{selectedAchievement.medical_fact}"
                     </p>
-                    {selectedAchievement.source && (
-                      <p className="text-[10px] text-muted-foreground font-black mt-6 uppercase tracking-[0.2em] italic relative z-10 opacity-40">Fonte: {selectedAchievement.source}</p>
+                     {selectedAchievement.medical_source && (
+                       <p className="text-[10px] text-muted-foreground font-black mt-6 uppercase tracking-[0.2em] italic relative z-10 opacity-40">Fonte: {selectedAchievement.medical_source}</p>
                     )}
                   </div>
                 )}
