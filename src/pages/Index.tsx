@@ -1,21 +1,21 @@
 import NavBar from "@/components/landing/NavBar";
 import HeroSection from "@/components/landing/HeroSection";
+import TrustBar from "@/components/landing/TrustBar";
+import FeaturesSection from "@/components/landing/FeaturesSection";
 import TestimonialsSection from "@/components/landing/SocialProofSection";
-import AppContentSection from "@/components/landing/BenefitsSection";
-import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import CalculatorSection from "@/components/landing/CalculatorSection";
-import PricingSection from "@/components/landing/PricingSection";
+import CtaSection from "@/components/landing/CtaSection";
+import FaqSection from "@/components/landing/FaqSection";
 import FooterSection from "@/components/landing/FooterSection";
 
 const Index = () => (
-  <div className="min-h-screen bg-background">
+  <div style={{ minHeight: "100vh", background: "#050505" }}>
     <NavBar />
     <HeroSection />
+    <TrustBar />
+    <FeaturesSection />
     <TestimonialsSection />
-    <AppContentSection />
-    <HowItWorksSection />
-    <CalculatorSection />
-    <PricingSection />
+    <CtaSection />
+    <FaqSection />
     <FooterSection />
   </div>
 );

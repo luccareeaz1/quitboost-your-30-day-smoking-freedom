@@ -1,85 +1,202 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Zap, User, Menu, Shield } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const NavBar = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks = [
+    { label: "Recursos", href: "#recursos" },
+    { label: "Depoimentos", href: "#depoimentos" },
+    { label: "FAQ", href: "#faq" },
+  ];
 
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 w-full z-50 border-b border-white/5 bg-black/40 backdrop-blur-3xl"
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      style={{
+        position: "fixed",
+        top: 0,
+        width: "100%",
+        zIndex: 50,
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(5,5,5,0.85)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+      }}
     >
-      <div className="container mx-auto px-6 h-24 flex items-center justify-between max-w-7xl">
-        {/* Brand Logo */}
-        <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate("/")}>
-          <div className="w-12 h-12 bg-primary/20 rounded-[1.2rem] flex items-center justify-center border border-primary/30 group-hover:bg-primary group-hover:scale-110 transition-all duration-700 shadow-glow">
-            <Zap className="w-6 h-6 text-primary group-hover:text-white transition-colors" fill="currentColor" />
-          </div>
-          <div className="flex flex-col">
-             <span className="text-3xl font-black text-white tracking-tighter leading-none italic uppercase">Quit<span className="text-primary italic">Boost.</span></span>
-             <div className="flex items-center gap-2 mt-1">
-               <Shield size={8} className="text-primary/60" />
-               <span className="text-[9px] font-black text-white/40 uppercase tracking-[0.3em] leading-none italic">Sovereign Protocol</span>
-             </div>
-          </div>
+      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "0 24px", height: "72px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        {/* Logo */}
+        <div
+          style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "0px" }}
+          onClick={() => navigate("/")}
+        >
+          <span style={{
+            fontFamily: "'Geist', sans-serif",
+            fontWeight: 900,
+            fontSize: "22px",
+            color: "#FFFFFF",
+            letterSpacing: "-0.04em",
+            lineHeight: 1,
+          }}>
+            Quit<span style={{ color: "#00D1FF" }}>Boost</span>
+          </span>
         </div>
 
-        {/* Global Navigation */}
-        <div className="hidden lg:flex items-center gap-12">
-          {["Funcionalidades", "Protocolo", "Esquadrão", "Acesso"].map((item) => (
-            <a 
-              key={item} 
-              href={`#${item.toLowerCase().replace(" ", "-")}`}
-              className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40 hover:text-primary transition-all duration-300 italic relative group"
+        {/* Desktop Nav Links */}
+        <div style={{ display: "flex", alignItems: "center", gap: "40px" }} className="hidden lg:flex">
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              style={{
+                fontFamily: "'Geist', sans-serif",
+                fontWeight: 500,
+                fontSize: "14px",
+                color: "#A1A1AA",
+                textDecoration: "none",
+                transition: "color 0.2s ease",
+                letterSpacing: "-0.01em",
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#FFFFFF")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#A1A1AA")}
             >
-              {item}
-              <span className="absolute -bottom-1 left-0 w-0 h-px bg-primary group-hover:w-full transition-all duration-500" />
+              {link.label}
             </a>
           ))}
         </div>
 
-        {/* Tactical Actions */}
-        <div className="flex items-center gap-6">
+        {/* CTA */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           {user ? (
-            <Button 
-              variant="default" 
-              size="lg" 
-              className="h-14 rounded-2xl px-10 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] italic hover:scale-105 active:scale-95 transition-all shadow-glow group overflow-hidden relative" 
+            <button
               onClick={() => navigate("/dashboard")}
+              style={{
+                fontFamily: "'Geist', sans-serif",
+                fontWeight: 700,
+                fontSize: "13px",
+                color: "#050505",
+                background: "#00D1FF",
+                border: "none",
+                borderRadius: "8px",
+                padding: "10px 20px",
+                cursor: "pointer",
+                letterSpacing: "-0.01em",
+                boxShadow: "0 0 24px -4px rgba(0,209,255,0.5)",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 40px -4px rgba(0,209,255,0.7)"; e.currentTarget.style.transform = "scale(1.02)"; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 24px -4px rgba(0,209,255,0.5)"; e.currentTarget.style.transform = "scale(1)"; }}
             >
-               <span className="relative z-10">Ponte de Comando</span>
-               <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </Button>
+              Dashboard
+            </button>
           ) : (
             <>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="hidden sm:inline-flex text-white/40 hover:text-white font-black uppercase tracking-[0.2em] text-[10px] italic transition-all" 
+              <button
                 onClick={() => navigate("/auth")}
+                className="hidden sm:block"
+                style={{
+                  fontFamily: "'Geist', sans-serif",
+                  fontWeight: 500,
+                  fontSize: "14px",
+                  color: "#A1A1AA",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  letterSpacing: "-0.01em",
+                  transition: "color 0.2s ease",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.color = "#FFFFFF")}
+                onMouseLeave={e => (e.currentTarget.style.color = "#A1A1AA")}
               >
-                Iniftrar
-              </Button>
-              <Button 
-                variant="default" 
-                size="lg" 
-                className="h-14 rounded-2xl px-12 bg-primary text-white font-black uppercase tracking-[0.2em] text-[10px] italic hover:scale-105 active:scale-95 transition-all shadow-glow group" 
+                Entrar
+              </button>
+              <button
                 onClick={() => navigate("/onboarding")}
+                style={{
+                  fontFamily: "'Geist', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "13px",
+                  color: "#050505",
+                  background: "#00D1FF",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "10px 20px",
+                  cursor: "pointer",
+                  letterSpacing: "-0.01em",
+                  boxShadow: "0 0 24px -4px rgba(0,209,255,0.5)",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 0 40px -4px rgba(0,209,255,0.7)"; e.currentTarget.style.transform = "scale(1.02)"; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 0 24px -4px rgba(0,209,255,0.5)"; e.currentTarget.style.transform = "scale(1)"; }}
               >
-                Recrutamento <Zap size={14} className="ml-2 animate-pulse" />
-              </Button>
+                Começar agora
+              </button>
             </>
           )}
-          <Button variant="ghost" size="icon" className="lg:hidden rounded-2xl text-white/40 hover:text-white bg-white/5 border border-white/10">
-            <Menu className="w-6 h-6" />
-          </Button>
+          {/* Mobile menu toggle */}
+          <button
+            className="lg:hidden"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            style={{ background: "transparent", border: "none", color: "#A1A1AA", cursor: "pointer", padding: "4px" }}
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileOpen && (
+        <div style={{
+          background: "rgba(5,5,5,0.98)",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          padding: "20px 24px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+        }}>
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              style={{
+                fontFamily: "'Geist', sans-serif",
+                fontWeight: 500,
+                fontSize: "16px",
+                color: "#A1A1AA",
+                textDecoration: "none",
+              }}
+            >
+              {link.label}
+            </a>
+          ))}
+          <button
+            onClick={() => { navigate("/onboarding"); setMobileOpen(false); }}
+            style={{
+              fontFamily: "'Geist', sans-serif",
+              fontWeight: 700,
+              fontSize: "14px",
+              color: "#050505",
+              background: "#00D1FF",
+              border: "none",
+              borderRadius: "8px",
+              padding: "14px 24px",
+              cursor: "pointer",
+              marginTop: "8px",
+            }}
+          >
+            Começar agora
+          </button>
+        </div>
+      )}
     </motion.nav>
   );
 };

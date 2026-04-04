@@ -1,17 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600;700;800;900&family=Geist+Mono:wght@100;200;300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ===========================
-   GALACTIC BLACK THEME
+   QUITBOOST — GROK DARK THEME
    =========================== */
 @layer base {
   :root {
-    /* Pure galactic black */
+    /* Pure dark background */
     --background: 0 0% 2%;
-    --foreground: 0 0% 98%;
+    --foreground: 0 0% 100%;
 
     --card: 0 0% 5%;
     --card-foreground: 0 0% 95%;
@@ -19,17 +19,17 @@
     --popover: 0 0% 4%;
     --popover-foreground: 0 0% 95%;
 
-    /* Emerald green accent */
-    --primary: 152 58% 48%;
+    /* Cyan electric accent */
+    --primary: 191 100% 50%;
     --primary-foreground: 0 0% 2%;
 
     --secondary: 0 0% 8%;
     --secondary-foreground: 0 0% 80%;
 
     --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 50%;
+    --muted-foreground: 0 0% 63%;
 
-    --accent: 152 30% 12%;
+    --accent: 191 30% 12%;
     --accent-foreground: 0 0% 95%;
 
     --destructive: 0 84% 60%;
@@ -37,11 +37,11 @@
 
     --border: 0 0% 12%;
     --input: 0 0% 9%;
-    --ring: 152 58% 48%;
+    --ring: 191 100% 50%;
 
-    --radius: 1.25rem;
+    --radius: 1rem;
 
-    --success: 152 58% 48%;
+    --success: 191 100% 50%;
     --success-foreground: 0 0% 2%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
@@ -50,51 +50,48 @@
     /* Sidebar */
     --sidebar-background: 0 0% 3%;
     --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 152 58% 48%;
+    --sidebar-primary: 191 100% 50%;
     --sidebar-primary-foreground: 0 0% 2%;
     --sidebar-accent: 0 0% 8%;
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 0 0% 10%;
-    --sidebar-ring: 152 58% 48%;
+    --sidebar-ring: 191 100% 50%;
 
-    --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-display: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'Geist Mono', 'Courier New', monospace;
+    --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
   html {
     background-color: #050505;
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
     background-color: #050505;
-    /* Galactic subtle star noise */
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, hsla(152, 58%, 48%, 0.07), transparent),
-      radial-gradient(1px 1px at 20% 35%, rgba(255,255,255,0.06) 0%, transparent 100%),
-      radial-gradient(1px 1px at 75% 44%, rgba(255,255,255,0.04) 0%, transparent 100%),
-      radial-gradient(1px 1px at 45% 70%, rgba(255,255,255,0.05) 0%, transparent 100%);
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.03em;
+    font-weight: 900;
+    letter-spacing: -0.04em;
   }
 }
 
 @layer utilities {
   /* ── Glassmorphism ── */
   .glass {
-    background: hsla(0, 0%, 8%, 0.6);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid hsla(152, 58%, 48%, 0.1);
+    background: hsla(0, 0%, 8%, 0.5);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsla(191, 100%, 50%, 0.08);
   }
   .glass-dark {
     background: hsla(0, 0%, 4%, 0.7);
@@ -111,190 +108,132 @@
     box-shadow: 0 8px 40px -8px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05);
   }
   .shadow-glow {
-    box-shadow: 0 0 60px -10px hsla(152, 58%, 48%, 0.25), 0 0 0 1px rgba(255,255,255,0.04);
+    box-shadow: 0 0 60px -10px hsla(191, 100%, 50%, 0.35), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .shadow-glow-purple {
+    box-shadow: 0 0 60px -10px hsla(252, 100%, 68%, 0.35), 0 0 0 1px rgba(255,255,255,0.04);
   }
 
-  /* ── Galactic gradients ── */
+  /* ── Gradients ── */
   .gradient-card {
     background: linear-gradient(145deg, hsl(0 0% 6%), hsl(0 0% 8%));
   }
   .gradient-hero {
     background:
-      radial-gradient(ellipse 80% 50% at 50% -20%, hsla(152, 58%, 48%, 0.15), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 50%, hsla(240, 70%, 60%, 0.05), transparent),
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsla(191, 100%, 50%, 0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 50%, hsla(252, 100%, 68%, 0.04), transparent),
       #050505;
   }
 
   /* ── Text effects ── */
-  .text-gradient {
-    background: linear-gradient(135deg, hsl(152 58% 55%), hsl(152 58% 75%));
+  .text-gradient-cyan {
+    background: linear-gradient(135deg, #00D1FF, #7B61FF);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   .text-gradient-white {
-    background: linear-gradient(180deg, #ffffff, rgba(255,255,255,0.5));
+    background: linear-gradient(180deg, #ffffff, rgba(255,255,255,0.6));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* ── Glows ── */
-  .glow-green {
-    box-shadow: 0 0 80px -12px hsla(152, 58%, 48%, 0.4);
+  /* ── Glow effects ── */
+  .glow-cyan {
+    box-shadow: 0 0 80px -12px hsla(191, 100%, 50%, 0.5);
+  }
+  .glow-purple {
+    box-shadow: 0 0 80px -12px hsla(252, 100%, 68%, 0.4);
   }
   .glow-white {
     box-shadow: 0 0 40px -8px rgba(255,255,255,0.15);
   }
 
-  /* ── Galactic star field overlay ── */
-  .stars-bg {
+  /* ── Hero glow line ── */
+  .hero-line-glow {
     position: relative;
-    overflow: hidden;
   }
-  .stars-bg::before {
+  .hero-line-glow::after {
     content: '';
     position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.08) 0%, transparent 100%),
-      radial-gradient(1px 1px at 30% 55%, rgba(255,255,255,0.06) 0%, transparent 100%),
-      radial-gradient(1px 1px at 60% 15%, rgba(255,255,255,0.07) 0%, transparent 100%),
-      radial-gradient(1px 1px at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 100%),
-      radial-gradient(1px 1px at 50% 85%, rgba(255,255,255,0.06) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 0;
+    top: 0; left: 0; right: 0;
+    height: 100%;
+    background: inherit;
+    filter: blur(8px);
+    opacity: 0.7;
   }
 
-  /* ── Nebula glow blobs ── */
-  .nebula-green {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, hsla(152, 58%, 48%, 0.12) 0%, transparent 70%);
-    filter: blur(60px);
-    pointer-events: none;
-  }
-  .nebula-blue {
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, hsla(220, 70%, 60%, 0.08) 0%, transparent 70%);
-    filter: blur(80px);
-    pointer-events: none;
-  }
-
-  /* ── Animate-pulse-slow & bounce-slow ── */
+  /* ── Animations ── */
   .animate-pulse-slow {
     animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
   .animate-bounce-slow {
     animation: float 6s ease-in-out infinite;
   }
-}
+  .animate-float {
+    animation: float 8s ease-in-out infinite;
+  }
 
+  /* ── Card hover ── */
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 40px -8px hsla(191, 100%, 50%, 0.25), 0 20px 40px -10px rgba(0,0,0,0.5);
+    border-color: hsla(191, 100%, 50%, 0.3);
+  }
 
-
-@layer base {
-  :root {
-    --background: 150 10% 4%;
-    --foreground: 150 5% 95%;
-
-    --card: 150 8% 7%;
-    --card-foreground: 150 5% 95%;
-
-    --popover: 150 8% 7%;
-    --popover-foreground: 150 5% 95%;
-
-    --primary: 152 58% 48%;
-    --primary-foreground: 150 10% 4%;
-
-    --secondary: 150 6% 12%;
-    --secondary-foreground: 150 5% 80%;
-
-    --muted: 150 6% 10%;
-    --muted-foreground: 150 5% 50%;
-
-    --accent: 152 30% 15%;
-    --accent-foreground: 150 5% 95%;
-
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 150 8% 14%;
-    --input: 150 8% 12%;
-    --ring: 152 58% 48%;
-
-    --radius: 1.25rem;
-
-    --success: 152 58% 48%;
-    --success-foreground: 150 10% 4%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    --streak: 38 92% 50%;
-
-    --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* ── Geist mono for stats ── */
+  .font-mono {
+    font-family: var(--font-mono) !important;
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-family: var(--font-body);
-  }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-display);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
 }
 
-@layer utilities {
-  .glass {
-    background: hsla(150, 8%, 7%, 0.7);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid hsla(152, 58%, 48%, 0.08);
-  }
-  .glass-dark {
-    background: hsla(150, 10%, 5%, 0.6);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid hsla(152, 58%, 48%, 0.06);
-  }
-  .shadow-soft {
-    box-shadow: 0 2px 16px -4px hsla(152, 58%, 48%, 0.08);
-  }
-  .shadow-elevated {
-    box-shadow: 0 8px 32px -8px hsla(152, 58%, 48%, 0.12);
-  }
-  .shadow-glow {
-    box-shadow: 0 0 40px -10px hsla(152, 58%, 48%, 0.2);
-  }
-  .gradient-card {
-    background: linear-gradient(145deg, hsl(150 8% 7%), hsl(150 8% 9%));
-  }
-  .gradient-hero {
-    background: radial-gradient(ellipse 80% 50% at 50% -20%, hsla(152, 58%, 48%, 0.15), transparent),
-                radial-gradient(ellipse 60% 40% at 80% 50%, hsla(152, 58%, 48%, 0.08), transparent),
-                hsl(150, 10%, 4%);
-  }
-  .text-gradient {
-    background: linear-gradient(135deg, hsl(152 58% 48%), hsl(152 58% 68%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .text-gradient-white {
-    background: linear-gradient(180deg, hsl(150 5% 95%), hsl(150 5% 60%));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .glow-green {
-    box-shadow: 0 0 60px -12px hsla(152, 58%, 48%, 0.3);
-  }
+@keyframes particle-drift {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.5; }
+  100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes slide-in-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Particle canvas styles */
+.particle-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Accordion styles */
+.accordion-content {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.35s ease;
+  max-height: 0;
+  opacity: 0;
+}
+.accordion-content.open {
+  max-height: 300px;
+  opacity: 1;
 }

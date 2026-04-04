@@ -17,6 +17,9 @@ export default {
       fontFamily: {
         sans: ["var(--font-sans)"],
         display: ["var(--font-display)"],
+        mono: ["var(--font-mono)", "Courier New", "monospace"],
+        geist: ["'Geist'", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        "geist-mono": ["'Geist Mono'", "Courier New", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",

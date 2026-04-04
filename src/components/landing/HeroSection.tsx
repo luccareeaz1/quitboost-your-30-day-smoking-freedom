@@ -1,152 +1,281 @@
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Star, ShieldCheck, Zap, Crosshair, Cpu, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { SparklesCore } from "@/components/ui/sparkles";
+
+// Animated particle canvas (cyan dots drifting upward)
+const ParticleCanvas = () => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId: number;
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    // Particle pool
+    const PARTICLE_COUNT = 80;
+    interface Particle {
+      x: number; y: number; size: number;
+      speedX: number; speedY: number;
+      opacity: number; life: number; maxLife: number;
+    }
+    const particles: Particle[] = [];
+    const rand = (min: number, max: number) => Math.random() * (max - min) + min;
+
+    const spawn = (): Particle => ({
+      x: rand(0, canvas.width),
+      y: rand(canvas.height * 0.3, canvas.height),
+      size: rand(0.5, 1.8),
+      speedX: rand(-0.2, 0.2),
+      speedY: rand(-0.4, -0.15),
+      opacity: 0,
+      life: 0,
+      maxLife: rand(180, 360),
+    });
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const p = spawn();
+      p.life = rand(0, p.maxLife);      // stagger start
+      particles.push(p);
+    }
+
+    const loop = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const p of particles) {
+        p.life++;
+        if (p.life > p.maxLife) {
+          Object.assign(p, spawn(), { life: 0 });
+          continue;
+        }
+        const progress = p.life / p.maxLife;
+        // Fade in / out
+        p.opacity = progress < 0.1
+          ? progress / 0.1
+          : progress > 0.8
+          ? (1 - progress) / 0.2
+          : 1;
+
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        ctx.save();
+        ctx.globalAlpha = p.opacity * 0.7;
+        ctx.fillStyle = "#00D1FF";
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = "#00D1FF";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      animId = requestAnimationFrame(loop);
+    };
+
+    loop();
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}
+    />
+  );
+};
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-black flex flex-col font-sans">
-      {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
-      
-      {/* === SPARKLES HERO BLOCK === */}
-      <div className="w-full bg-black flex flex-col items-center justify-center overflow-hidden pt-48 pb-12 relative">
-        {/* Main title */}
-        <div className="relative z-20 flex flex-col items-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="mb-8 px-6 py-2 rounded-full border border-primary/20 bg-primary/10 backdrop-blur-xl flex items-center gap-3 shadow-glow"
+    <section style={{
+      position: "relative",
+      minHeight: "100vh",
+      background: "#050505",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      paddingTop: "72px",
+    }}>
+      {/* Ambient radial glow top */}
+      <div style={{
+        position: "absolute",
+        top: "-10%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "900px",
+        height: "400px",
+        background: "radial-gradient(ellipse at center, rgba(0,209,255,0.06) 0%, transparent 70%)",
+        pointerEvents: "none",
+        zIndex: 0,
+      }} />
+
+      {/* Floating particles */}
+      <ParticleCanvas />
+
+      {/* Main content */}
+      <div style={{
+        position: "relative",
+        zIndex: 2,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+        padding: "0 24px",
+        maxWidth: "900px",
+        width: "100%",
+      }}>
+        {/* Title */}
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          style={{
+            fontFamily: "'Geist', sans-serif",
+            fontWeight: 900,
+            fontSize: "clamp(72px, 14vw, 160px)",
+            color: "#FFFFFF",
+            letterSpacing: "-0.06em",
+            lineHeight: 0.9,
+            margin: 0,
+            marginBottom: "24px",
+          }}
+        >
+          Quit<span style={{ color: "#00D1FF" }}>Boost</span>
+        </motion.h1>
+
+        {/* Glow line separator */}
+        <motion.div
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: 1, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          style={{
+            position: "relative",
+            width: "100%",
+            maxWidth: "600px",
+            height: "2px",
+            marginBottom: "32px",
+          }}
+        >
+          {/* Base line */}
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(90deg, transparent, #00D1FF, transparent)",
+          }} />
+          {/* Glow layer */}
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(90deg, transparent, #00D1FF, transparent)",
+            filter: "blur(8px)",
+            opacity: 0.8,
+          }} />
+          {/* Bright center point */}
+          <div style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "8px",
+            height: "8px",
+            background: "#00D1FF",
+            borderRadius: "50%",
+            boxShadow: "0 0 16px 4px rgba(0,209,255,0.9)",
+          }} />
+        </motion.div>
+
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.45 }}
+          style={{
+            fontFamily: "'Geist', sans-serif",
+            fontWeight: 500,
+            fontSize: "clamp(18px, 3vw, 32px)",
+            color: "#A1A1AA",
+            letterSpacing: "-0.02em",
+            lineHeight: 1.3,
+            margin: 0,
+            marginBottom: "48px",
+            maxWidth: "520px",
+          }}
+        >
+          Pare de fumar para sempre.
+        </motion.p>
+
+        {/* CTA Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <button
+            onClick={() => navigate("/onboarding")}
+            style={{
+              fontFamily: "'Geist', sans-serif",
+              fontWeight: 700,
+              fontSize: "16px",
+              color: "#050505",
+              background: "#00D1FF",
+              border: "none",
+              borderRadius: "12px",
+              padding: "18px 48px",
+              cursor: "pointer",
+              letterSpacing: "-0.02em",
+              boxShadow: "0 0 40px -4px rgba(0,209,255,0.6), 0 0 0 1px rgba(0,209,255,0.2)",
+              transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.boxShadow = "0 0 70px -4px rgba(0,209,255,0.9), 0 0 0 1px rgba(0,209,255,0.4)";
+              e.currentTarget.style.transform = "translateY(-2px) scale(1.03)";
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.boxShadow = "0 0 40px -4px rgba(0,209,255,0.6), 0 0 0 1px rgba(0,209,255,0.2)";
+              e.currentTarget.style.transform = "translateY(0) scale(1)";
+            }}
           >
-            <ShieldCheck size={14} className="text-primary animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white italic">Protocolo Alpha v4.0 Ativo</span>
-          </motion.div>
-          
-          <motion.h1
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "circOut" }}
-            className="md:text-8xl text-5xl lg:text-[10rem] font-black text-center text-white relative z-20 tracking-tighter uppercase italic leading-none"
-          >
-            Quit<span className="text-primary italic drop-shadow-glow">Boost.</span>
-          </motion.h1>
-        </div>
+            Começar agora
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+          </button>
+        </motion.div>
 
-        {/* Sparkles area — Emerald Optimized */}
-        <div className="w-[60rem] h-40 relative mt-4">
-          {/* Emerald Gradient lines */}
-          <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-primary to-transparent h-[2px] w-3/4 blur-sm shadow-glow" />
-          <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-primary to-transparent h-px w-3/4" />
-          <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-primary/60 to-transparent h-[5px] w-1/4 blur-sm" />
-          <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-primary/60 to-transparent h-px w-1/4" />
-
-          {/* Core particle component */}
-          <SparklesCore
-            background="transparent"
-            minSize={0.4}
-            maxSize={1.2}
-            particleDensity={1500}
-            className="w-full h-full"
-            particleColor="#10b981" // Emerald Primary
-          />
-
-          {/* Radial gradient mask */}
-          <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]" />
-        </div>
-      </div>
-
-      {/* === REST OF HERO === */}
-      <div className="relative z-10 flex-1 px-6">
-        <div className="container relative z-10 mx-auto max-w-5xl py-12">
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-2xl md:text-3xl text-white/40 max-w-4xl mx-auto mb-16 font-black italic text-center uppercase tracking-tight leading-tight"
-          >
-            A única plataforma que usa{" "}
-            <span className="text-white drop-shadow-glow">Inteligência Artificial Neural</span>{" "}
-            para reprogramar sua biologia e te libertar do cigarro em 30 dias.
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-8 items-center justify-center mb-24"
-          >
-            <Button
-              size="lg"
-              onClick={() => navigate("/onboarding")}
-              className="h-24 px-16 text-[13px] rounded-[2.5rem] bg-white text-black font-black uppercase tracking-[0.3em] shadow-glow hover:scale-105 active:scale-95 transition-all italic flex items-center group overflow-hidden relative"
-            >
-              <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="relative z-10">Iniciar Recrutamento</span>
-              <ArrowRight className="relative z-10 ml-4 w-6 h-6 group-hover:translate-x-2 transition-transform" />
-            </Button>
-
-            <div className="flex flex-col items-center sm:items-start px-6 py-4 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl">
-              <div className="flex gap-1 text-primary mb-2">
-                {[1, 2, 3, 4, 5].map(i => (
-                  <Star key={i} size={14} fill="currentColor" className="drop-shadow-glow" />
-                ))}
-              </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 italic">
-                Sincronização Perfeita <span className="text-white">5.0/5.0</span>
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Tactical Specs */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/10 pt-16"
-          >
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:shadow-glow transition-all">
-                <Cpu size={20} />
-              </div>
-              <p className="text-[10px] font-black text-white uppercase tracking-widest italic mb-1">Mecanismo</p>
-              <p className="text-[11px] font-bold text-white/40 italic">IA Neuro-Focada</p>
-            </div>
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:shadow-glow transition-all">
-                <Crosshair size={20} />
-              </div>
-              <p className="text-[10px] font-black text-white uppercase tracking-widest italic mb-1">Taxa Êxito</p>
-              <p className="text-[11px] font-bold text-white/40 italic">94.2% Conclusão</p>
-            </div>
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:shadow-glow transition-all">
-                <Globe size={20} />
-              </div>
-              <p className="text-[10px] font-black text-white uppercase tracking-widest italic mb-1">Global</p>
-              <p className="text-[11px] font-bold text-white/40 italic">+12k Usuários</p>
-            </div>
-            <div className="flex flex-col items-center text-center group">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary mb-4 group-hover:shadow-glow transition-all">
-                <ShieldCheck size={20} />
-              </div>
-              <p className="text-[10px] font-black text-white uppercase tracking-widest italic mb-1">Segurança</p>
-              <p className="text-[11px] font-bold text-white/40 italic">Militar AES-256</p>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Hero Footnote */}
-      <div className="pb-12 text-center relative z-20">
-         <p className="text-[8px] font-black text-white/10 uppercase tracking-[0.5em] italic">
-           Sincronized with Global Health Standards • 2026 Fleet Base
-         </p>
+        {/* Social proof micro-text */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.9 }}
+          style={{
+            fontFamily: "'Geist', sans-serif",
+            fontWeight: 400,
+            fontSize: "13px",
+            color: "rgba(161,161,170,0.5)",
+            letterSpacing: "-0.01em",
+            marginTop: "20px",
+          }}
+        >
+          +87.000 pessoas já transformaram sua vida
+        </motion.p>
       </div>
     </section>
   );
