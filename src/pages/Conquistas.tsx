@@ -296,7 +296,7 @@ const Conquistas = () => {
               >
                 <div className="absolute inset-0 bg-primary/2 pointer-events-none" />
                 <div className="w-40 h-40 rounded-[2.5rem] bg-black/60 border border-primary/30 flex items-center justify-center text-8xl mx-auto mb-10 shadow-glow rotate-3">
-                  {selectedAchievement.icon_url || "🏅"}
+                  {selectedAchievement.emoji || selectedAchievement.icon || "🏅"}
                 </div>
                 <h3 className="text-4xl font-black italic text-white tracking-tighter mb-4 leading-none">{selectedAchievement.title}</h3>
                 <p className="text-xl font-bold italic text-white/60 mb-10 leading-relaxed px-4">
