@@ -89,7 +89,7 @@ const Conquistas = () => {
     const diffDays = Math.floor((Date.now() - quitDate.getTime()) / (1000 * 60 * 60 * 24));
     
     const unlockedList = achievements.filter(a => unlockedIds.has(a.id));
-    const totalPoints = unlockedList.reduce((sum, a) => sum + a.points, 0);
+    const totalPoints = unlockedList.reduce((sum, a) => sum + (a.points || 0), 0);
     
     const lockedList = achievements.filter(a => !unlockedIds.has(a.id));
     const nextAchievement = lockedList.find(a => a.requirement_type === 'days') || null;
