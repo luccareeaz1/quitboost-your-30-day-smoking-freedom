@@ -54,7 +54,7 @@ const AppContentSection = () => {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 mb-6 backdrop-blur-md"
           >
             <Sparkles size={12} fill="currentColor" />
-            <span className="text-[10px] font-black uppercase tracking-widest leading-none">Ecossistema Completo</span>
+            <span className="text-sm font-medium font-black uppercase tracking-widest leading-none">Ecossistema Completo</span>
           </motion.div>
           
           <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-6 text-white leading-none">
@@ -77,7 +77,7 @@ const AppContentSection = () => {
             >
               <AppleCard className="h-full group hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 flex flex-col p-8 bg-card/40 backdrop-blur-xl border-border/40 overflow-hidden relative">
                 {item.badge && (
-                  <div className="absolute top-6 right-6 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black text-primary uppercase tracking-widest italic leading-none">
+                  <div className="absolute top-6 right-6 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium font-black text-primary uppercase tracking-widest italic leading-none">
                     {item.badge}
                   </div>
                 )}
@@ -114,7 +114,7 @@ const AppContentSection = () => {
                className="text-center p-8 rounded-[2.5rem] bg-card/20 border border-border/20 backdrop-blur-sm group hover:border-primary/30 transition-all"
              >
                <p className="text-3xl font-black tracking-tighter text-white italic group-hover:scale-110 transition-transform">{stat.title}</p>
-               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mt-2">{stat.sub}</p>
+               <p className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground mt-2">{stat.sub}</p>
              </motion.div>
            ))}
         </div>

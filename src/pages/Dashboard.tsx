@@ -27,14 +27,14 @@ function StatCard({ label, value, icon: Icon, suffix = "", prefix = "" }: any) {
           <div className="p-2 rounded-xl bg-white/[0.03] border border-white/5">
              <Icon size={16} />
           </div>
-          <span className="text-[11px] font-bold tracking-[0.2em] uppercase">{label}</span>
+          <span className="text-base font-medium font-bold tracking-widest uppercase">{label}</span>
         </div>
         <div className="flex items-baseline gap-1">
-          <span className="text-[12px] font-bold text-white/40 mb-1">{prefix}</span>
+          <span className="text-base font-medium font-bold text-white/40 mb-1">{prefix}</span>
           <span className="text-4xl font-extralight tracking-tight text-white mb-1">
             {value}
           </span>
-          <span className="text-[12px] font-bold text-white/40 mb-1">{suffix}</span>
+          <span className="text-base font-medium font-bold text-white/40 mb-1">{suffix}</span>
         </div>
       </div>
     </div>
@@ -98,24 +98,24 @@ export default function Dashboard() {
             >
               {stats.days}
             </motion.div>
-            <div className="text-[12px] font-bold tracking-[0.6em] text-white/20 uppercase mb-12">
+            <div className="text-base font-medium font-bold tracking-widest text-white/20 uppercase mb-12">
               DIAS DE LIBERDADE
             </div>
             
-            <div className="flex gap-12 font-bold tracking-[0.2em] text-[12px] text-white/40">
+            <div className="flex gap-12 font-bold tracking-widest text-base font-medium text-white/40">
                <div className="flex flex-col gap-1 items-center">
                  <span className="text-white text-base font-extralight tracking-normal">{String(stats.hours).padStart(2, '0')}</span>
-                 <span className="text-[9px]">HORAS</span>
+                 <span className="text-sm font-medium">HORAS</span>
                </div>
                <div className="w-px h-8 bg-white/5" />
                <div className="flex flex-col gap-1 items-center">
                  <span className="text-white text-base font-extralight tracking-normal">{String(stats.minutes).padStart(2, '0')}</span>
-                 <span className="text-[9px]">MINUTOS</span>
+                 <span className="text-sm font-medium">MINUTOS</span>
                </div>
                <div className="w-px h-8 bg-white/5" />
                <div className="flex flex-col gap-1 items-center">
                  <span className="text-white text-base font-extralight tracking-normal">{String(stats.seconds).padStart(2, '0')}</span>
-                 <span className="text-[9px]">SEGUNDOS</span>
+                 <span className="text-sm font-medium">SEGUNDOS</span>
                </div>
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function Dashboard() {
               <div className="bg-white/[0.02] border border-white/[0.05] rounded-[32px] p-10 h-full">
                  <div className="flex items-center justify-between mb-12">
                     <h3 className="text-xl font-extralight tracking-[0.1em] text-white">EVOLUÇÃO DOS TECIDOS</h3>
-                    <div className="text-[10px] font-bold text-white/20 tracking-[0.2em]">ÚLTIMOS 7 DIAS</div>
+                    <div className="text-sm font-medium font-bold text-white/20 tracking-widest">ÚLTIMOS 7 DIAS</div>
                  </div>
                  <div className="h-[300px]">
                    <ResponsiveContainer width="100%" height="100%">
@@ -158,7 +158,7 @@ export default function Dashboard() {
            <div className="space-y-8">
               <div className="bg-indigo-600 rounded-[32px] p-10 text-white relative overflow-hidden group">
                  <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <h4 className="text-[10px] font-bold tracking-[0.2em] mb-4 opacity-70">DEEP MISSÃO</h4>
+                 <h4 className="text-sm font-medium font-bold tracking-widest mb-4 opacity-70">DEEP MISSÃO</h4>
                  <p className="text-2xl font-light tracking-tight mb-8 leading-tight">
                    {dailyChallenge?.title || "Sessão Intensiva de Foco"}
                  </p>
@@ -169,7 +169,7 @@ export default function Dashboard() {
 
               <div className="bg-white/[0.02] border border-white/[0.05] rounded-[32px] p-10 flex flex-col justify-between">
                  <div>
-                    <h4 className="text-[10px] font-bold tracking-[0.2em] mb-4 text-white/20">AI QUOTE</h4>
+                    <h4 className="text-sm font-medium font-bold tracking-widest mb-4 text-white/20">AI QUOTE</h4>
                     <p className="text-lg font-light italic text-white/60 leading-relaxed">
                       "A consistência supera a motivação em 99% das vezes."
                     </p>
@@ -178,7 +178,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
                        <Bot size={14} className="text-indigo-400" />
                     </div>
-                    <span className="text-[11px] font-bold text-white/20 tracking-[0.1em]">ANALISTA IA</span>
+                    <span className="text-base font-medium font-bold text-white/20 tracking-[0.1em]">ANALISTA IA</span>
                  </div>
               </div>
            </div>

@@ -95,7 +95,7 @@ const CravingModal = ({ open, onClose }: CravingModalProps) => {
                 >
                   <Heart className="w-5 h-5 text-destructive" />
                 </motion.div>
-                <span className="text-[10px] text-muted-foreground ml-2 self-center">
+                <span className="text-sm font-medium text-muted-foreground ml-2 self-center">
                   {timer > 40 ? "rápido" : timer > 20 ? "normalizando" : "calmo"}
                 </span>
               </div>

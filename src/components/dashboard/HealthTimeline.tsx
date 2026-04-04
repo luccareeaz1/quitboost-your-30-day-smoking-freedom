@@ -48,7 +48,7 @@ const HealthTimeline = ({ diffHours }: HealthTimelineProps) => {
                     {m.label}
                   </span>
                 </span>
-                <span className="text-[10px] text-muted-foreground">{timeLabel}</span>
+                <span className="text-sm font-medium text-muted-foreground">{timeLabel}</span>
               </div>
               <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                 <div

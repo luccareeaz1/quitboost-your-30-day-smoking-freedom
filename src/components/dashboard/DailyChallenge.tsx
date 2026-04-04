@@ -71,7 +71,7 @@ const DailyActivities = () => {
         <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
           <ListTodo className="w-5 h-5 text-primary" /> Atividades de Hoje
         </h3>
-        <span className="text-[10px] font-bold px-2 py-1 bg-primary/5 text-primary rounded-full border border-primary/10 flex items-center gap-1">
+        <span className="text-sm font-medium font-bold px-2 py-1 bg-primary/5 text-primary rounded-full border border-primary/10 flex items-center gap-1">
           <Sparkles className="w-3 h-3" /> Automático
         </span>
       </div>

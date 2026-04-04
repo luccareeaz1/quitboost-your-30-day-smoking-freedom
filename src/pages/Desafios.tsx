@@ -163,7 +163,7 @@ const Desafios = () => {
           <div className="w-20 h-20 rounded-[2rem] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary animate-pulse shadow-glow">
             <Trophy size={40} fill="currentColor" />
           </div>
-          <p className="text-muted-foreground font-black uppercase tracking-[0.5em] text-[10px] animate-pulse italic">
+          <p className="text-muted-foreground font-black uppercase tracking-widest text-sm font-medium animate-pulse italic">
             Sincronizando Conquistas Galácticas...
           </p>
         </div>
@@ -182,7 +182,7 @@ const Desafios = () => {
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 text-white italic leading-none">
             Mission <span className="text-primary drop-shadow-glow">Control.</span>
           </h1>
-          <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.5em] leading-relaxed italic">
+          <p className="text-muted-foreground text-sm font-medium font-black uppercase tracking-widest leading-relaxed italic">
             Protocolos de Gamificação Aplicada • Nível de Dificuldade: Adaptativo Neural
           </p>
         </header>
@@ -200,19 +200,19 @@ const Desafios = () => {
                   {currentLevel.icon}
                 </div>
                 <div className="text-center sm:text-left">
-                  <p className="text-[11px] font-black uppercase tracking-[0.4em] text-primary italic leading-none mb-2">Rank: Categoria {currentLevel.level}</p>
+                  <p className="text-base font-medium font-black uppercase tracking-widest text-primary italic leading-none mb-2">Rank: Categoria {currentLevel.level}</p>
                   <p className="text-4xl font-black tracking-tighter text-white italic leading-none">{currentLevel.name}</p>
                 </div>
               </div>
               <div className="text-center sm:text-right">
                 <p className="text-6xl font-black text-white drop-shadow-glow italic leading-none">{totalPoints}</p>
-                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground mt-2 italic leading-none">PX Acumulados</p>
+                <p className="text-base font-medium font-black uppercase tracking-widest text-muted-foreground mt-2 italic leading-none">PX Acumulados</p>
               </div>
             </div>
 
             {currentLevel.next && (
               <div className="space-y-5">
-                <div className="flex justify-between text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground italic leading-none">
+                <div className="flex justify-between text-base font-medium font-black uppercase tracking-widest text-muted-foreground italic leading-none">
                   <span>Upgrade para Categoria {currentLevel.level + 1}</span>
                   <span className="text-primary">{currentLevel.next - totalPoints} PX para o Salto</span>
                 </div>
@@ -233,7 +233,7 @@ const Desafios = () => {
         <div className="flex flex-wrap gap-4 mb-12">
           <button
             onClick={() => setShowWeekly(false)}
-            className={`flex-1 h-16 rounded-[1.2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all italic ${
+            className={`flex-1 h-16 rounded-[1.2rem] text-base font-medium font-black uppercase tracking-widest transition-all italic ${
               !showWeekly ? "bg-white text-black shadow-glow scale-[1.02] border-white" : "bg-card/40 border border-border/40 text-muted-foreground hover:bg-card/60 hover:text-white"
             }`}
           >
@@ -241,7 +241,7 @@ const Desafios = () => {
           </button>
           <button
             onClick={() => setShowWeekly(true)}
-            className={`flex-1 h-16 rounded-[1.2rem] text-[11px] font-black uppercase tracking-[0.2em] transition-all italic ${
+            className={`flex-1 h-16 rounded-[1.2rem] text-base font-medium font-black uppercase tracking-widest transition-all italic ${
               showWeekly ? "bg-white text-black shadow-glow scale-[1.02] border-white" : "bg-card/40 border border-border/40 text-muted-foreground hover:bg-card/60 hover:text-white"
             }`}
           >
@@ -280,18 +280,18 @@ const Desafios = () => {
                       <div className="flex-1">
                          <p className="text-lg font-black text-white truncate group-hover/entry:text-primary transition-colors uppercase tracking-tight italic">{entry.display_name || "Comandante Solitário"}</p>
                          <div className="flex items-center gap-3 mt-1">
-                           <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest italic group-hover/entry:text-foreground transition-colors leading-none">Neural Sync {entry.current_streak}D</span>
+                           <span className="text-sm font-medium text-muted-foreground font-black uppercase tracking-widest italic group-hover/entry:text-foreground transition-colors leading-none">Neural Sync {entry.current_streak}D</span>
                          </div>
                       </div>
                       <div className="text-right">
                          <p className="text-2xl font-black text-primary drop-shadow-glow italic leading-none">{entry.total_points}</p>
-                         <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-1 leading-none italic">PX</p>
+                         <p className="text-sm font-medium font-black text-muted-foreground uppercase tracking-widest mt-1 leading-none italic">PX</p>
                       </div>
                     </div>
                   )) : (
                     <div className="flex flex-col items-center py-10 gap-4">
                       <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                      <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.4em] animate-pulse italic">
+                      <p className="text-sm font-medium text-muted-foreground font-black uppercase tracking-widest animate-pulse italic">
                         Sincronizando Dados da Frota...
                       </p>
                     </div>
@@ -308,7 +308,7 @@ const Desafios = () => {
             <button
               key={catId}
               onClick={() => setSelectedCategory(catId)}
-              className={`h-12 px-8 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all whitespace-nowrap border italic flex items-center gap-3 ${
+              className={`h-12 px-8 rounded-2xl text-sm font-medium font-black uppercase tracking-widest transition-all whitespace-nowrap border italic flex items-center gap-3 ${
                 selectedCategory === catId 
                 ? "bg-white text-black border-white shadow-glow scale-105" 
                 : "bg-card/40 border-border/40 text-muted-foreground hover:border-primary/40 hover:text-white"
@@ -364,17 +364,17 @@ const Desafios = () => {
                             {c.title}
                           </h4>
                           <div className="flex flex-wrap gap-3 pt-1">
-                             <span className={`text-[9px] font-black uppercase px-4 py-1.5 rounded-full border shadow-sm ${cat.bg} ${cat.color} ${cat.border} tracking-[0.2em] italic leading-none`}>
+                             <span className={`text-sm font-medium font-black uppercase px-4 py-1.5 rounded-full border shadow-sm ${cat.bg} ${cat.color} ${cat.border} tracking-widest italic leading-none`}>
                                PROTOCOL: {cat.label}
                              </span>
-                             <span className={`text-[9px] font-black uppercase px-4 py-1.5 rounded-full border shadow-sm ${diff.bg} ${diff.color} border-current opacity-70 tracking-[0.2em] italic leading-none`}>
+                             <span className={`text-sm font-medium font-black uppercase px-4 py-1.5 rounded-full border shadow-sm ${diff.bg} ${diff.color} border-current opacity-70 tracking-widest italic leading-none`}>
                                LVL: {diff.label}
                              </span>
                           </div>
                         </div>
                         <div className="text-right ml-6 shrink-0 pt-1">
                           <p className="text-3xl font-black text-primary drop-shadow-glow leading-none italic">+{c.points}</p>
-                          <p className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.3em] mt-1 italic leading-none">PX</p>
+                          <p className="text-sm font-medium font-black text-muted-foreground uppercase tracking-widest mt-1 italic leading-none">PX</p>
                         </div>
                       </div>
 
@@ -394,15 +394,15 @@ const Desafios = () => {
                               <div className="flex items-center gap-4 p-5 bg-black/40 rounded-[1.5rem] border border-border/20 backdrop-blur-md group/info">
                                  <Brain size={20} className="text-primary group-hover/info:scale-110 transition-transform" />
                                  <div className="flex flex-col">
-                                   <span className="text-[8px] font-black text-primary uppercase tracking-[0.3em] italic mb-1">Base Neural</span>
-                                   <span className="text-[11px] font-bold text-white uppercase tracking-wider">{c.technique}</span>
+                                   <span className="text-sm font-medium font-black text-primary uppercase tracking-widest italic mb-1">Base Neural</span>
+                                   <span className="text-base font-medium font-bold text-white uppercase tracking-wider">{c.technique}</span>
                                  </div>
                               </div>
                               <div className="flex items-center gap-4 p-5 bg-black/40 rounded-[1.5rem] border border-border/20 backdrop-blur-md group/info">
                                  <Shield size={20} className="text-primary group-hover/info:scale-110 transition-transform" />
                                  <div className="flex flex-col">
-                                   <span className="text-[8px] font-black text-primary uppercase tracking-[0.3em] italic mb-1">Fonte Info</span>
-                                   <span className="text-[11px] font-bold text-white uppercase tracking-wider truncate max-w-[120px]">{c.source}</span>
+                                   <span className="text-sm font-medium font-black text-primary uppercase tracking-widest italic mb-1">Fonte Info</span>
+                                   <span className="text-base font-medium font-bold text-white uppercase tracking-wider truncate max-w-[120px]">{c.source}</span>
                                  </div>
                               </div>
                             </div>
@@ -422,7 +422,7 @@ const Desafios = () => {
            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
              <Navigation size={32} className="text-primary animate-pulse shadow-glow" />
            </div>
-           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.6em] leading-loose italic group-hover:text-white transition-colors">
+           <p className="text-sm font-medium font-black text-muted-foreground uppercase tracking-widest leading-loose italic group-hover:text-white transition-colors">
              Protocolos de Expansão de Consciência e Resiliência Neural<br />
              <span className="text-primary/60 group-hover:text-primary transition-colors">Bases Globais: OMS • CDC • INCA • TCC v3.0</span>
            </p>

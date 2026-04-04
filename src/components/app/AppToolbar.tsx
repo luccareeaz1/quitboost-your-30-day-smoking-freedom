@@ -36,7 +36,7 @@ export default function AppToolbar() {
           >
             <div className="absolute inset-0 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full" />
             <Zap size={22} className="relative z-10 text-white" />
-            <span className="relative z-10 text-[13px] font-black tracking-[0.2em] text-white uppercase select-none">
+            <span className="relative z-10 text-base font-black tracking-widest text-white uppercase select-none">
               QUIT<span className="text-white/40">BOOST</span>
             </span>
           </div>
@@ -60,7 +60,7 @@ export default function AppToolbar() {
                       }`} 
                     />
                     <span 
-                      className={`text-[12px] font-bold tracking-[0.1em] uppercase transition-all duration-300 ${
+                      className={`text-base font-medium font-bold tracking-[0.1em] uppercase transition-all duration-300 ${
                         isActive ? "text-white" : "text-white/30 group-hover:text-white/60"
                       }`}
                     >

@@ -81,7 +81,7 @@ const Progresso = () => {
             <div className="w-20 h-20 rounded-[2rem] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary animate-pulse shadow-glow">
               <Zap size={40} fill="currentColor" />
             </div>
-            <p className="text-muted-foreground font-black uppercase tracking-[0.5em] text-[10px] animate-pulse italic">
+            <p className="text-muted-foreground font-black uppercase tracking-widest text-sm font-medium animate-pulse italic">
               Sincronizando Métricas Neurais...
             </p>
          </div>
@@ -96,7 +96,7 @@ const Progresso = () => {
             <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-white italic leading-none">
               Mission <span className="text-primary drop-shadow-glow">Metrics.</span>
             </h1>
-            <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.5em] mt-4 italic">
+            <p className="text-muted-foreground text-sm font-medium font-black uppercase tracking-widest mt-4 italic">
               Relatório de Desempenho Biológico • ID: {user?.id.slice(0, 8)}
             </p>
         </header>
@@ -106,11 +106,11 @@ const Progresso = () => {
            <AppleCard className="p-10 sm:p-20 border-primary/20 rounded-[48px] overflow-hidden shadow-elevated relative group bg-card/40 backdrop-blur-3xl">
               <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 group-hover:scale-[1.6] transition-transform duration-1000 text-primary"><Wallet size={160} /></div>
               <div className="relative z-10 text-center space-y-8">
-                 <p className="text-[10px] font-black uppercase tracking-[0.6em] text-primary italic leading-none">Créditos de Saúde Recuperados</p>
+                 <p className="text-sm font-medium font-black uppercase tracking-widest text-primary italic leading-none">Créditos de Saúde Recuperados</p>
                   <div className="text-7xl sm:text-9xl font-black tracking-tighter italic text-white drop-shadow-elevated leading-none">
                     <CountUp value={stats.moneySaved} prefix="R$" />
                   </div>
-                  <div className="flex flex-wrap items-center justify-center gap-6 text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground italic">
+                  <div className="flex flex-wrap items-center justify-center gap-6 text-base font-medium font-black uppercase tracking-widest text-muted-foreground italic">
                     <div className="flex items-center gap-3 bg-black/40 px-6 py-3 rounded-full border border-border/40 backdrop-blur-md group-hover:border-rose-500/30 transition-colors">
                       <TrendingDown className="w-4 h-4 text-rose-500 animate-pulse" /> 
                       <span className="text-white">-{stats.avoidedCount} cigarros</span>
@@ -132,7 +132,7 @@ const Progresso = () => {
         <div className="grid md:grid-cols-3 gap-8">
            <AppleCard className="md:col-span-2 p-10 rounded-[40px] border-border/40 shadow-elevated flex flex-col bg-card/40 backdrop-blur-3xl group">
               <div className="flex items-center justify-between mb-10">
-                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground italic">Projeção Monetária Estelar</h3>
+                 <h3 className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground italic">Projeção Monetária Estelar</h3>
                  <BarChart3 size={18} className="text-primary opacity-40 group-hover:opacity-100 transition-opacity" />
               </div>
               <div className="h-[280px] w-full">
@@ -171,13 +171,13 @@ const Progresso = () => {
               </div>
               <div>
                 <h3 className="text-3xl font-black tracking-tighter leading-tight text-white mb-4 italic">Liberdade Financeira.</h3>
-                <p className="text-[11px] font-bold text-muted-foreground leading-relaxed uppercase tracking-widest italic leading-relaxed">
+                <p className="text-base font-medium font-bold text-muted-foreground leading-relaxed uppercase tracking-widest italic leading-relaxed">
                   Em 1 ano, sua economia projetada é de <span className="text-primary font-black underline decoration-primary/30 underline-offset-4">R${Math.round((profile.cigarettes_per_day || 0) * (Number(profile.price_per_cigarette) || 0) * 365)}</span> extras.
                 </p>
               </div>
               <button 
                 onClick={() => navigate("/checkout")}
-                className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-primary hover:text-white hover:scale-105 transition-all shadow-glow italic"
+                className="w-full h-14 rounded-2xl bg-white text-black font-black uppercase tracking-widest text-sm font-medium hover:bg-primary hover:text-white hover:scale-105 transition-all shadow-glow italic"
               >
                 Simular Futuro
               </button>
@@ -191,7 +191,7 @@ const Progresso = () => {
               <h2 className="text-4xl font-black tracking-tighter text-white italic leading-none">Status Biológico</h2>
               <div className="flex items-center gap-4 bg-primary/10 px-6 py-3 rounded-full border border-primary/20 backdrop-blur-md">
                  <div className="w-3 h-3 rounded-full bg-primary animate-pulse shadow-glow" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary italic leading-none">Neural Sync: Live Data</span>
+                 <span className="text-sm font-medium font-black uppercase tracking-widest text-primary italic leading-none">Neural Sync: Live Data</span>
               </div>
            </div>
 
@@ -217,8 +217,8 @@ const Progresso = () => {
                     </div>
                     <div className="flex-1 pt-3">
                        <div className="flex items-center gap-4 mb-4">
-                          <span className={cn("text-[10px] font-black uppercase tracking-[0.4em] italic", achieved ? "text-primary" : "text-muted-foreground")}>{m.time}</span>
-                          {achieved && <span className="text-[8px] font-black uppercase tracking-[0.2em] bg-primary text-primary-foreground px-4 py-1.5 rounded-full italic shadow-glow">Vitoria Bio-Digital</span>}
+                          <span className={cn("text-sm font-medium font-black uppercase tracking-widest italic", achieved ? "text-primary" : "text-muted-foreground")}>{m.time}</span>
+                          {achieved && <span className="text-sm font-medium font-black uppercase tracking-widest bg-primary text-primary-foreground px-4 py-1.5 rounded-full italic shadow-glow">Vitoria Bio-Digital</span>}
                        </div>
                        <h4 className="text-2xl font-black tracking-tighter mb-4 text-white leading-tight italic group-hover:text-primary transition-colors">{m.benefit}</h4>
                        
@@ -242,7 +242,7 @@ const Progresso = () => {
 
         {/* DISCLAIMER */}
         <AppleCard className="p-10 rounded-[40px] border-border/20 text-center bg-transparent backdrop-blur-sm group hover:border-primary/20 transition-all">
-           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground leading-relaxed italic group-hover:text-white transition-colors duration-500">
+           <p className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground leading-relaxed italic group-hover:text-white transition-colors duration-500">
              Protocolo de Monitoramento Elite 3.0 • Sincronizado com Redes Globais de Saúde 2026
            </p>
         </AppleCard>

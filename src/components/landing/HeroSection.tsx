@@ -48,7 +48,7 @@ const HeroSection = () => {
           initial={{ opacity: 0 }} 
           animate={{ opacity: 1 }} 
           transition={{ delay: 2.8, duration: 1 }}
-          className="mt-8 text-[11px] font-bold tracking-[0.4em] text-white/20 uppercase"
+          className="mt-8 text-base font-medium font-bold tracking-widest text-white/20 uppercase"
         >
           A tecnologia definitiva para parar de fumar
         </motion.p>
@@ -60,7 +60,7 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 3, duration: 1 }}
-          className="flex items-center gap-4 text-white/20 text-[10px] tracking-[0.2em] font-medium"
+          className="flex items-center gap-4 text-white/20 text-sm font-medium tracking-widest font-medium"
         >
           <span>ESTADO DA ARTE</span>
           <div className="w-1 h-1 rounded-full bg-white/20" />

@@ -213,7 +213,7 @@ export default function AICoachInterface() {
                 <button
                   key={action.label}
                   onClick={() => handleSend(action.label)}
-                  className={cn("flex items-center gap-2 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest border transition-all hover:scale-105 hover:shadow-lg", action.color)}
+                  className={cn("flex items-center gap-2 px-6 py-3 rounded-2xl text-base font-medium font-black uppercase tracking-widest border transition-all hover:scale-105 hover:shadow-lg", action.color)}
                 >
                   <action.icon size={16} />
                   {action.label}

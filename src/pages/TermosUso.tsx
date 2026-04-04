@@ -11,7 +11,7 @@ const TermosUso = () => {
       <div className="max-w-3xl mx-auto">
         <button 
           onClick={() => navigate(-1)}
-          className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-all mb-12"
+          className="group flex items-center gap-3 text-sm font-medium font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-all mb-12"
         >
           <div className="w-8 h-8 rounded-xl bg-card border border-border flex items-center justify-center group-hover:-translate-x-1 transition-transform">
              <ArrowLeft size={14} />
@@ -26,7 +26,7 @@ const TermosUso = () => {
            <h1 className="text-5xl font-black tracking-tighter mb-4 italic">Termos de <br />Uso & <span className="text-primary italic">Serviços.</span></h1>
            <p className="text-muted-foreground font-medium text-lg leading-relaxed">As regras do jogo para sua liberdade. Leia atentamente.</p>
            <div className="flex items-center gap-2 mt-6">
-              <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-full">Atualizado: Março 2026</span>
+              <span className="text-sm font-medium font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-full">Atualizado: Março 2026</span>
            </div>
         </header>
 
@@ -83,7 +83,7 @@ const TermosUso = () => {
            </section>
         </div>
 
-        <footer className="mt-20 pt-10 border-t border-border/40 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground flex items-center justify-between">
+        <footer className="mt-20 pt-10 border-t border-border/40 text-sm font-medium font-black uppercase tracking-widest text-muted-foreground flex items-center justify-between">
            <span>QuitBoost Protocol 2026</span>
            <span className="text-primary italic font-black uppercase tracking-widest">Liberdade Digital</span>
         </footer>

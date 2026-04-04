@@ -249,7 +249,7 @@ const PostCard = ({
               <span className="font-medium text-sm text-foreground truncate">
                 {post.profiles?.display_name || "Membro"}
               </span>
-              <span className="text-xs text-muted-foreground flex-shrink-0">
+              <span className="text-sm font-medium text-muted-foreground/80 flex-shrink-0">
                 • {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ptBR })}
               </span>
             </div>
@@ -259,16 +259,16 @@ const PostCard = ({
           </div>
           
           {/* Mock streak badge for flavor */}
-          <div className="flex items-center gap-1 mt-0.5 opacity-80">
-            <Flame className="w-3 h-3 text-amber-500" />
-            <span className="text-[11px] text-amber-500/80 font-medium">Livre do cigarro</span>
+          <div className="flex items-center gap-1.5 mt-1 opacity-90">
+            <Flame className="w-3.5 h-3.5 text-amber-500" />
+            <span className="text-xs text-amber-500 font-semibold uppercase tracking-wide">Livre do cigarro</span>
           </div>
         </div>
       </div>
 
       {/* Post Content */}
       <div className="pl-14 mb-4">
-        <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-wrap">
+        <p className="text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
           {post.content}
         </p>
       </div>
@@ -277,22 +277,22 @@ const PostCard = ({
       <div className="pl-14 flex items-center gap-6">
         <button
           onClick={onLike}
-          className={`flex items-center gap-1.5 text-sm transition-colors ${
-            likedByMe ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"
+          className={`flex items-center gap-2 transition-colors ${
+            likedByMe ? "text-primary text-base" : "text-muted-foreground hover:text-foreground text-base"
           }`}
         >
-          <Heart className={`w-[18px] h-[18px] ${likedByMe ? "fill-current" : ""}`} />
-          <span>{post.post_likes?.length || 0}</span>
+          <Heart className={`w-[20px] h-[20px] ${likedByMe ? "fill-current" : ""}`} />
+          <span className="font-semibold">{post.post_likes?.length || 0}</span>
         </button>
         
         <button
           onClick={() => setShowReply(!showReply)}
-          className={`flex items-center gap-1.5 text-sm transition-colors ${
-            showReply ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+          className={`flex items-center gap-2 transition-colors ${
+            showReply ? "text-foreground text-base" : "text-muted-foreground hover:text-foreground text-base"
           }`}
         >
-          <MessageSquare className="w-[18px] h-[18px]" />
-          <span>{post.comments?.length || 0}</span>
+          <MessageSquare className="w-[20px] h-[20px]" />
+          <span className="font-semibold">{post.comments?.length || 0}</span>
         </button>
       </div>
 
@@ -335,14 +335,14 @@ const PostCard = ({
                 </div>
                 <div className="flex-1 bg-muted/20 rounded-2xl rounded-tl-none p-3 border border-border/30">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-sm font-medium">
+                    <span className="text-[15px] font-semibold">
                       {comment.profiles?.display_name || "Membro"}
                     </span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-xs font-medium text-muted-foreground/80">
                       {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true, locale: ptBR })}
                     </span>
                   </div>
-                  <p className="text-[13px] text-foreground/90 whitespace-pre-wrap">
+                  <p className="text-base text-foreground/90 whitespace-pre-wrap leading-relaxed">
                     {comment.content}
                   </p>
                 </div>

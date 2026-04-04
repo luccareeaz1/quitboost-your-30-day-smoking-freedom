@@ -17,7 +17,7 @@ const StreakCard = ({ days }: { days: number }) => (
           <div className="absolute inset-0 rounded-full animate-breathe bg-muted/50" />
           <div className="z-10 text-center">
             <p className="text-4xl font-bold tracking-tight">{days}</p>
-            <p className="text-[10px] text-muted-foreground">dias seguidos</p>
+            <p className="text-sm font-medium text-muted-foreground">dias seguidos</p>
           </div>
         </div>
       </div>

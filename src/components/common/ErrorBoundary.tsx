@@ -54,7 +54,7 @@ class ErrorBoundary extends Component<Props, State> {
           <div className="flex flex-col sm:flex-row gap-4 w-full max-w-sm">
             <Button 
               onClick={this.handleReset}
-              className="flex-1 h-14 rounded-[20px] bg-primary font-black uppercase tracking-widest text-[10px] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+              className="flex-1 h-14 rounded-[20px] bg-primary font-black uppercase tracking-widest text-sm font-medium shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
             >
               <RefreshCcw size={14} className="mr-2" /> Recarregar App
             </Button>
@@ -62,7 +62,7 @@ class ErrorBoundary extends Component<Props, State> {
             <Button 
               variant="outline"
               onClick={this.handleGoHome}
-              className="flex-1 h-14 rounded-[20px] font-black uppercase tracking-widest text-[10px] border-2"
+              className="flex-1 h-14 rounded-[20px] font-black uppercase tracking-widest text-sm font-medium border-2"
             >
               <Home size={14} className="mr-2" /> Voltar ao Início
             </Button>
@@ -70,7 +70,7 @@ class ErrorBoundary extends Component<Props, State> {
 
           {process.env.NODE_ENV === "development" && (
             <div className="mt-12 p-6 rounded-3xl bg-muted/50 border border-border text-left overflow-auto max-w-2xl w-full">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Detalhes técnicos:</p>
+              <p className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground mb-2">Detalhes técnicos:</p>
               <code className="text-xs text-destructive font-mono break-all">
                 {this.state.error?.message}
               </code>

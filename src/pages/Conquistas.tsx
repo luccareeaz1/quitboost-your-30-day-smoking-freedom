@@ -126,7 +126,7 @@ const Conquistas = () => {
             transition={{ repeat: Infinity, duration: 1.5 }} 
             className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full shadow-glow" 
           />
-          <p className="text-muted-foreground font-black uppercase tracking-[0.4em] text-[10px] italic animate-pulse text-center">Sincronizando Hall da Fama...</p>
+          <p className="text-muted-foreground font-black uppercase tracking-widest text-sm font-medium italic animate-pulse text-center">Sincronizando Hall da Fama...</p>
         </div>
       </AppLayout>
     );
@@ -147,7 +147,7 @@ const Conquistas = () => {
            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 italic text-white leading-none">
              Hall da <span className="text-primary drop-shadow-glow">Fama</span>
            </h1>
-           <p className="text-muted-foreground text-[10px] font-black uppercase tracking-[0.5em] italic">
+           <p className="text-muted-foreground text-sm font-medium font-black uppercase tracking-widest italic">
              {stats.unlockedCount} de {achievements.length} Protokollos Sincronizados
            </p>
         </header>
@@ -167,7 +167,7 @@ const Conquistas = () => {
                   {stats.currentLevel.icon}
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 text-primary italic mb-2">Classificação de Frota</p>
+                  <p className="text-sm font-medium font-black uppercase tracking-widest opacity-40 text-primary italic mb-2">Classificação de Frota</p>
                   <p className="text-4xl font-black tracking-tighter italic text-white uppercase">{stats.currentLevel.name}</p>
                 </div>
               </div>
@@ -175,7 +175,7 @@ const Conquistas = () => {
                 <p className="text-6xl font-black text-primary drop-shadow-glow italic tracking-tighter leading-none">
                   <AnimatedCounter value={stats.totalPoints} />
                 </p>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40 text-white italic mt-2">PX Acumulados</p>
+                <p className="text-sm font-medium font-black uppercase tracking-widest opacity-40 text-white italic mt-2">PX Acumulados</p>
               </div>
             </div>
           </AppleCard>
@@ -192,13 +192,13 @@ const Conquistas = () => {
                <div className="flex items-center gap-4">
                  <div className="p-4 rounded-[1rem] bg-primary/10 border border-primary/20"><Target className="w-6 h-6 text-primary" /></div>
                  <div>
-                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground italic">Próximo Marco Neuronal</p>
+                   <p className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground italic">Próximo Marco Neuronal</p>
                    <p className="text-xl font-black italic text-white">{stats.nextAchievement.title}</p>
                  </div>
                </div>
                <div className="text-center sm:text-right">
                   <p className="text-xl font-black text-primary italic tracking-tight italic">-{(stats.nextAchievement.required_days || 0) - stats.diffDays} dias</p>
-                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground opacity-40">Para Sincronização</p>
+                  <p className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground opacity-40">Para Sincronização</p>
                </div>
             </div>
             <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
@@ -220,7 +220,7 @@ const Conquistas = () => {
              <button
                key={f}
                onClick={() => setFilter(f as 'all' | 'unlocked' | 'locked')}
-               className={`px-8 py-4 rounded-[1.2rem] text-[10px] font-black uppercase tracking-[0.3em] border transition-all italic hover:scale-105 active:scale-95 ${
+               className={`px-8 py-4 rounded-[1.2rem] text-sm font-medium font-black uppercase tracking-widest border transition-all italic hover:scale-105 active:scale-95 ${
                  filter === f 
                  ? "bg-primary text-white border-primary shadow-glow" 
                  : "bg-card/40 text-muted-foreground border-border/40 hover:bg-card/60 backdrop-blur-xl"
@@ -261,7 +261,7 @@ const Conquistas = () => {
                       {unlocked ? (badge.emoji || badge.icon || "🏅") : <Lock className="w-10 h-10 text-white/20" />}
                     </div>
                     <div className="mb-4">
-                       <span className={`text-[8px] font-black uppercase px-3 py-1 rounded-full border mb-3 inline-block italic ${rarity.bg} ${rarity.color} ${rarity.border}`}>
+                       <span className={`text-sm font-medium font-black uppercase px-3 py-1 rounded-full border mb-3 inline-block italic ${rarity.bg} ${rarity.color} ${rarity.border}`}>
                          {rarity.label}
                        </span>
                        <h4 className="text-lg font-black tracking-tighter text-white italic line-clamp-1 group-hover:text-primary transition-colors">{badge.title}</h4>
@@ -270,7 +270,7 @@ const Conquistas = () => {
                        {badge.description}
                     </p>
                     <div className="flex items-center justify-between w-full mt-auto pt-6 border-t border-white/5">
-                       <span className="text-[10px] font-black text-primary italic uppercase tracking-widest">+{badge.points} PX</span>
+                       <span className="text-sm font-medium font-black text-primary italic uppercase tracking-widest">+{badge.points} PX</span>
                        {unlocked && <Share2 className="w-4 h-4 text-muted-foreground hover:text-white transition-colors" />}
                     </div>
                  </div>
@@ -308,20 +308,20 @@ const Conquistas = () => {
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="flex items-center gap-3 mb-4 relative z-10">
                        <Shield className="w-5 h-5 text-primary drop-shadow-glow" />
-                       <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-primary italic leading-none">Dados de Biocontrole</h4>
+                       <h4 className="text-sm font-medium font-black uppercase tracking-widest text-primary italic leading-none">Dados de Biocontrole</h4>
                     </div>
                     <p className="text-sm font-bold text-white/80 leading-relaxed italic relative z-10">
                       "{selectedAchievement.medical_fact}"
                     </p>
                      {selectedAchievement.medical_source && (
-                       <p className="text-[10px] text-muted-foreground font-black mt-6 uppercase tracking-[0.2em] italic relative z-10 opacity-40">Fonte: {selectedAchievement.medical_source}</p>
+                       <p className="text-sm font-medium text-muted-foreground font-black mt-6 uppercase tracking-widest italic relative z-10 opacity-40">Fonte: {selectedAchievement.medical_source}</p>
                     )}
                   </div>
                 )}
 
                 <div className="flex gap-4">
                   <Button 
-                    className="flex-1 h-16 rounded-[1.5rem] bg-white text-black font-black italic uppercase tracking-[0.3em] text-[11px] transition-all hover:scale-105 active:scale-95 shadow-glow" 
+                    className="flex-1 h-16 rounded-[1.5rem] bg-white text-black font-black italic uppercase tracking-widest text-base font-medium transition-all hover:scale-105 active:scale-95 shadow-glow" 
                     onClick={() => setSelectedAchievement(null)}
                   >
                      Cerrar Protokollo
@@ -339,7 +339,7 @@ const Conquistas = () => {
         <div className="mt-24 p-12 rounded-[2.5rem] bg-card/20 backdrop-blur-md border border-border/20 text-center relative overflow-hidden group">
            <div className="absolute inset-0 bg-primary/2 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
            <AlertCircle className="w-8 h-8 text-primary/40 mx-auto mb-6 group-hover:animate-bounce" />
-           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.5em] leading-loose italic max-w-2xl mx-auto">
+           <p className="text-sm font-medium font-black text-muted-foreground uppercase tracking-widest leading-loose italic max-w-2xl mx-auto">
              Marcos Evolutivos Sincronizados com Dados de Saúde Real.<br />
              Cada emblema representa a reconquista de autonomia celular.
            </p>

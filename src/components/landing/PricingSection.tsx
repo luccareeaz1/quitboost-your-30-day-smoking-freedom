@@ -48,7 +48,7 @@ const PricingSection = () => {
           viewport={{ once: true }}
           className="text-center mb-24"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold mb-6 uppercase tracking-[0.2em] border border-primary/20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium font-bold mb-6 uppercase tracking-widest border border-primary/20">
             <Zap size={12} fill="currentColor" /> Escolha seu Plano
           </div>
           <h2 className="text-4xl md:text-5xl font-black mb-6 tracking-tight text-foreground">
@@ -74,7 +74,7 @@ const PricingSection = () => {
               }`}
             >
               {plan.highlighted && (
-                <div className="absolute top-8 right-10 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-lg">
+                <div className="absolute top-8 right-10 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-medium font-bold uppercase tracking-widest flex items-center gap-1.5 shadow-lg">
                   <Star size={12} fill="currentColor" /> Recomendado
                 </div>
               )}

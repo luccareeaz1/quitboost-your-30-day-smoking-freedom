@@ -38,7 +38,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
         <footer className="py-12 border-t border-white/[0.03] mt-auto">
           <div className="container mx-auto px-6 text-center">
-            <p className="text-[10px] font-bold tracking-[0.4em] text-white/10 uppercase">
+            <p className="text-sm font-medium font-bold tracking-widest text-white/10 uppercase">
               QUIT BOOST INC — BEYOND LIMITS TECHNOLOGY
             </p>
           </div>

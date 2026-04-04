@@ -101,7 +101,7 @@ export default function Checkout() {
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-[10px] font-bold tracking-[0.4em] text-white/20 uppercase mb-16 hover:text-white transition-colors"
+          className="flex items-center gap-2 text-sm font-medium font-bold tracking-widest text-white/20 uppercase mb-16 hover:text-white transition-colors"
         >
           <ArrowLeft size={14} /> VOLTAR AO SISTEMA
         </motion.button>
@@ -112,7 +112,7 @@ export default function Checkout() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/5 bg-white/[0.03] text-[10px] font-bold tracking-[0.2em] text-indigo-400 uppercase mb-8">
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full border border-white/5 bg-white/[0.03] text-sm font-medium font-bold tracking-widest text-indigo-400 uppercase mb-8">
             <ShieldCheck size={12} /> PAGAMENTO CRIPTOGRAFADO
           </div>
           <h1 className="text-6xl md:text-8xl font-extralight tracking-tight text-white mb-6">
@@ -139,7 +139,7 @@ export default function Checkout() {
               >
                 <div style={cardStyle(isSelected)}>
                   {p.badge && (
-                    <div className="absolute top-[-14px] left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full bg-indigo-500 text-white text-[9px] font-black tracking-[0.3em] uppercase shadow-[0_0_20px_rgba(99,102,241,0.6)]">
+                    <div className="absolute top-[-14px] left-1/2 -translate-x-1/2 px-6 py-1.5 rounded-full bg-indigo-500 text-white text-sm font-medium font-black tracking-widest uppercase shadow-[0_0_20px_rgba(99,102,241,0.6)]">
                       {p.badge}
                     </div>
                   )}
@@ -153,14 +153,14 @@ export default function Checkout() {
                         <h3 className="text-2xl font-extralight tracking-tight text-white mb-1">
                           {p.name}
                         </h3>
-                        <p className="text-[10px] font-bold text-white/20 tracking-[0.2em] uppercase">{p.desc}</p>
+                        <p className="text-sm font-medium font-bold text-white/20 tracking-widest uppercase">{p.desc}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="mb-12">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-[14px] font-black text-white/20">R$</span>
+                      <span className="text-base font-black text-white/20">R$</span>
                       <span className="text-7xl font-extralight tracking-tight text-white">
                         {p.price.split(",")[0]}
                       </span>
@@ -175,10 +175,10 @@ export default function Checkout() {
                   <ul className="space-y-4 mb-12 flex-1">
                     {p.features.map(f => (
                       <li key={f} className="flex items-center gap-4">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${isSelected ? "bg-indigo-400 text-[#050a18]" : "bg-white/5 text-white/20"}`}>
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-sm font-medium ${isSelected ? "bg-indigo-400 text-[#050a18]" : "bg-white/5 text-white/20"}`}>
                           <Check size={12} strokeWidth={3} />
                         </div>
-                        <span className={`text-[12px] font-bold tracking-[0.05em] uppercase ${isSelected ? "text-white/80" : "text-white/30"}`}>
+                        <span className={`text-base font-medium font-bold tracking-[0.05em] uppercase ${isSelected ? "text-white/80" : "text-white/30"}`}>
                           {f}
                         </span>
                       </li>
@@ -210,7 +210,7 @@ export default function Checkout() {
             )}
           </button>
           
-          <p className="mt-8 text-[9px] font-bold tracking-[0.4em] text-white/10 uppercase">
+          <p className="mt-8 text-sm font-medium font-bold tracking-widest text-white/10 uppercase">
              7 DIAS DE GARANTIA TOTAL — SATISFAÇÃO OU REEMBOLSO
           </p>
         </motion.div>

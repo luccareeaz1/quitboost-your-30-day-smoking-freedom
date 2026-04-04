@@ -155,7 +155,7 @@ const Perfil = () => {
                  </p>
               </div>
               
-              <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border-2 ${
+              <div className={`inline-flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium font-black uppercase tracking-widest border-2 ${
                 subscription === 'elite' ? "bg-amber-500/10 border-amber-500/20 text-amber-500" : "bg-primary/10 border-primary/20 text-primary"
               }`}>
                  {subscription === 'elite' ? <Crown className="w-3.5 h-3.5" /> : <Shield className="w-3.5 h-3.5" />}
@@ -167,11 +167,11 @@ const Perfil = () => {
         {/* SHORTCUTS */}
         <div className="grid grid-cols-2 gap-4 mb-8">
            <div className="p-6 rounded-[32px] bg-emerald-500/5 border-2 border-emerald-500/10 flex flex-col items-center text-center">
-              <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">Dias Livres</p>
+              <p className="text-sm font-medium font-black uppercase tracking-widest text-emerald-600 mb-1">Dias Livres</p>
               <p className="text-3xl font-black text-emerald-600">{stats.diffDays}</p>
            </div>
            <div className="p-6 rounded-[32px] bg-blue-500/5 border-2 border-blue-500/10 flex flex-col items-center text-center">
-              <p className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-1">Economia</p>
+              <p className="text-sm font-medium font-black uppercase tracking-widest text-blue-600 mb-1">Economia</p>
               <p className="text-3xl font-black text-blue-600">R${Math.round(stats.economia)}</p>
            </div>
         </div>
@@ -180,7 +180,7 @@ const Perfil = () => {
         <section className="mb-8 bg-card rounded-[32px] border-none p-6 shadow-soft">
            <div className="flex items-center justify-between mb-4 px-2">
               <h3 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Hall da Fama</h3>
-              <button onClick={() => navigate("/conquistas")} className="text-[10px] font-black uppercase tracking-widest text-primary hover:underline">Ver todas</button>
+              <button onClick={() => navigate("/conquistas")} className="text-sm font-medium font-black uppercase tracking-widest text-primary hover:underline">Ver todas</button>
            </div>
            <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar px-2">
               {userAchievements.length > 0 ? userAchievements.map((badge, i) => (
@@ -195,7 +195,7 @@ const Perfil = () => {
                 </motion.div>
               )) : (
                 <div className="py-4 text-center w-full">
-                   <p className="text-[10px] text-muted-foreground font-medium italic">Suas conquistas aparecerão aqui.</p>
+                   <p className="text-sm font-medium text-muted-foreground font-medium italic">Suas conquistas aparecerão aqui.</p>
                 </div>
               )}
            </div>
@@ -262,32 +262,32 @@ const Perfil = () => {
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Nome de Exibição</label>
+                      <label className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground ml-2">Nome de Exibição</label>
                       <input value={editData.nome} onChange={e => setEditData({...editData, nome: e.target.value})} className="w-full h-14 bg-muted border-none rounded-2xl px-6 font-bold text-sm" />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Status / Bio</label>
+                      <label className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground ml-2">Status / Bio</label>
                       <textarea value={editData.bio} onChange={e => setEditData({...editData, bio: e.target.value})} className="w-full min-h-[100px] bg-muted border-none rounded-2xl p-6 font-bold text-sm resize-none" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Cig/Dia</label>
+                        <label className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground ml-2">Cig/Dia</label>
                         <input type="number" value={editData.cigarrosPorDia} onChange={e => setEditData({...editData, cigarrosPorDia: Number(e.target.value)})} className="w-full h-14 bg-muted border-none rounded-2xl px-6 font-bold text-sm" />
                       </div>
                       <div>
-                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Anos</label>
+                        <label className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground ml-2">Anos</label>
                         <input type="number" value={editData.anosFumando} onChange={e => setEditData({...editData, anosFumando: Number(e.target.value)})} className="w-full h-14 bg-muted border-none rounded-2xl px-6 font-bold text-sm" />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2">Custo/Cig (R$)</label>
+                      <label className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground ml-2">Custo/Cig (R$)</label>
                       <input type="number" step="0.01" value={editData.custoPorCigarro} onChange={e => setEditData({...editData, custoPorCigarro: Number(e.target.value)})} className="w-full h-14 bg-muted border-none rounded-2xl px-6 font-bold text-sm" />
                     </div>
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-2 mb-2 block">Gatilhos Ativos</label>
+                      <label className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground ml-2 mb-2 block">Gatilhos Ativos</label>
                       <div className="flex flex-wrap gap-2">
                          {ALL_GATILHOS.map(g => (
-                           <button key={g} onClick={() => handleToggleGatilho(g)} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 transition-all ${
+                           <button key={g} onClick={() => handleToggleGatilho(g)} className={`px-4 py-2 rounded-xl text-sm font-medium font-black uppercase tracking-widest border-2 transition-all ${
                              editData.gatilhos.includes(g) ? "bg-primary border-primary text-white" : "border-border text-muted-foreground hover:bg-muted"
                            }`}>
                              {g}

@@ -11,7 +11,7 @@ const PoliticaPrivacidade = () => {
       <div className="max-w-3xl mx-auto">
         <button 
           onClick={() => navigate(-1)}
-          className="group flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-all mb-12"
+          className="group flex items-center gap-3 text-sm font-medium font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-all mb-12"
         >
           <div className="w-8 h-8 rounded-xl bg-card border border-border flex items-center justify-center group-hover:-translate-x-1 transition-transform">
              <ArrowLeft size={14} />
@@ -26,8 +26,8 @@ const PoliticaPrivacidade = () => {
            <h1 className="text-5xl font-black tracking-tighter mb-4 italic">Privacidade & <br />Conformidade <span className="text-primary italic">LGPD.</span></h1>
            <p className="text-muted-foreground font-medium text-lg leading-relaxed">Sua jornada para a liberdade exige confiança total. Veja como protegemos seus dados vitais.</p>
            <div className="flex items-center gap-2 mt-6">
-              <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-full">Versão 2026.1</span>
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Última atualização: Março 2026</span>
+              <span className="text-sm font-medium font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-full">Versão 2026.1</span>
+              <span className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground">Última atualização: Março 2026</span>
            </div>
         </header>
 
@@ -99,7 +99,7 @@ const PoliticaPrivacidade = () => {
            </section>
         </div>
 
-        <footer className="mt-20 pt-10 border-t border-border/40 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">
+        <footer className="mt-20 pt-10 border-t border-border/40 text-sm font-medium font-black uppercase tracking-widest text-muted-foreground text-center">
            © 2026 QuitBoost Ecosistema • Saúde Digital Ética
         </footer>
       </div>
