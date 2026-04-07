@@ -13,7 +13,11 @@ import {
   Clock,
   Sparkles,
   User,
-  Loader2
+  Loader2,
+  Wind,
+  Gamepad2,
+  AlertTriangle,
+  Heart
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
@@ -22,10 +26,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const SESSÕES_INICIAIS = [
-  "Plano de Rotina Matinal",
-  "Revisão Semanal de Metas",
-  "Gestão de Estresse",
-  "Qualidade do Sono"
+  "Lidando com Gatilhos Fortes",
+  "Primeira Semana: O que esperar",
+  "Substitutos e Redução",
+  "Recaídas: Como Recomeçar"
 ];
 
 interface Message {
@@ -201,25 +205,32 @@ export default function AICoach() {
                     {i === messages.length - 1 && msg.role === "assistant" && !isLoading && (
                       <div className="flex flex-wrap gap-2 mt-4 animate-in fade-in slide-in-from-top-2">
                         <Button 
-                          onClick={() => toast({ title: "Agenda", description: "Compromisso adicionado com sucesso." })}
+                          onClick={() => toast({ title: "Respiração", description: "Iniciando técnica 4-7-8 para acalmar os pulmões." })}
                           variant="outline" 
                           className="rounded-full bg-white border-slate-100 text-slate-600 font-bold text-xs gap-2 py-5 px-6 shadow-sm hover:border-[#2D45C1] hover:text-[#2D45C1] transition-all"
                         >
-                          <Calendar className="w-4 h-4" /> Adicionar à agenda
+                          <Wind className="w-4 h-4" /> Exercício de Respiração
                         </Button>
                         <Button 
-                          onClick={() => toast({ title: "Vídeos", description: "Carregando biblioteca de exercícios." })}
+                          onClick={() => toast({ title: "Distração", description: "Aqui está um mini-game de 2 minutos para mudar seu foco." })}
                           variant="outline" 
                           className="rounded-full bg-white border-slate-100 text-slate-600 font-bold text-xs gap-2 py-5 px-6 shadow-sm hover:border-[#2D45C1] hover:text-[#2D45C1] transition-all"
                         >
-                          <PlayCircle className="w-4 h-4" /> Ver vídeos
+                          <Gamepad2 className="w-4 h-4" /> Mudar o Foco
                         </Button>
                         <Button 
-                          onClick={() => toast({ title: "Ajuste", description: "Plano recalibrado para 15 minutos." })}
+                          onClick={() => toast({ title: "Fissura Registrada", description: "Isso nos ajuda a entender seus gatilhos. Você é forte!" })}
                           variant="outline" 
-                          className="rounded-full bg-white border-slate-100 text-slate-600 font-bold text-xs gap-2 py-5 px-6 shadow-sm hover:border-[#2D45C1] hover:text-[#2D45C1] transition-all"
+                          className="rounded-full bg-white border-slate-100 text-slate-600 font-bold text-xs gap-2 py-5 px-6 shadow-sm hover:border-rose-500 hover:text-rose-500 transition-all"
                         >
-                          <Clock className="w-4 h-4" /> Ajustar para 15 min
+                          <AlertTriangle className="w-4 h-4" /> Registrar Fissura
+                        </Button>
+                        <Button 
+                          onClick={() => toast({ title: "Motivação", description: "Lembre-se: Você está fazendo isso pelos seus filhos e sua saúde." })}
+                          variant="outline" 
+                          className="rounded-full bg-white border-slate-100 text-slate-600 font-bold text-xs gap-2 py-5 px-6 shadow-sm hover:border-emerald-500 hover:text-emerald-500 transition-all"
+                        >
+                          <Heart className="w-4 h-4" /> Ver Meu "Porquê"
                         </Button>
                       </div>
                     )}

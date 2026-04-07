@@ -15,7 +15,10 @@ import {
   Lock,
   ChevronRight,
   Zap,
-  Target
+  Target,
+  Trash2,
+  Coffee,
+  Package
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -25,42 +28,42 @@ import { useToast } from "@/hooks/use-toast";
 const MISSÕES = [
   {
     id: 1,
-    title: "Clareza Matinal",
-    desc: "Complete uma meditação de 10 minutos antes das 08:00.",
+    title: "Arsenal Limpo",
+    desc: "Jogue fora todos os maços, isqueiros e lave todos os cinzeiros da casa.",
     difficulty: "FÁCIL",
     xp: 200,
     status: "completed",
-    icon: Sun,
+    icon: Trash2,
     color: "emerald"
   },
   {
     id: 2,
-    title: "Herói da Hidratação",
-    desc: "Beba 3 litros de água por 5 dias consecutivos.",
+    title: "Nova Rotina: Café",
+    desc: "Mude o local onde você costuma tomar café para quebrar o gatilho automático.",
     difficulty: "MÉDIO",
     xp: 500,
     status: "in-progress",
-    icon: Droplet,
+    icon: Coffee,
     color: "blue",
-    progress: 60
+    progress: 50
   },
   {
     id: 3,
-    title: "Mestre do Foco",
-    desc: "Registre dois blocos de 90 minutos de foco ininterrupto.",
+    title: "Kit de Sobrevivência",
+    desc: "Prepare um kit com chicletes de canela, água gelada e um cubo mágico para o dia.",
     difficulty: "DIFÍCIL",
     xp: 1200,
     status: "locked",
-    icon: Brain,
+    icon: Package,
     color: "indigo"
   }
 ];
 
 const INITIAL_CHECKLIST = [
-  { id: "meal", label: "Registre sua refeição matinal", xp: 150, completed: true },
-  { id: "steps", label: "Caminhe 10.000 passos", xp: 300, completed: false },
-  { id: "read", label: "Leia 10 páginas de um livro", xp: 100, completed: false },
-  { id: "photo", label: "Envie sua foto de progresso diário", xp: 200, completed: true },
+  { id: "water", label: "Tomar 3 goles de água em uma micro-fissura", xp: 150, completed: true },
+  { id: "smell", label: "Cheirar algo agradável (flor/perfume) por 30s", xp: 300, completed: false },
+  { id: "walk", label: "Caminhar 5 min após o almoço (em vez de fumar)", xp: 100, completed: false },
+  { id: "photo", label: "Envie sua motivação do dia (foto)", xp: 200, completed: true },
 ];
 
 export default function Missions() {

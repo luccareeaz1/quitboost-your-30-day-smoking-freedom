@@ -24,22 +24,21 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
 const TRENDING = [
-  { name: "#CorridaMatinal", count: "1.240 participando", color: "bg-blue-400" },
-  { name: "#SemAçúcar", count: "868 postagens", color: "bg-emerald-400" },
-  { name: "#RespireFundo", count: "3.102 postagens", color: "bg-indigo-400" },
+  { name: "#PrimeiraSemana", count: "1.240 focados", color: "bg-blue-400" },
+  { name: "#SemRecaída", count: "868 conquistas", color: "bg-emerald-400" },
+  { name: "#RespireFreesh", count: "3.102 vitoriosos", color: "bg-indigo-400" },
 ];
 
 const SUGGESTIONS = [
-  { name: "Coach Sarah", handle: "@sarah_freesh", avatar: "SC" },
-  { name: "Alex Miller", handle: "@amiller_yoga", avatar: "AM" },
+  { name: "Dr. Ricardo (Pneumo)", handle: "@dr_ricardo", avatar: "DR" },
+  { name: "Ana (1 ano sem fumar)", handle: "@ana_venceu", avatar: "AV" },
 ];
 
 const SIDEBAR_ITEMS = [
-  { icon: LayoutGrid, label: "Feed", active: true },
-  { icon: MessageSquare, label: "Mensagens" },
-  { icon: Users, label: "Grupos" },
-  { icon: TrendingUp, label: "Ranking" },
-  { icon: Trophy, label: "Desafios" },
+  { icon: LayoutGrid, label: "Feed de Apoio", active: true },
+  { icon: Users, label: "Grupos Mentorados" },
+  { icon: MessageSquare, label: "Dicas Diárias" },
+  { icon: Trophy, label: "Vitoriosos" },
 ];
 
 export default function Community() {
@@ -91,9 +90,9 @@ export default function Community() {
         {/* Center Feed */}
         <main className="md:col-span-6">
           <div className="mb-10">
-            <h1 className="text-3xl font-black text-slate-900 mb-6 uppercase tracking-tight">comunidade freesh</h1>
+            <h1 className="text-3xl font-black text-slate-900 mb-6 uppercase tracking-tight">Rede de Apoio Freesh</h1>
             <div className="flex gap-8 border-b border-slate-100 pb-1">
-              {["Para Você", "Seguindo", "Desafios"].map((tab, i) => (
+              {["Para Você", "Minha Rede", "Gritos de Ajuda"].map((tab, i) => (
                 <button 
                   key={tab} 
                   onClick={() => handleAction("Filtro", `Mostrando feed: ${tab}`)}
@@ -152,24 +151,24 @@ export default function Community() {
                     <div className="flex-1 flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h3 className="text-lg font-black text-slate-900 leading-tight">Elena Gilbert</h3>
-                          <span className="text-sm font-bold text-slate-400">@elena_fit · 2h</span>
+                          <h3 className="text-lg font-black text-slate-900 leading-tight">Clara Oliveira</h3>
+                          <span className="text-sm font-bold text-slate-400">@clara_freesh · 2h</span>
                         </div>
                         <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-lg border border-emerald-100 inline-flex">
                           <CheckCircle2 className="w-3 h-3 fill-emerald-100" />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Conquista: 30 dias</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest">Conquista: 30 dias sem fumar!</span>
                         </div>
                       </div>
                       <button className="text-slate-300 hover:text-slate-900"><MoreHorizontal className="w-6 h-6" /></button>
                     </div>
                   </div>
                   <p className="text-slate-700 text-md leading-relaxed mb-6 font-medium">
-                    Acabei de terminar minha corrida de 5km! O Coach IA sugeriu um novo ritmo e eu realmente bati meu recorde pessoal em 15 segundos. Me sentindo incrível. Continuem firmes, pessoal! 🏃🏼‍♀️✨
+                    Gente, hoje fazem 30 dias que eu não acendo um cigarro! Sinto meu fôlego voltando e o cheiro das coisas está muito mais nítido. Se eu consegui, você também consegue! Vamos juntos nessa? 🚭✨
                   </p>
                   <div className="rounded-[2.5rem] overflow-hidden mb-8 aspect-[16/9] bg-slate-100 shadow-inner group">
                     <img 
-                      src="https://images.unsplash.com/photo-1502481851512-e9e2529bbbf9" 
-                      alt="Runner path" 
+                      src="https://images.unsplash.com/photo-1506126613408-eca07ce68773" 
+                      alt="Health lifestyle" 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                   </div>
@@ -204,24 +203,24 @@ export default function Community() {
                   <div className="flex gap-4 mb-4">
                     <Avatar className="w-14 h-14 ring-4 ring-slate-50/50 border border-slate-100">
                       <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus" />
-                      <AvatarFallback>MK</AvatarFallback>
+                      <AvatarFallback>RC</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h3 className="text-lg font-black text-slate-900 leading-tight">Marcus King</h3>
-                          <span className="text-sm font-bold text-slate-400">@m_king_wellness · 5h</span>
+                          <h3 className="text-lg font-black text-slate-900 leading-tight">Ricardo Castro</h3>
+                          <span className="text-sm font-bold text-slate-400">@ricardo_freesh · 5h</span>
                         </div>
-                        <div className="flex items-center gap-2 bg-blue-50 text-[#2D45C1] px-2 py-0.5 rounded-lg border border-blue-100 inline-flex">
-                          <Flame className="w-3 h-3 fill-blue-50" />
-                          <span className="text-[10px] font-black uppercase tracking-widest">110 dias de sequência</span>
+                        <div className="flex items-center gap-2 bg-rose-50 text-rose-600 px-2 py-0.5 rounded-lg border border-rose-100 inline-flex">
+                          <AlertTriangle className="w-3 h-3 fill-rose-50" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Grito de Ajuda</span>
                         </div>
                       </div>
                       <button className="text-slate-300 hover:text-slate-900"><MoreHorizontal className="w-6 h-6" /></button>
                     </div>
                   </div>
                   <p className="text-slate-700 text-md leading-relaxed font-medium">
-                    Consistência é o único segredo. 112 dias e não perdi uma única meta de hidratação. A comunidade aqui é o que me mantém focado. Quem mais está batendo as metas hoje? 💧
+                    Eita vontade que não passa... Acabei de sair de uma reunião estressante e meu cérebro só pensa no cigarro. Alguém tem alguma dica rápida de foco? Não quero jogar meus 112 dias fora. 🆘
                   </p>
                   <div className="flex items-center gap-10 mt-6 pt-4 border-t border-slate-50">
                     <button 
@@ -247,7 +246,7 @@ export default function Community() {
         <aside className="md:col-span-3 space-y-10">
           <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
             <h2 className="text-xl font-black text-slate-900 mb-8 flex items-center gap-3">
-              Desafios em Alta
+              Grupos em Alta
             </h2>
             <div className="space-y-6">
               {TRENDING.map((challenge) => (
@@ -270,7 +269,7 @@ export default function Community() {
           </div>
 
           <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
-            <h2 className="text-xl font-black text-slate-900 mb-8">Quem seguir</h2>
+            <h2 className="text-xl font-black text-slate-900 mb-8">Mentores Especialistas</h2>
             <div className="space-y-8">
               {SUGGESTIONS.map((user) => (
                 <div key={user.name} className="flex items-center gap-4">
@@ -282,11 +281,11 @@ export default function Community() {
                     <p className="text-xs font-bold text-slate-400 truncate">{user.handle}</p>
                   </div>
                   <Button 
-                    onClick={() => handleAction("Seguindo!", `Você agora segue ${user.name}`)}
+                    onClick={() => handleAction("Apoiando!", `Você agora apoia ${user.name}`)}
                     variant="outline" 
                     className="rounded-xl border-slate-200 text-slate-900 font-black h-10 px-4 text-xs hover:bg-slate-50 transition-all"
                   >
-                    Seguir
+                    Apoiar
                   </Button>
                 </div>
               ))}

@@ -17,9 +17,9 @@ import {
   Trophy,
   Heart
 } from "lucide-react";
-import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const STATS = [
   { label: "DINHEIRO ECONOMIZADO", value: "R$218", sub: "+R$15.57 / dia", icon: Wallet, color: "bg-emerald-50 text-emerald-600" },
@@ -84,8 +84,26 @@ export default function Dashboard() {
   const handleSOS = () => {
     toast({
       title: "Respire fundo! 🧘‍♂️",
-      description: "Um alerta foi enviado para sua rede de apoio e o Coach IA está pronto para conversar agora.",
+      description: "Dica rápida: Beba um copo de água bem gelada ou faça 10 flexões. A fissura dura em média apenas 5 a 10 minutos. Você consegue!",
       variant: "destructive",
+    });
+  };
+
+  const [confirmedDays, setConfirmedDays] = useState(14);
+  const handleConfirmDay = (day: number) => {
+    if (day === confirmedDays + 1) {
+      setConfirmedDays(day);
+      toast({
+        title: "Dia Confirmado! 🏆",
+        description: `Parabéns por completar o dia ${day}. XP adicionado!`,
+      });
+    }
+  };
+
+  const handleLogTrigger = (trigger: string) => {
+    toast({
+      title: "Gatilho Registrado",
+      description: `Entendido. Quando estiver com ${trigger}, procure respirar ou mudar de ambiente. O Coach IA pode te ajudar mais.`,
     });
   };
 
@@ -170,11 +188,12 @@ export default function Dashboard() {
               {Array.from({ length: 30 }).map((_, i) => (
                 <div 
                   key={i} 
+                  onClick={() => handleConfirmDay(i + 1)}
                   className={cn(
-                    "aspect-square rounded-full flex items-center justify-center text-[10px] font-bold transition-all",
-                    i < 14 
-                      ? "bg-[#2D45C1] text-white shadow-lg shadow-blue-100" 
-                      : i === 14 ? "border-2 border-dashed border-slate-200 text-slate-300" : "bg-slate-50 text-slate-300"
+                    "aspect-square rounded-full flex items-center justify-center text-[10px] font-bold transition-all cursor-pointer",
+                    i < confirmedDays 
+                      ? "bg-emerald-500 text-white shadow-lg shadow-emerald-100" 
+                      : i === confirmedDays ? "bg-[#2D45C1] text-white animate-pulse" : "bg-slate-50 text-slate-300"
                   )}
                 >
                   {i + 1}
@@ -218,42 +237,38 @@ export default function Dashboard() {
             </div>
           </Card>
 
-          {/* Recent Badges */}
-          <Card className="lg:col-span-6 border-row-span-2 border-none shadow-sm bg-white rounded-3xl p-8">
+          {/* Craving Logger / Quick Check-in */}
+          <Card className="lg:col-span-6 border-none shadow-sm bg-white rounded-3xl p-8">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-xl font-bold text-slate-900">Conquistas Recentes</h2>
-              <button href="#" className="text-xs font-bold text-[#2D45C1] hover:underline">Ver Tudo</button>
+              <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight">Registro de Fissura</h2>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">O que disparou a vontade?</span>
             </div>
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               {[
-                { name: "Primeiras 24h", earned: true, color: "amber" },
-                { name: "Membro freesh", earned: true, color: "blue" },
-                { name: "Primeira Semana", earned: true, color: "emerald" },
-                { name: "1 Mês", earned: false },
-                { name: "Economia 10k", earned: false },
-                { name: "Mais Vida", earned: false },
-              ].map((badge, i) => (
-                <div key={i} className="flex flex-col items-center gap-3">
-                  <div className={cn(
-                    "w-20 h-20 rounded-2xl flex items-center justify-center transition-all shadow-inner",
-                    badge.earned 
-                      ? (badge.color === "amber" ? "bg-amber-50 border border-amber-100" : 
-                         badge.color === "blue" ? "bg-blue-50 border border-blue-100" : 
-                         "bg-emerald-50 border border-emerald-100")
-                      : "bg-slate-50 border border-slate-100 opacity-40 grayscale"
-                  )}>
-                    <Trophy className={cn(
-                      "w-8 h-8",
-                      badge.earned 
-                        ? (badge.color === "amber" ? "text-amber-500" : 
-                           badge.color === "blue" ? "text-blue-500" : 
-                           "text-emerald-500") 
-                        : "text-slate-300"
-                    )} />
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">{badge.name}</span>
-                </div>
+                { name: "Estresse", icon: Activity, color: "hover:bg-rose-50" },
+                { name: "Café/Comida", icon: Soup, color: "hover:bg-amber-50" },
+                { name: "Social/Álcool", icon: HeartPulse, color: "hover:bg-indigo-50" },
+                { name: "Tédio", icon: Zap, color: "hover:bg-blue-50" },
+              ].map((trigger) => (
+                <button
+                  key={trigger.name}
+                  onClick={() => handleLogTrigger(trigger.name)}
+                  className={cn(
+                    "flex flex-col items-center justify-center p-6 rounded-2xl border border-slate-100 bg-white transition-all active:scale-95",
+                    trigger.color
+                  )}
+                >
+                  <trigger.icon className="w-10 h-10 text-slate-400 mb-3" />
+                  <span className="text-xs font-bold text-slate-900 uppercase tracking-widest">{trigger.name}</span>
+                </button>
               ))}
+            </div>
+            <div className="mt-8 p-6 bg-slate-50 rounded-[2rem] border border-slate-100/50">
+              <p className="text-sm font-medium text-slate-600 mb-4 italic">"A vontade é como uma onda. Ela vem, atinge o pico e passa. Você só precisa surfá-la."</p>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Dica: Mude de ambiente agora!</span>
+              </div>
             </div>
           </Card>
         </div>
