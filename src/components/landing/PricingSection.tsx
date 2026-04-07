@@ -55,7 +55,7 @@ const PricingSection = () => {
             Um investimento em <span className="text-primary italic">vida.</span>
           </h2>
           <p className="text-muted-foreground text-xl font-medium max-w-2xl mx-auto italic">
-            O custo do vício é a sua saúde. O custo do QuitBoost é a sua liberdade.
+            O custo do vício é a sua saúde. O custo do freesh é a sua liberdade.
           </p>
         </motion.div>
 

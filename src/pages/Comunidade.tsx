@@ -1,358 +1,264 @@
-import { useState, useEffect, useCallback } from "react";
-import { User } from "@supabase/supabase-js";
-import {
-  MessageSquare,
-  Heart,
-  Send,
-  MoreVertical,
-  Flame,
-  Award
-} from "lucide-react";
+import { FreeshNavbar } from "@/components/layout/FreeshNavbar";
 import { Button } from "@/components/ui/button";
-import AppLayout from "@/components/app/AppLayout";
-import { useAuth } from "@/hooks/useAuth";
-import { communityService } from "@/lib/services";
-import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { 
+  Users, 
+  MessageSquare, 
+  Trophy, 
+  TrendingUp, 
+  Plus, 
+  Share2, 
+  MoreHorizontal,
+  Heart,
+  MessageCircle,
+  Share,
+  LayoutGrid,
+  ChevronRight,
+  Flame,
+  CheckCircle2
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
-interface Profile {
-  id: string;
-  display_name: string;
-  avatar_url: string;
-}
+const TRENDING = [
+  { name: "#Morning5K", count: "1,240 participating", color: "bg-blue-400" },
+  { name: "#NoSugarWeek", count: "868 posts", color: "bg-emerald-400" },
+  { name: "#DeepBreaths", count: "3,102 posts", color: "bg-indigo-400" },
+];
 
-interface Like {
-  user_id: string;
-}
+const SUGGESTIONS = [
+  { name: "Coach Sarah", handle: "@sarah_freesh", avatar: "SC" },
+  { name: "Alex Miller", handle: "@amiller_yoga", avatar: "AM" },
+];
 
-interface Comment {
-  id: string;
-  content: string;
-  created_at: string;
-  parent_id: string | null;
-  user_id: string;
-  profiles: Profile;
-  comment_likes: Like[];
-}
+const SIDEBAR_ITEMS = [
+  { icon: LayoutGrid, label: "Feed", active: true },
+  { icon: MessageSquare, label: "Messages" },
+  { icon: Users, label: "Groups" },
+  { icon: TrendingUp, label: "Ranking" },
+  { icon: Trophy, label: "Challenges" },
+];
 
-interface PostWithData {
-  id: string;
-  content: string;
-  created_at: string;
-  category: string;
-  hashtags: string[];
-  views_count: number;
-  user_id: string;
-  profiles: Profile;
-  post_likes: Like[];
-  comments: Comment[];
-}
-
-const Comunidade = () => {
-  const { user, profile } = useAuth();
-  const [posts, setPosts] = useState<PostWithData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isPosting, setIsPosting] = useState(false);
-  const [newPostContent, setNewPostContent] = useState("");
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const fetchedPosts = await communityService.getPosts();
-      setPosts(fetchedPosts as unknown as PostWithData[]);
-    } catch (error) {
-      console.error("Erro ao carregar posts:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-    const subscription = communityService.subscribeToNewPosts(() => {
-      loadData();
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [loadData]);
-
-  const handleCreatePost = async () => {
-    if (!user) {
-      toast.error("Faça login para interagir na comunidade.");
-      return;
-    }
-    if (!newPostContent.trim()) return;
-
-    try {
-      setIsPosting(true);
-      await communityService.createPost(user.id, newPostContent, "geral", []);
-      setNewPostContent("");
-      toast.success("Mensagem enviada!");
-      loadData();
-    } catch (error) {
-      toast.error("Erro ao publicar.");
-    } finally {
-      setIsPosting(false);
-    }
-  };
-
-  const handleToggleLike = async (postId: string) => {
-    if (!user) {
-      toast.error("Faça login para curtir.");
-      return;
-    }
-    try {
-      const liked = await communityService.toggleLike(user.id, postId);
-      setPosts((prev) =>
-        prev.map((p) => {
-          if (p.id === postId) {
-            const currentLikes = p.post_likes || [];
-            return {
-              ...p,
-              post_likes: liked
-                ? [...currentLikes, { user_id: user.id }]
-                : currentLikes.filter((l) => l.user_id !== user.id),
-            };
-          }
-          return p;
-        })
-      );
-    } catch (error) {
-      toast.error("Erro ao processar curtida.");
-    }
-  };
-
+export default function Community() {
   return (
-    <AppLayout>
-      <div className="container mx-auto px-4 max-w-2xl py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="min-h-screen bg-[#FDFDFD]">
+      <FreeshNavbar />
+      
+      <div className="max-w-[1400px] mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-12 gap-10">
         
-        {/* Header / Title */}
-        <div className="mb-8 border-b border-border/40 pb-6">
-          <h1 className="text-3xl font-semibold tracking-tight">Comunidade</h1>
-          <p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-            Compartilhe sua jornada, apoie outras pessoas e encontre motivação. 
-            Estamos todos juntos na missão de conquistar uma vida livre do cigarro.
-          </p>
-        </div>
-
-        {/* Input Area (Post Composer) */}
-        <div className="mb-10 p-5 bg-card border border-border/50 rounded-2xl shadow-sm">
-          <div className="flex gap-4">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-              <span className="font-semibold text-primary text-sm">
-                {profile?.display_name ? profile.display_name[0].toUpperCase() : "U"}
-              </span>
-            </div>
-            <div className="flex-1">
-              <textarea
-                placeholder="Como você está se sentindo hoje? Compartilhe seu progresso..."
-                value={newPostContent}
-                onChange={(e) => setNewPostContent(e.target.value)}
-                className="w-full bg-transparent border-none outline-none resize-none min-h-[80px] text-[15px] placeholder:text-muted-foreground/50 py-2 focus:ring-0"
-              />
-              <div className="flex justify-end pt-3 border-t border-border/30 mt-2">
-                <Button
-                  onClick={handleCreatePost}
-                  disabled={!newPostContent.trim() || isPosting}
-                  className="rounded-full h-9 px-6 bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm transition-all"
-                >
-                  {isPosting ? "Enviando..." : "Publicar"}
-                </Button>
-              </div>
+        {/* Left Sidebar */}
+        <aside className="md:col-span-2 hidden md:block">
+          <div className="space-y-4">
+            {SIDEBAR_ITEMS.map((item) => (
+              <button
+                key={item.label}
+                className={cn(
+                  "w-full flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all",
+                  item.active 
+                    ? "bg-[#2D45C1]/5 text-[#2D45C1] shadow-[0_4px_12px_rgba(45,69,193,0.1)]" 
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                )}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.label}
+              </button>
+            ))}
+            <div className="pt-8 px-4">
+              <Button className="w-full bg-[#2D45C1] hover:bg-[#1E30A1] text-white rounded-full h-14 font-black gap-2 shadow-xl shadow-blue-100">
+                <Plus className="w-5 h-5 pointer-events-none" />
+                Share
+              </Button>
             </div>
           </div>
-        </div>
+        </aside>
 
-        {/* Feed Posts */}
-        <div className="space-y-6">
-          {loading ? (
-            <div className="text-center py-10 opacity-50">
-              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-              <p className="text-sm">Carregando feed...</p>
+        {/* Center Feed */}
+        <main className="md:col-span-7">
+          <div className="mb-10">
+            <h1 className="text-3xl font-black text-slate-900 mb-6">freesh community</h1>
+            <div className="flex gap-8 border-b border-slate-100 pb-1">
+              {["For You", "Following", "Challenges"].map((tab, i) => (
+                <button 
+                  key={tab} 
+                  className={cn(
+                    "text-sm font-bold pb-4 transition-all relative px-2",
+                    i === 0 ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
+                  )}
+                >
+                  {tab}
+                  {i === 0 && <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#2D45C1] rounded-full" />}
+                </button>
+              ))}
             </div>
-          ) : posts.length === 0 ? (
-            <div className="text-center py-12 rounded-2xl border border-dashed border-border/40 text-muted-foreground bg-muted/5">
-              <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-20" />
-              <p className="text-sm">Seja o primeiro a compartilhar na comunidade.</p>
+          </div>
+
+          <Card className="border-none shadow-[0_4px_24px_rgba(0,0,0,0.03)] bg-white rounded-3xl mb-10 overflow-hidden group">
+            <CardContent className="p-6">
+              <div className="flex gap-4">
+                <Avatar className="w-12 h-12 shadow-sm border border-slate-100">
+                  <AvatarFallback className="bg-slate-100 text-slate-400 font-bold">JD</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <div className="bg-slate-50 border border-slate-100/50 rounded-2xl p-4 transition-all group-focus-within:border-[#2D45C1]/30">
+                    <textarea 
+                      placeholder="What's happening in your wellness journey?" 
+                      className="w-full bg-transparent border-none text-md resize-none focus:outline-none min-h-[60px] placeholder:text-slate-400"
+                    />
+                    <div className="mt-4 pt-4 border-t border-slate-200/50 flex justify-between items-center">
+                      <div className="flex gap-4">
+                        <button className="text-slate-400 hover:text-[#2D45C1] transition-all"><Plus className="w-5 h-5" /></button>
+                        <button className="text-slate-400 hover:text-[#2D45C1] transition-all"><TrendingUp className="w-5 h-5" /></button>
+                      </div>
+                      <Button className="bg-[#2D45C1] hover:bg-[#1E30A1] text-white px-8 rounded-xl h-10 font-bold shadow-lg shadow-blue-100">Post</Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="space-y-10">
+            {/* Post 1 */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Card className="border-none shadow-[0_4px_32px_rgba(0,0,0,0.02)] bg-white rounded-3xl overflow-hidden hover:shadow-[0_8px_48px_rgba(0,0,0,0.04)] transition-all">
+                <CardContent className="p-8">
+                  <div className="flex gap-4 mb-6">
+                    <Avatar className="w-14 h-14 ring-4 ring-slate-50/50 border border-slate-100">
+                      <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Elena" />
+                      <AvatarFallback>EG</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="text-lg font-black text-slate-900 leading-tight">Elena Gilbert</h3>
+                          <span className="text-sm font-bold text-slate-400">@elena_fit · 2h</span>
+                        </div>
+                        <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-lg border border-emerald-100 inline-flex">
+                          <CheckCircle2 className="w-3 h-3 fill-emerald-100" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">30 days badge</span>
+                        </div>
+                      </div>
+                      <button className="text-slate-300 hover:text-slate-900"><MoreHorizontal className="w-6 h-6" /></button>
+                    </div>
+                  </div>
+                  <p className="text-slate-700 text-md leading-relaxed mb-6 font-medium">
+                    Just finished my morning 5k! The Coach IA suggested a new pace and I actually beat my personal best by 15 seconds. Feeling absolutely incredible. Keep pushing everyone! 🏃🏼‍♀️✨
+                  </p>
+                  <div className="rounded-[2.5rem] overflow-hidden mb-8 aspect-[16/9] bg-slate-100 shadow-inner group">
+                    <img 
+                      src="https://images.unsplash.com/photo-1502481851512-e9e2529bbbf9" 
+                      alt="Runner path" 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="flex items-center gap-10 pt-4 border-t border-slate-50">
+                    <button className="flex items-center gap-2 text-slate-400 hover:text-rose-500 transition-all">
+                      <Heart className="w-6 h-6" /> <span className="text-sm font-bold">768</span>
+                    </button>
+                    <button className="flex items-center gap-2 text-slate-400 hover:text-blue-500 transition-all">
+                      <MessageCircle className="w-6 h-6" /> <span className="text-sm font-bold">24</span>
+                    </button>
+                    <button className="flex items-center gap-2 text-slate-400 hover:text-emerald-500 transition-all ml-auto">
+                      <Share className="w-6 h-6" /> <span className="text-sm font-bold">12</span>
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Post 2 */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <Card className="border-none shadow-[0_4px_32px_rgba(0,0,0,0.02)] bg-white rounded-3xl overflow-hidden hover:shadow-[0_8px_48px_rgba(0,0,0,0.04)] transition-all">
+                <CardContent className="p-8">
+                  <div className="flex gap-4 mb-4">
+                    <Avatar className="w-14 h-14 ring-4 ring-slate-50/50 border border-slate-100">
+                      <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Marcus" />
+                      <AvatarFallback>MK</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 flex justify-between items-start">
+                      <div>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="text-lg font-black text-slate-900 leading-tight">Marcus King</h3>
+                          <span className="text-sm font-bold text-slate-400">@m_king_wellness · 5h</span>
+                        </div>
+                        <div className="flex items-center gap-2 bg-blue-50 text-[#2D45C1] px-2 py-0.5 rounded-lg border border-blue-100 inline-flex">
+                          <Flame className="w-3 h-3 fill-blue-50" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">110 days streak</span>
+                        </div>
+                      </div>
+                      <button className="text-slate-300 hover:text-slate-900"><MoreHorizontal className="w-6 h-6" /></button>
+                    </div>
+                  </div>
+                  <p className="text-slate-700 text-md leading-relaxed font-medium">
+                    Consistency is the only hack. 112 days and haven't missed a single hydration goal. The community here is what keeps me going. Who's hitting their targets today? 💧
+                  </p>
+                  <div className="flex items-center gap-10 mt-6 pt-4 border-t border-slate-50">
+                    <button className="flex items-center gap-2 text-slate-400 hover:text-rose-500 transition-all">
+                      <Heart className="w-6 h-6" /> <span className="text-sm font-bold">42</span>
+                    </button>
+                    <button className="flex items-center gap-2 text-slate-400 hover:text-blue-500 transition-all">
+                      <MessageCircle className="w-6 h-6" /> <span className="text-sm font-bold">8</span>
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </main>
+
+        {/* Right Sidebar */}
+        <aside className="md:col-span-3 space-y-10">
+          <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+            <h2 className="text-xl font-black text-slate-900 mb-8 flex items-center gap-3">
+              Trending Challenges
+            </h2>
+            <div className="space-y-6">
+              {TRENDING.map((challenge) => (
+                <div key={challenge.name} className="group cursor-pointer">
+                  <div className="flex justify-between items-start mb-2">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Fitness • Trending</p>
+                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-900 transition-all group-hover:translate-x-1" />
+                  </div>
+                  <h4 className="text-md font-black text-slate-900 group-hover:text-[#2D45C1] transition-all mb-1">{challenge.name}</h4>
+                  <p className="text-sm font-bold text-slate-500">{challenge.count}</p>
+                </div>
+              ))}
+              <button className="text-sm font-bold text-[#2D45C1] hover:underline pt-2">Show more</button>
             </div>
-          ) : (
-            posts.map((post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                currentUser={user}
-                onLike={() => handleToggleLike(post.id)}
-                refreshData={loadData}
-              />
-            ))
-          )}
-        </div>
-      </div>
-    </AppLayout>
-  );
-};
+          </div>
 
-// CHILD COMPONENT: Post Card
-const PostCard = ({
-  post,
-  currentUser,
-  onLike,
-  refreshData,
-}: {
-  post: PostWithData;
-  currentUser: User | null;
-  onLike: () => Promise<void>;
-  refreshData: () => void;
-}) => {
-  const [showReply, setShowReply] = useState(false);
-  const [replyContent, setReplyContent] = useState("");
-  const likedByMe = post.post_likes?.some((l) => l.user_id === currentUser?.id);
-
-  const handleAddComment = async () => {
-    if (!currentUser) {
-      toast.error("Faça login para comentar.");
-      return;
-    }
-    if (!replyContent.trim()) return;
-
-    try {
-      await communityService.addComment(
-        currentUser.id,
-        post.id,
-        replyContent,
-        undefined
-      );
-      setReplyContent("");
-      toast.success("Comentário adicionado.");
-      refreshData();
-    } catch (error) {
-      toast.error("Erro ao enviar comentário.");
-    }
-  };
-
-  return (
-    <div className="bg-card border border-border/50 rounded-2xl p-5 shadow-sm hover:border-border transition-colors">
-      <div className="flex items-start gap-4 mb-4">
-        {/* User Avatar */}
-        <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0 border border-border">
-          <span className="font-semibold text-foreground text-sm">
-            {post.profiles?.display_name ? post.profiles.display_name[0].toUpperCase() : "U"}
-          </span>
-        </div>
-        
-        {/* Post Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 truncate">
-              <span className="font-medium text-sm text-foreground truncate">
-                {post.profiles?.display_name || "Membro"}
-              </span>
-              <span className="text-sm font-medium text-muted-foreground/80 flex-shrink-0">
-                • {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: ptBR })}
-              </span>
+          <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-[0_4px_24px_rgba(0,0,0,0.02)]">
+            <h2 className="text-xl font-black text-slate-900 mb-8">Who to follow</h2>
+            <div className="space-y-8">
+              {SUGGESTIONS.map((user) => (
+                <div key={user.name} className="flex items-center gap-4">
+                  <Avatar className="w-12 h-12 shadow-sm border border-slate-100 ring-4 ring-slate-50/50">
+                    <AvatarFallback className="bg-slate-50 text-slate-400 font-bold">{user.avatar}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-black text-slate-900 truncate mb-0.5">{user.name}</h4>
+                    <p className="text-xs font-bold text-slate-400 truncate">{user.handle}</p>
+                  </div>
+                  <Button variant="outline" className="rounded-xl border-slate-200 text-slate-900 font-black h-10 px-4 text-xs hover:bg-slate-50 transition-all">
+                    Follow
+                  </Button>
+                </div>
+              ))}
+              <button className="text-sm font-bold text-[#2D45C1] hover:underline pt-2 w-full text-left">Show more</button>
             </div>
-            <button className="text-muted-foreground hover:text-foreground transition-colors">
-              <MoreVertical className="w-4 h-4" />
-            </button>
           </div>
           
-          {/* Mock streak badge for flavor */}
-          <div className="flex items-center gap-1.5 mt-1 opacity-90">
-            <Flame className="w-3.5 h-3.5 text-amber-500" />
-            <span className="text-xs text-amber-500 font-semibold uppercase tracking-wide">Livre do cigarro</span>
+          <div className="flex flex-wrap gap-4 px-4 text-[10px] font-bold text-slate-300 uppercase tracking-widest">
+            <a href="#" className="hover:text-slate-500">Terms of Service</a>
+            <a href="#" className="hover:text-slate-500">Privacy Policy</a>
+            <a href="#" className="hover:text-slate-500">Cookie Policy</a>
+            <a href="#" className="hover:text-slate-500">Accessibility</a>
+            <span>© 2026 Freesh Inc.</span>
           </div>
-        </div>
+        </aside>
       </div>
-
-      {/* Post Content */}
-      <div className="pl-14 mb-4">
-        <p className="text-base leading-relaxed text-foreground/90 whitespace-pre-wrap">
-          {post.content}
-        </p>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="pl-14 flex items-center gap-6">
-        <button
-          onClick={onLike}
-          className={`flex items-center gap-2 transition-colors ${
-            likedByMe ? "text-primary text-base" : "text-muted-foreground hover:text-foreground text-base"
-          }`}
-        >
-          <Heart className={`w-[20px] h-[20px] ${likedByMe ? "fill-current" : ""}`} />
-          <span className="font-semibold">{post.post_likes?.length || 0}</span>
-        </button>
-        
-        <button
-          onClick={() => setShowReply(!showReply)}
-          className={`flex items-center gap-2 transition-colors ${
-            showReply ? "text-foreground text-base" : "text-muted-foreground hover:text-foreground text-base"
-          }`}
-        >
-          <MessageSquare className="w-[20px] h-[20px]" />
-          <span className="font-semibold">{post.comments?.length || 0}</span>
-        </button>
-      </div>
-
-      {/* Comments Section */}
-      {showReply && (
-        <div className="mt-5 pl-14 pt-4 border-t border-border/40">
-          {currentUser && (
-            <div className="flex gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0 border border-border">
-                <span className="font-semibold text-xs text-foreground">
-                  {currentUser?.email ? currentUser.email[0].toUpperCase() : "U"}
-                </span>
-              </div>
-              <div className="flex-1 flex items-center bg-muted/20 border border-border/50 rounded-full px-4 h-10">
-                <input
-                  placeholder="Escreva um comentário..."
-                  value={replyContent}
-                  onChange={(e) => setReplyContent(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
-                  className="w-full bg-transparent border-none text-sm outline-none placeholder:text-muted-foreground/60 focus:ring-0"
-                />
-                <button
-                  onClick={handleAddComment}
-                  disabled={!replyContent.trim()}
-                  className="text-primary hover:text-primary/80 disabled:opacity-50 ml-2"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="space-y-4 pt-2">
-            {post.comments?.map((comment) => (
-              <div key={comment.id} className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                  <span className="font-medium text-xs text-foreground">
-                    {comment.profiles?.display_name ? comment.profiles.display_name[0].toUpperCase() : "U"}
-                  </span>
-                </div>
-                <div className="flex-1 bg-muted/20 rounded-2xl rounded-tl-none p-3 border border-border/30">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-[15px] font-semibold">
-                      {comment.profiles?.display_name || "Membro"}
-                    </span>
-                    <span className="text-xs font-medium text-muted-foreground/80">
-                      {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true, locale: ptBR })}
-                    </span>
-                  </div>
-                  <p className="text-base text-foreground/90 whitespace-pre-wrap leading-relaxed">
-                    {comment.content}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
-};
-
-export default Comunidade;
+}

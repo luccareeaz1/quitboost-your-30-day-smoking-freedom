@@ -5,7 +5,7 @@ const testimonials = [
   {
     name: "Ricardo Santos",
     days: "127 dias sem fumar",
-    text: "O QuitBoost mudou tudo. O AI Coach me ajudou nos momentos mais difíceis. Nunca pensei que conseguiria, mas aqui estou.",
+    text: "Fumei por 20 anos e tentei parar 8 vezes. Com o freesh finalmente consegui. O plano personalizado é cirúrgico.",
     initials: "RS",
   },
   {
@@ -23,7 +23,7 @@ const testimonials = [
   {
     name: "Ana Ferreira",
     days: "312 dias sem fumar",
-    text: "Fumei por 20 anos e tentei parar 8 vezes. Com o QuitBoost finalmente consegui. O plano personalizado é cirúrgico.",
+    text: "Fumei por 20 anos e tentei parar 8 vezes. Com o freesh finalmente consegui. O plano personalizado é cirúrgico.",
     initials: "AF",
   },
 ];

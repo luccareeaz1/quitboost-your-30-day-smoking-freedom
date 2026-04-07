@@ -46,7 +46,7 @@ const NavBar = () => {
             letterSpacing: "-0.04em",
             lineHeight: 1,
           }}>
-            Quit<span style={{ color: "#6366f1" }}>Boost</span>
+            freesh
           </span>
         </div>
 

@@ -38,7 +38,7 @@ const NotFound = () => {
 
       <div className="mt-20 flex items-center gap-2 opacity-30 select-none">
          <Wind className="w-4 h-4" />
-         <span className="text-sm font-medium font-black uppercase tracking-widest">QuitBoost Ecosystem</span>
+         <span className="text-sm font-medium font-black uppercase tracking-widest">freesh Ecosystem</span>
       </div>
     </div>
   );

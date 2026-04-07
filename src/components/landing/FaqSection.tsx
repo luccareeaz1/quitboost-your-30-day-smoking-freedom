@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const faqs = [
   {
-    q: "O QuitBoost funciona mesmo para fumantes de longa data?",
+    q: "O freesh funciona mesmo para fumantes de longa data?",
     a: "Sim. Nosso método foi desenvolvido para todos os perfis de fumantes, incluindo quem fuma há décadas. A IA personaliza o plano com base no seu histórico, aumentando significativamente as chances de sucesso."
   },
   {

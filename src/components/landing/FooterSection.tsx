@@ -160,7 +160,7 @@ const FooterSection = () => {
             letterSpacing: "-0.01em",
             margin: 0,
           }}>
-            © {year} QuitBoost. Todos os direitos reservados.
+            © {year} freesh. Todos os direitos reservados.
           </p>
         </div>
       </div>

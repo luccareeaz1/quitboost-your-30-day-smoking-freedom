@@ -12,8 +12,8 @@ const HeroSection = () => {
       {/* Background Orbs */}
       <div className="absolute inset-0 z-0">
         <NeonOrbs 
-          title="QUIT BOOST" 
-          subtitle="O FUTURO É AGORA" 
+          title="FREESH" 
+          subtitle="FRESH AIR. NEW LIFE." 
         />
       </div>
 

@@ -58,7 +58,7 @@ const AppContentSection = () => {
           </motion.div>
           
           <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-6 text-white leading-none">
-            O que você encontra no <span className="text-primary italic">QuitBoost</span>
+            O que você encontra no <span className="text-primary italic">freesh</span>
           </h2>
           <p className="text-muted-foreground text-xl max-w-3xl font-medium italic leading-relaxed">
             Nós não construímos apenas um aplicativo. Criamos um <span className="text-white font-bold">arsenal tecnológico</span> de elite para a sua libertação definitiva.
