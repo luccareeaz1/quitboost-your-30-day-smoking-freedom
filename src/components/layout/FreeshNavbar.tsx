@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { path: "/coach", icon: MessageSquare, label: "Coach AI" },
-  { path: "/comunidade", icon: Users, label: "Community" },
-  { path: "/desafios", icon: Trophy, label: "Missions" },
+  { path: "/coach", icon: MessageSquare, label: "Coach IA" },
+  { path: "/comunidade", icon: Users, label: "Comunidade" },
+  { path: "/desafios", icon: Trophy, label: "Missões" },
 ];
 
 export function FreeshNavbar() {
@@ -40,7 +40,7 @@ export function FreeshNavbar() {
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 bg-orange-50 px-3 py-1.5 rounded-full border border-orange-100">
           <Flame className="w-4 h-4 text-orange-500 fill-orange-500" />
-          <span className="text-sm font-bold text-orange-700">14 days</span>
+          <span className="text-sm font-bold text-orange-700">14 dias</span>
         </div>
         <div className="w-8 h-8 rounded-full bg-slate-200 border border-slate-300" />
       </div>

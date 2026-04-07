@@ -19,21 +19,22 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 const STATS = [
-  { label: "MONEY SAVED", value: "R$218", sub: "+R$15.57 / day", icon: Wallet, color: "bg-emerald-50 text-emerald-600" },
-  { label: "CIGARETTES AVOIDED", value: "280", sub: "14 packs not bought", icon: Ban, color: "bg-blue-50 text-blue-600" },
-  { label: "LIFE GAINED", value: "+7.2h", sub: "Extra time earned", icon: HeartPulse, color: "bg-rose-50 text-rose-600" },
-  { label: "GROWTH", value: "Level 4", xp: 349, maxXp: 500, icon: Zap, color: "bg-amber-50 text-amber-600" },
+  { label: "DINHEIRO ECONOMIZADO", value: "R$218", sub: "+R$15.57 / dia", icon: Wallet, color: "bg-emerald-50 text-emerald-600" },
+  { label: "CIGARROS EVITADOS", value: "280", sub: "14 maços não comprados", icon: Ban, color: "bg-blue-50 text-blue-600" },
+  { label: "VIDA GANHA", value: "+7.2h", sub: "Tempo extra de vida", icon: HeartPulse, color: "bg-rose-50 text-rose-600" },
+  { label: "EVOLUÇÃO", value: "Nível 4", xp: 349, maxXp: 500, icon: Zap, color: "bg-amber-50 text-amber-600" },
 ];
 
 const RECOVERY_METRICS = [
-  { name: "Lungs", value: 72, icon: Heart, color: "text-blue-500" },
-  { name: "Circulation", value: 88, icon: Activity, color: "text-emerald-500" },
-  { name: "Blood pressure", value: 54, icon: Stethoscope, color: "text-orange-500" },
-  { name: "Taste", value: 65, icon: Soup, color: "text-indigo-500" },
-  { name: "Heart rate", value: 92, icon: Wind, color: "text-rose-500" },
-  { name: "Immunity", value: 41, icon: ShieldCheck, color: "text-amber-500" },
+  { name: "Pulmões", value: 72, icon: Heart, color: "text-blue-500" },
+  { name: "Circulação", value: 88, icon: Activity, color: "text-emerald-500" },
+  { name: "Pressão Arterial", value: 54, icon: Stethoscope, color: "text-orange-500" },
+  { name: "Paladar", value: 65, icon: Soup, color: "text-indigo-500" },
+  { name: "Frequência Cardíaca", value: 92, icon: Wind, color: "text-rose-500" },
+  { name: "Imunidade", value: 41, icon: ShieldCheck, color: "text-amber-500" },
 ];
 
 const CircularProgress = ({ value, label, icon: Icon, color }: any) => {
@@ -71,13 +72,23 @@ const CircularProgress = ({ value, label, icon: Icon, color }: any) => {
           {value}%
         </div>
       </div>
-      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{label}</span>
+      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center h-8 flex items-center">{label}</span>
     </div>
   );
 };
 
 
 export default function Dashboard() {
+  const { toast } = useToast();
+
+  const handleSOS = () => {
+    toast({
+      title: "Respire fundo! 🧘‍♂️",
+      description: "Um alerta foi enviado para sua rede de apoio e o Coach IA está pronto para conversar agora.",
+      variant: "destructive",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       <FreeshNavbar />
@@ -86,17 +97,21 @@ export default function Dashboard() {
         {/* Hero Section */}
         <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-8">
           <div className="max-w-2xl">
-            <p className="text-slate-500 font-medium mb-1">You've been breathing clean for:</p>
+            <p className="text-slate-500 font-medium mb-1">Você está respirando ar puro há:</p>
             <h1 className="text-6xl font-black text-slate-900 mb-2">
-              14 <span className="text-4xl font-bold text-slate-400">days smoke-free</span>
+              14 <span className="text-4xl font-bold text-slate-400">dias sem fumar</span>
             </h1>
             <p className="text-slate-600 text-lg">
-              Every breath is a victory. Your lungs are healing, and your future is getting brighter with every passing second.
+              Cada respiração é uma vitória. Seus pulmões estão se recuperando e seu futuro brilha a cada segundo.
             </p>
           </div>
-          <Button size="lg" className="bg-[#2D45C1] hover:bg-[#1E30A1] text-white rounded-full px-8 gap-2 h-14 text-md shadow-xl shadow-blue-200/50">
+          <Button 
+            onClick={handleSOS}
+            size="lg" 
+            className="bg-[#2D45C1] hover:bg-[#1E30A1] text-white rounded-full px-8 gap-2 h-14 text-md shadow-xl shadow-blue-200/50"
+          >
             <AlertCircle className="w-5 h-5 fill-white/20" />
-            SOS: I NEED HELP
+            SOS: PRECISO DE AJUDA
           </Button>
         </div>
 
@@ -117,7 +132,7 @@ export default function Dashboard() {
                   {stat.xp && (
                     <div className="mt-3">
                       <div className="flex justify-between text-[10px] font-bold text-slate-400 mb-1">
-                        <span>XP PROGRESS</span>
+                        <span>PROGRESSO DE XP</span>
                         <span>{stat.xp}/{stat.maxXp} XP</span>
                       </div>
                       <Progress value={(stat.xp / stat.maxXp) * 100} className="h-1.5 bg-slate-100" />
@@ -133,8 +148,8 @@ export default function Dashboard() {
           {/* Body Recovery */}
           <Card className="lg:col-span-8 border-none shadow-sm bg-white rounded-3xl p-8">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-xl font-bold text-slate-900">Body Recovery</h2>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Biological healing progress</span>
+              <h2 className="text-xl font-bold text-slate-900">Recuperação Corporal</h2>
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Progresso biológico de cura</span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-y-10 gap-x-8">
               {RECOVERY_METRICS.map((metric) => (
@@ -150,7 +165,7 @@ export default function Dashboard() {
 
           {/* 30 Day Milestone */}
           <Card className="lg:col-span-4 border-none shadow-sm bg-white rounded-3xl p-8">
-            <h2 className="text-xl font-bold text-slate-900 mb-6">30 Day Milestone</h2>
+            <h2 className="text-xl font-bold text-slate-900 mb-6">Jornada de 30 Dias</h2>
             <div className="grid grid-cols-5 gap-3">
               {Array.from({ length: 30 }).map((_, i) => (
                 <div 
@@ -171,7 +186,7 @@ export default function Dashboard() {
                 <Trophy className="w-4 h-4 text-[#2D45C1]" />
               </div>
               <p className="text-xs text-slate-600 font-medium">
-                <span className="font-bold text-slate-900">16 days</span> until you reach the Silver Lung milestone!
+                faltam <span className="font-bold text-slate-900">16 dias</span> para você atingir a marca de Pulmão de Prata!
               </p>
             </div>
           </Card>
@@ -179,16 +194,16 @@ export default function Dashboard() {
           {/* Craving Triggers */}
           <Card className="lg:col-span-6 border-none shadow-sm bg-white rounded-3xl p-8">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-xl font-bold text-slate-900">Craving Triggers</h2>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">This Week</span>
+              <h2 className="text-xl font-bold text-slate-900">Gatilhos de Fissura</h2>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Esta Semana</span>
             </div>
             <div className="flex items-end justify-between h-48 gap-4 px-4">
               {[
-                { name: "Stress", val: 80, color: "bg-rose-400" },
-                { name: "Coffee", val: 40, color: "bg-[#2D45C1]" },
+                { name: "Estresse", val: 80, color: "bg-rose-400" },
+                { name: "Café", val: 40, color: "bg-[#2D45C1]" },
                 { name: "Social", val: 60, color: "bg-emerald-400" },
-                { name: "Boredom", val: 30, color: "bg-amber-400" },
-                { name: "Alcohol", val: 50, color: "bg-indigo-400" },
+                { name: "Tédio", val: 30, color: "bg-amber-400" },
+                { name: "Álcool", val: 50, color: "bg-indigo-400" },
               ].map((trigger) => (
                 <div key={trigger.name} className="flex-1 flex flex-col items-center gap-4">
                   <motion.div 
@@ -206,28 +221,34 @@ export default function Dashboard() {
           {/* Recent Badges */}
           <Card className="lg:col-span-6 border-row-span-2 border-none shadow-sm bg-white rounded-3xl p-8">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="text-xl font-bold text-slate-900">Recent Badges</h2>
-              <button className="text-xs font-bold text-[#2D45C1] hover:underline">See All</button>
+              <h2 className="text-xl font-bold text-slate-900">Conquistas Recentes</h2>
+              <button href="#" className="text-xs font-bold text-[#2D45C1] hover:underline">Ver Tudo</button>
             </div>
             <div className="grid grid-cols-3 gap-6">
               {[
-                { name: "First 24h", earned: true, color: "amber" },
-                { name: "FREESH Joined", earned: true, color: "blue" },
-                { name: "Week One", earned: true, color: "emerald" },
-                { name: "1 Month", earned: false },
-                { name: "10,000 Saved", earned: false },
-                { name: "Life Extender", earned: false },
+                { name: "Primeiras 24h", earned: true, color: "amber" },
+                { name: "Membro freesh", earned: true, color: "blue" },
+                { name: "Primeira Semana", earned: true, color: "emerald" },
+                { name: "1 Mês", earned: false },
+                { name: "Economia 10k", earned: false },
+                { name: "Mais Vida", earned: false },
               ].map((badge, i) => (
                 <div key={i} className="flex flex-col items-center gap-3">
                   <div className={cn(
                     "w-20 h-20 rounded-2xl flex items-center justify-center transition-all shadow-inner",
                     badge.earned 
-                      ? `bg-${badge.color}-50 border border-${badge.color}-100` 
+                      ? (badge.color === "amber" ? "bg-amber-50 border border-amber-100" : 
+                         badge.color === "blue" ? "bg-blue-50 border border-blue-100" : 
+                         "bg-emerald-50 border border-emerald-100")
                       : "bg-slate-50 border border-slate-100 opacity-40 grayscale"
                   )}>
                     <Trophy className={cn(
                       "w-8 h-8",
-                      badge.earned ? `text-${badge.color}-500` : "text-slate-300"
+                      badge.earned 
+                        ? (badge.color === "amber" ? "text-amber-500" : 
+                           badge.color === "blue" ? "text-blue-500" : 
+                           "text-emerald-500") 
+                        : "text-slate-300"
                     )} />
                   </div>
                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">{badge.name}</span>
