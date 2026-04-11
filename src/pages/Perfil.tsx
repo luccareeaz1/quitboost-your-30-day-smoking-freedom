@@ -3,14 +3,17 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Trophy, Heart, Settings, Target, Shield, Users, Bot,
-  Sparkles, Crown, Loader2, LogOut, Trash2, Edit3, ChevronRight 
+  Sparkles, Crown, Loader2, LogOut, Trash2, Edit3, ChevronRight,
+  CreditCard, Bell, Key, ShieldCheck, Mail, MapPin, ExternalLink,
+  ChevronLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import AppLayout from "@/components/app/AppLayout";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService, achievementService } from "@/lib/services";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 interface UserAchievement {
   id: string;
@@ -19,12 +22,11 @@ interface UserAchievement {
   emoji: string | null;
 }
 
-const Perfil = () => {
+export default function Perfil() {
   const navigate = useNavigate();
   const { user, profile, loading, signOut, subscription } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [saving, setSaving] = useState(false);
   const [userAchievements, setUserAchievements] = useState<UserAchievement[]>([]);
 
@@ -40,7 +42,7 @@ const Perfil = () => {
   useEffect(() => {
     if (profile) {
       setEditData({
-        nome: profile.display_name || user?.email?.split("@")[0] || "Usuário",
+        nome: profile.display_name || user?.email?.split("@")[0] || "Guerreiro",
         bio: profile.bio || "",
         cigarrosPorDia: profile.cigarettes_per_day || 0,
         anosFumando: profile.years_smoking || 0,
@@ -48,18 +50,15 @@ const Perfil = () => {
         gatilhos: profile.triggers || [],
       });
       
-      achievementService.getUserAchievements(user!.id).then(ua => {
-        const mapped = ua.map(item => {
-          const ach = item.achievements as unknown as { id: string; title: string; icon: string; emoji: string };
-          return {
-            id: ach.id,
-            title: ach.title,
-            icon: ach.icon,
-            emoji: ach.emoji
-          };
+      if (user) {
+        achievementService.getUserAchievements(user.id).then(ua => {
+          const mapped = ua.map(item => {
+            const ach = item.achievements as any;
+            return { id: ach.id, title: ach.title, icon: ach.icon, emoji: ach.emoji };
+          });
+          setUserAchievements(mapped);
         });
-        setUserAchievements(mapped);
-      });
+      }
     }
   }, [profile, user]);
 
@@ -67,10 +66,8 @@ const Perfil = () => {
     if (!profile) return null;
     const quitDate = new Date(profile.quit_date || new Date().toISOString());
     const diffDays = Math.max(0, Math.floor((Date.now() - quitDate.getTime()) / (1000 * 60 * 60 * 24)));
-    const cigarrosEvitados = diffDays * (profile.cigarettes_per_day || 0);
-    const economia = cigarrosEvitados * (Number(profile.price_per_cigarette) || 0);
-
-    return { diffDays, cigarrosEvitados, economia, quitDate };
+    const economia = diffDays * (profile.cigarettes_per_day || 0) * (Number(profile.price_per_cigarette) || 0);
+    return { diffDays, economia, quitDate };
   }, [profile]);
 
   const handleSaveProfile = async () => {
@@ -94,235 +91,265 @@ const Perfil = () => {
     }
   };
 
-  const handleToggleGatilho = (gatilho: string) => {
-    setEditData((prev) => ({
-      ...prev,
-      gatilhos: prev.gatilhos.includes(gatilho)
-        ? prev.gatilhos.filter((g) => g !== gatilho)
-        : [...prev.gatilhos, gatilho],
-    }));
-  };
-
-  const ALL_GATILHOS = ["Café", "Álcool", "Estresse", "Após refeições", "Ansiedade", "Tédio", "Social", "Dirigir", "Acordar", "Antes de dormir"];
-
   if (loading || !profile || !stats) {
     return (
-      <AppLayout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <Loader2 className="w-10 h-10 text-[#528114] animate-spin" />
-        </div>
-      </AppLayout>
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+      </div>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="bg-white min-h-screen pb-32">
-        <header className="bg-[#528114] text-white pt-10 pb-8 px-4 flex flex-col rounded-b-[40px] relative">
-           <div className="absolute top-4 right-4">
-              <button onClick={() => setShowSettings(!showSettings)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center transition-transform active:scale-95">
-                 <Settings className="w-5 h-5 text-white" />
-              </button>
-           </div>
-           
-           <div className="flex flex-col items-center mt-4">
-              <div className="relative mb-4">
-                 <div className="w-24 h-24 rounded-full bg-white border-4 border-white flex items-center justify-center overflow-hidden shadow-lg">
-                    {profile.avatar_url ? (
-                      <img src={profile.avatar_url} className="w-full h-full object-cover" />
-                    ) : (
-                      <User className="w-10 h-10 text-[#528114]" />
-                    )}
-                 </div>
-                 <button onClick={() => setIsEditing(true)} className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-black text-white flex items-center justify-center shadow-lg border-2 border-white hover:scale-105 active:scale-95 transition-all">
-                    <Edit3 className="w-4 h-4" />
-                 </button>
-              </div>
-              <h2 className="text-2xl font-bold tracking-tight">{profile.display_name || "Guerreiro"}</h2>
-              <p className="text-sm font-medium text-white/80 mt-1">
-                Livre desde {stats.quitDate.toLocaleDateString("pt-BR")}
-              </p>
-              
-              <div className="mt-4 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/20 text-white border border-white/30 shadow-sm">
-                 {subscription === 'elite' ? <Crown className="w-3.5 h-3.5" /> : <Shield className="w-3.5 h-3.5" />}
-                 Plano {subscription?.toUpperCase() || 'FREE'}
-              </div>
-           </div>
-        </header>
+    <div className="min-h-screen bg-[#F8FAFC] pb-32">
+      {/* Premium Hero Header */}
+      <header className="bg-slate-900 pt-20 pb-40 px-6 lg:px-12 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
+          <div className="absolute top-20 right-20 w-96 h-96 bg-primary/20 rounded-full blur-[100px]" />
+          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-sky-400/10 rounded-full blur-[100px]" />
+        </div>
 
-        <div className="px-4 py-8 max-w-lg mx-auto space-y-6 -mt-6">
-          {/* STATS CARDS */}
-          <div className="grid grid-cols-2 gap-4">
-             <div className="p-5 rounded-[24px] bg-white border border-gray-100 shadow-sm flex flex-col items-center text-center">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Dias Livres</p>
-                <p className="text-3xl font-light text-[#528114]">{stats.diffDays}</p>
-             </div>
-             <div className="p-5 rounded-[24px] bg-white border border-gray-100 shadow-sm flex flex-col items-center text-center">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-1">Economia</p>
-                <p className="text-3xl font-light text-[#528114]">
-                   <span className="text-lg">R$</span>{Math.round(stats.economia)}
-                </p>
-             </div>
+        <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-10">
+          <div className="relative group">
+            <div className="w-40 h-40 rounded-[3rem] bg-white p-1.5 shadow-2xl relative">
+              <div className="w-full h-full rounded-[2.5rem] bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-100">
+                {profile.avatar_url ? (
+                  <img src={profile.avatar_url} className="w-full h-full object-cover" alt="Profile" />
+                ) : (
+                  <User className="w-16 h-16 text-slate-200" />
+                )}
+              </div>
+              <button 
+                onClick={() => setIsEditing(true)}
+                className="absolute -bottom-2 -right-2 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl border-4 border-slate-900 group-hover:scale-110 transition-transform"
+              >
+                <Edit3 className="w-5 h-5" />
+              </button>
+            </div>
+            {subscription === 'elite' && (
+              <div className="absolute -top-4 -right-4 w-12 h-12 bg-amber-400 rounded-full flex items-center justify-center shadow-lg border-4 border-slate-900">
+                <Crown className="w-6 h-6 text-white" />
+              </div>
+            )}
           </div>
 
-          {/* BADGE BAR */}
-          <section className="bg-white rounded-[24px] border border-gray-100 p-5 shadow-sm">
-             <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#528114]">Suas Conquistas</h3>
-                <button onClick={() => navigate("/conquistas")} className="text-[11px] font-bold uppercase tracking-widest text-gray-400 hover:text-black">Ver Todas</button>
+          <div className="text-center md:text-left flex-1">
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+              {profile.display_name || "Guerreiro"}
+            </h1>
+            <p className="text-white/40 font-bold uppercase tracking-widest text-xs mb-6">
+              Iniciado em {stats.quitDate.toLocaleDateString("pt-BR")}
+            </p>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+              <BadgeBox label="Nível 04" color="bg-primary/20 text-primary border-primary/20" />
+              <BadgeBox label={subscription?.toUpperCase() || 'FREE'} color="bg-amber-400/20 text-amber-400 border-amber-400/20" />
+              <BadgeBox label="São Paulo, BR" color="bg-white/5 text-white/40 border-white/10" icon={MapPin} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+             <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2rem] text-center min-w-[140px]">
+                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Dias Livres</p>
+                <p className="text-4xl font-black text-white">{stats.diffDays}</p>
              </div>
-             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-                {userAchievements.length > 0 ? userAchievements.map((badge, i) => (
+             <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2rem] text-center min-w-[140px]">
+                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Economia</p>
+                <p className="text-4xl font-black text-white">R${Math.round(stats.economia)}</p>
+             </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Sections */}
+      <div className="max-w-5xl mx-auto px-6 -mt-24 relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="lg:col-span-8 space-y-10">
+          {/* Conquistas Bar */}
+          <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10">
+             <div className="flex justify-between items-center mb-10">
+                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Galeria de Troféus</h3>
+                <Button variant="ghost" className="text-xs font-black text-primary uppercase tracking-widest" onClick={() => navigate("/conquistas")}>Ver Galeria</Button>
+             </div>
+             <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+                {userAchievements.map((badge, i) => (
                   <motion.div
-                    key={badge.id}
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="w-14 h-14 rounded-[14px] bg-[#F2F2F7] shrink-0 flex items-center justify-center text-2xl border border-gray-100 shadow-sm"
+                    key={i}
+                    initial={{ scale: 0.8 }}
+                    animate={{ scale: 1 }}
+                    className="w-20 h-20 rounded-[1.5rem] bg-slate-50 flex items-center justify-center text-4xl shrink-0 group hover:bg-primary/5 transition-colors border border-slate-100"
                   >
-                    {badge.emoji || "🏅"}
+                    <span className="group-hover:scale-125 transition-transform">{badge.emoji || "🏅"}</span>
                   </motion.div>
-                )) : (
-                  <div className="py-4 text-center w-full">
-                     <p className="text-sm font-medium text-gray-400">Nenhuma conquista ainda.</p>
+                ))}
+                {userAchievements.length === 0 && (
+                  <div className="py-10 text-center w-full bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-100">
+                    <p className="text-sm font-bold text-slate-400">Suas vitórias aparecerão aqui em breve.</p>
                   </div>
                 )}
              </div>
-          </section>
+          </Card>
 
-          {/* MENU */}
-          <section className="space-y-2">
-             {[
-               { label: "Coach da Saúde AI", icon: Bot, path: "/coach" },
-               { label: "Comunidade", icon: Users, path: "/comunidade" },
-               { label: "Desafios Diários", icon: Target, path: "/desafios" },
-             ].map((item) => (
-               <button
-                 key={item.label}
-                 onClick={() => navigate(item.path)}
-                 className="w-full h-16 rounded-[20px] bg-[#F2F2F7] flex items-center gap-4 px-5 active:scale-95 transition-transform"
-               >
-                  <div className="w-10 h-10 rounded-[12px] bg-white flex items-center justify-center border border-gray-100 shadow-sm">
-                     <item.icon className="w-5 h-5 text-black" />
-                  </div>
-                  <span className="flex-1 text-left font-bold text-sm text-black">{item.label}</span>
-                  <ChevronRight size={18} className="text-gray-400" />
-               </button>
-             ))}
-          </section>
-
-          {/* SETTINGS DRAWER (Simulated) */}
-          <AnimatePresence>
-            {showSettings && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                 <div className="bg-white rounded-[24px] p-2 space-y-2 border border-gray-100 shadow-sm mt-4">
-                    <button onClick={signOut} className="w-full flex items-center justify-between p-4 rounded-[16px] bg-[#F2F2F7] text-gray-500 font-bold text-sm">
-                      Sair da Conta <LogOut size={16} />
-                    </button>
-                    <button onClick={() => setShowDeleteConfirm(true)} className="w-full flex items-center justify-between p-4 rounded-[16px] bg-red-50 text-red-600 font-bold text-sm">
-                      Apagar Dados <Trash2 size={16} />
-                    </button>
-                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* Account Settings Bento */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <SettingsCard icon={ShieldCheck} title="Privacidade" desc="Gerencie visibilidade e dados." color="text-sky-500" />
+            <SettingsCard icon={CreditCard} title="Assinatura" desc="Upgrade para Elite Pro." color="text-amber-500" />
+            <SettingsCard icon={Bell} title="Notificações" desc="Alertas de fissura e saúde." color="text-primary" />
+            <SettingsCard icon={LogOut} title="Desconectar" desc="Sair da conta atual." color="text-slate-400" onClick={signOut} />
+          </div>
+          
+          <Button 
+            variant="destructive" 
+            onClick={() => setShowDeleteConfirm(true)}
+            className="w-full h-16 rounded-[2rem] bg-rose-50 text-rose-500 hover:bg-rose-100 border border-rose-100 font-black uppercase tracking-widest text-[11px] gap-3"
+          >
+            <Trash2 className="w-4 h-4" /> Resetar Histórico Físico
+          </Button>
         </div>
+
+        {/* Sidebar Mini Profile Info */}
+        <aside className="lg:col-span-4 space-y-10">
+           <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10">
+             <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-8">Bio Médica</h3>
+             <div className="space-y-6">
+               <InfoRow label="Cigarros/Dia" value={profile.cigarettes_per_day} icon={Flame} />
+               <InfoRow label="Fuma há" value={`${profile.years_smoking} Anos`} icon={Clock} />
+               <InfoRow label="Status" value="Regenerando" icon={Heart} />
+             </div>
+             
+             <div className="mt-10 pt-10 border-t border-slate-50">
+               <p className="text-xs font-bold text-slate-400 leading-relaxed italic">
+                 "Sua capacidade pulmonar aumentou 22% desde o início desta jornada."
+               </p>
+             </div>
+           </Card>
+
+           <Card className="border-none shadow-xl shadow-slate-100 bg-primary/5 rounded-[3rem] p-10 border border-primary/10">
+             <h4 className="text-lg font-black text-primary mb-4 flex items-center gap-2">
+               <Sparkles className="w-5 h-5" /> Apoio do Coach
+             </h4>
+             <p className="text-sm font-bold text-primary/70 leading-relaxed mb-8">
+               O seu plano atual cobre mensagens ilimitadas de texto com o Coach IA especializado em cessação do tabagismo.
+             </p>
+             <Button className="w-full bg-primary text-white hover:bg-emerald-600 rounded-2xl h-12 font-black uppercase tracking-widest text-[10px]" onClick={() => navigate('/coach')}>
+               Falar com Coach
+             </Button>
+           </Card>
+        </aside>
       </div>
 
-      {/* EDIT MODAL */}
+      {/* EDIT OVERLAY */}
       <AnimatePresence>
         {isEditing && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
-            onClick={() => !saving && setIsEditing(false)}
-          >
-             <motion.div
-               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-               className="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto no-scrollbar"
-               onClick={e => e.stopPropagation()}
-             >
-                <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-2 sm:hidden" />
-                <h3 className="text-xl font-bold tracking-tight mb-2 text-center">Editar Perfil</h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-[#528114] ml-2 block mb-1">Nome de Exibição</label>
-                    <input value={editData.nome} onChange={e => setEditData({...editData, nome: e.target.value})} className="w-full h-14 bg-[#F2F2F7] focus:bg-white focus:border-[#528114] border-2 border-transparent outline-none rounded-[16px] px-4 font-bold text-sm transition-colors text-black" />
+          <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-xl" onClick={() => setIsEditing(false)} />
+            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="bg-white w-full max-w-xl rounded-[3rem] p-12 shadow-2xl relative z-10">
+               <div className="flex justify-between items-center mb-10">
+                 <h3 className="text-3xl font-black text-slate-900">Editar Perfil</h3>
+                 <button onClick={() => setIsEditing(false)} className="text-slate-300 hover:text-slate-900"><ChevronLeft className="w-8 h-8" /></button>
+               </div>
+               
+               <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 no-scrollbar">
+                  <InputGroup label="Nome de Exibição" value={editData.nome} onChange={v => setEditData({...editData, nome: v})} />
+                  <InputGroup label="Bio / Motivação" value={editData.bio} onChange={v => setEditData({...editData, bio: v})} isTextArea />
+                  <div className="grid grid-cols-2 gap-8">
+                    <InputGroup label="Cigarros Diários" value={editData.cigarrosPorDia} onChange={v => setEditData({...editData, cigarrosPorDia: Number(v)})} type="number" />
+                    <InputGroup label="Anos de Hábito" value={editData.anosFumando} onChange={v => setEditData({...editData, anosFumando: Number(v)})} type="number" />
                   </div>
-                  <div>
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-[#528114] ml-2 block mb-1">Bio</label>
-                    <textarea value={editData.bio} onChange={e => setEditData({...editData, bio: e.target.value})} className="w-full min-h-[100px] bg-[#F2F2F7] focus:bg-white focus:border-[#528114] border-2 border-transparent outline-none rounded-[16px] p-4 font-bold text-sm resize-none transition-colors text-black" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-[#528114] ml-2 block mb-1">Cigarros/Dia</label>
-                      <input type="number" value={editData.cigarrosPorDia} onChange={e => setEditData({...editData, cigarrosPorDia: Number(e.target.value)})} className="w-full h-14 bg-[#F2F2F7] focus:bg-white focus:border-[#528114] border-2 border-transparent outline-none rounded-[16px] px-4 font-bold text-sm transition-colors text-black" />
-                    </div>
-                    <div>
-                      <label className="text-[11px] font-bold uppercase tracking-widest text-[#528114] ml-2 block mb-1">Anos</label>
-                      <input type="number" value={editData.anosFumando} onChange={e => setEditData({...editData, anosFumando: Number(e.target.value)})} className="w-full h-14 bg-[#F2F2F7] focus:bg-white focus:border-[#528114] border-2 border-transparent outline-none rounded-[16px] px-4 font-bold text-sm transition-colors text-black" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-[#528114] ml-2 block mb-1">Custo/Cigarro (R$)</label>
-                    <input type="number" step="0.01" value={editData.custoPorCigarro} onChange={e => setEditData({...editData, custoPorCigarro: Number(e.target.value)})} className="w-full h-14 bg-[#F2F2F7] focus:bg-white focus:border-[#528114] border-2 border-transparent outline-none rounded-[16px] px-4 font-bold text-sm transition-colors text-black" />
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-bold uppercase tracking-widest text-[#528114] ml-2 block mb-2">Gatilhos</label>
-                    <div className="flex flex-wrap gap-2">
-                       {ALL_GATILHOS.map(g => (
-                         <button key={g} onClick={() => handleToggleGatilho(g)} className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                           editData.gatilhos.includes(g) ? "bg-[#528114] text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-                         }`}>
-                           {g}
-                         </button>
-                       ))}
-                    </div>
-                  </div>
-                </div>
+                  <InputGroup label="Preço Médio do Maço" value={editData.custoPorCigarro} onChange={v => setEditData({...editData, custoPorCigarro: Number(v)})} type="number" />
+               </div>
 
-                <div className="flex gap-4 pt-4 pb-4">
-                   <button className="flex-1 h-14 rounded-[14px] font-bold text-sm bg-gray-100 text-gray-600" onClick={() => setIsEditing(false)}>Cancelar</button>
-                   <button className="flex-1 h-14 rounded-[14px] font-bold text-sm bg-[#528114] text-white flex items-center justify-center" onClick={handleSaveProfile} disabled={saving}>
-                      {saving ? <Loader2 className="animate-spin w-5 h-5" /> : "Salvar"}
-                   </button>
-                </div>
-             </motion.div>
-          </motion.div>
+               <div className="flex gap-4 mt-12">
+                  <Button variant="ghost" className="flex-1 rounded-2xl h-16 font-black uppercase tracking-widest text-xs" onClick={() => setIsEditing(false)}>Cancelar</Button>
+                  <Button className="flex-1 bg-slate-900 text-white hover:bg-black rounded-2xl h-16 font-black uppercase tracking-widest text-xs shadow-xl shadow-slate-200" onClick={handleSaveProfile} disabled={saving}>
+                    {saving ? <Loader2 className="animate-spin w-5 h-5" /> : "Salvar Alterações"}
+                  </Button>
+               </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
       {/* DELETE CONFIRM */}
       <AnimatePresence>
         {showDeleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setShowDeleteConfirm(false)}
-          >
-             <div className="bg-white w-full max-w-sm rounded-[32px] p-8 text-center space-y-6">
-                <div className="w-16 h-16 rounded-[20px] bg-red-50 text-red-500 flex items-center justify-center mx-auto"><Trash2 size={32} /></div>
-                <div>
-                  <h3 className="text-xl font-bold text-black mb-2">Reiniciar Jornada?</h3>
-                  <p className="text-sm text-gray-500 font-medium">Os dados físicos serão reiniciados e isso afetará seu painel.</p>
-                </div>
-                <div className="flex gap-3">
-                  <button className="flex-1 h-12 rounded-[12px] font-bold text-sm bg-gray-100 text-gray-600" onClick={() => setShowDeleteConfirm(false)}>Agora não</button>
-                  <button className="flex-1 h-12 rounded-[12px] font-bold text-sm bg-red-500 text-white" onClick={() => navigate("/onboarding")}>Sim, Recomeçar</button>
-                </div>
-             </div>
-          </motion.div>
+          <div className="fixed inset-0 z-[130] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={() => setShowDeleteConfirm(false)} />
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center relative z-10 shadow-2xl">
+               <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
+                 <Trash2 className="w-10 h-10" />
+               </div>
+               <h3 className="text-2xl font-black text-slate-900 mb-4">Resetar Progresso?</h3>
+               <p className="text-slate-500 font-medium mb-10 leading-relaxed">
+                 Isso apagará seu histórico de saúde atual, mas manterá suas conquistas ganhas. Tem certeza que deseja recomeçar?
+               </p>
+               <div className="flex flex-col gap-3">
+                 <Button className="bg-rose-500 text-white rounded-2xl h-14 font-black uppercase tracking-widest text-xs shadow-xl shadow-rose-200">Sim, Reiniciar</Button>
+                 <Button variant="ghost" className="h-14 font-black uppercase tracking-widest text-slate-400" onClick={() => setShowDeleteConfirm(false)}>Agora não</Button>
+               </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
-    </AppLayout>
+    </div>
   );
-};
+}
 
-export default Perfil;
+function BadgeBox({ label, color, icon: Icon }: any) {
+  return (
+    <div className={cn("px-4 py-2 rounded-xl border font-black text-[10px] uppercase tracking-widest flex items-center gap-2", color)}>
+      {Icon && <Icon className="w-3 h-3" />}
+      {label}
+    </div>
+  );
+}
+
+function SettingsCard({ icon: Icon, title, desc, color, onClick }: any) {
+  return (
+    <Card 
+      onClick={onClick}
+      className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[2.5rem] p-8 flex items-center gap-6 cursor-pointer hover:-translate-y-1 transition-all group"
+    >
+      <div className={cn("w-14 h-14 rounded-2xl bg-white shadow-inner flex items-center justify-center scale-100 group-hover:scale-110 transition-transform", color)}>
+        <Icon className="w-6 h-6" />
+      </div>
+      <div className="flex-1">
+        <h4 className="font-black text-slate-900 tracking-tight">{title}</h4>
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{desc}</p>
+      </div>
+    </Card>
+  );
+}
+
+function InfoRow({ label, value, icon: Icon }: any) {
+  return (
+    <div className="flex items-center gap-4">
+      <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
+        <Icon className="w-4 h-4" />
+      </div>
+      <div className="flex-1">
+        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{label}</p>
+        <p className="text-sm font-black text-slate-900">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+function InputGroup({ label, value, onChange, type = "text", isTextArea = false }: any) {
+  return (
+    <div className="space-y-3">
+      <label className="text-[10px] font-black text-primary uppercase tracking-[0.2em] ml-2">{label}</label>
+      {isTextArea ? (
+        <textarea 
+          value={value} 
+          onChange={e => onChange(e.target.value)}
+          className="w-full bg-slate-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-[1.5rem] p-6 text-sm font-bold min-h-[120px] outline-none transition-all placeholder:text-slate-200"
+        />
+      ) : (
+        <input 
+          type={type}
+          value={value} 
+          onChange={e => onChange(e.target.value)}
+          className="w-full h-14 bg-slate-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl px-6 text-sm font-bold outline-none transition-all placeholder:text-slate-200"
+        />
+      )}
+    </div>
+  );
+}

@@ -1,44 +1,19 @@
 import { useState, useEffect, useMemo } from "react";
-import { motion, animate } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   Heart, Wind, Activity, Target,
   Shield, CheckCircle2, Wallet,
-  TrendingDown, Zap, Droplets, Clock, Loader2, Sparkles, Monitor
+  TrendingDown, Zap, Droplets, Clock, Loader2, Sparkles, Monitor,
+  TrendingUp, ArrowUpRight, ArrowDownRight, Info
 } from "lucide-react";
-import AppLayout from "@/components/app/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
-import { ResponsiveContainer, AreaChart, Area, Tooltip } from "recharts";
-import { calculateQuitStats, calculateHealthProgress } from "@/lib/calculations";
+import { ResponsiveContainer, AreaChart, Area, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
+import { calculateQuitStats, calculateOverallHealth } from "@/lib/calculations";
 import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-// ========== ANIMATED COUNTER ==========
-function CountUp({ value, prefix = "", suffix = "", decimals = 2 }: { value: number; prefix?: string; suffix?: string; decimals?: number }) {
-  const [displayValue, setDisplayValue] = useState(0);
-  useEffect(() => {
-    const controls = animate(0, value, {
-      duration: 2.5,
-      ease: "easeOut",
-      onUpdate: (latest) => setDisplayValue(latest),
-    });
-    return () => controls.stop();
-  }, [value]);
-  return <span>{prefix}{displayValue.toLocaleString("pt-BR", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}{suffix}</span>;
-}
-
-const healthMilestones = [
-  { time: "20 min", minutes: 20, benefit: "Pressão arterial normaliza.", icon: Heart, source: "OMS" },
-  { time: "8h", minutes: 480, benefit: "Monóxido de carbono cai pela metade.", icon: Wind, source: "CDC" },
-  { time: "24h", minutes: 1440, benefit: "Risco cardíaco imediato reduz.", icon: Activity, source: "OMS" },
-  { time: "48h", minutes: 2880, benefit: "Paladar e olfato começam a melhorar.", icon: Droplets, source: "INCA" },
-  { time: "72h", minutes: 4320, benefit: "Brônquios relaxam e energia sobe.", icon: Zap, source: "INCA" },
-  { time: "1 semana", minutes: 10080, benefit: "Cílios pulmonares em recuperação.", icon: Shield, source: "OMS" },
-  { time: "1 mês", minutes: 43200, benefit: "Função pulmonar aumenta em até 30%.", icon: CheckCircle2, source: "OMS" },
-  { time: "1 ano", minutes: 525600, benefit: "Risco coronariano cai pela metade.", icon: Target, source: "CDC" },
-];
-
-const Progresso = () => {
-  const navigate = useNavigate();
+export default function Progresso() {
   const { user, profile, loading } = useAuth();
   const [now, setNow] = useState(new Date());
 
@@ -53,189 +28,215 @@ const Progresso = () => {
     const quitStats = calculateQuitStats({
       quit_date: profile.quit_date || new Date().toISOString(),
       cigarettes_per_day: profile.cigarettes_per_day || 0,
-      price_per_cigarette: Number(profile.price_per_cigarette) || 0,
+      pack_price: profile.pack_price || profile.price_per_cigarette * (profile.cigarettes_per_pack || 20) || 20,
     }, now);
 
-    const achievedMilestones = calculateHealthProgress(quitStats.totalSeconds).filter(m => m.achieved);
-    const nextMilestone = calculateHealthProgress(quitStats.totalSeconds).find(m => !m.achieved);
-
-    const chartData = Array.from({ length: 7 }, (_, i) => ({
-      name: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"][i],
-      valor: Math.round((profile.cigarettes_per_day || 0) * (Number(profile.price_per_cigarette) || 0) * (i + 1))
+    const chartData = Array.from({ length: 14 }, (_, i) => ({
+      day: i + 1,
+      economy: Math.round(quitStats.moneySaved * ((i + 1) / 14)),
+      health: Math.min(100, Math.round(calculateOverallHealth(quitStats.totalSeconds) * ((i + 1) / 14)))
     }));
 
-    return { ...quitStats, achievedMilestones, nextMilestone, chartData };
+    return { ...quitStats, chartData };
   }, [profile, now]);
-
 
   if (loading || !profile || !stats) {
     return (
-      <AppLayout>
-         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
-            <Loader2 className="w-8 h-8 text-[#528114] animate-spin" />
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-sm animate-pulse">
-              Calculando progresso...
-            </p>
-         </div>
-      </AppLayout>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+        <p className="text-slate-400 font-black uppercase tracking-widest text-xs animate-pulse">
+          Sincronizando dados...
+        </p>
+      </div>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="bg-white min-h-screen pb-32">
-        <div className="bg-[#528114] text-white pt-10 pb-12 px-4 flex flex-col items-center rounded-b-3xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight mb-2">
-              Meu Progresso
-            </h1>
-            <p className="text-white/80 font-medium text-sm">
-              Visão detalhada sobre finanças e saúde.
-            </p>
+    <div className="min-h-screen bg-[#F8FAFC] pb-24 lg:p-12 p-6">
+      <header className="mb-12">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+            <Activity className="w-4 h-4" />
+          </div>
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Relatório Detalhado</span>
         </div>
+        <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Evolução do <span className="text-primary italic">Corpo e Bolso</span></h1>
+        <p className="text-slate-500 mt-2 font-medium">Veja o impacto real da sua decisão a cada minuto.</p>
+      </header>
 
-        <div className="px-4 py-8 max-w-4xl mx-auto space-y-8 -mt-8 relative z-10">
-          
-          {/* FINANCIAL HERO */}
-          <section className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-8 sm:p-12 overflow-hidden relative">
-            <div className="absolute top-0 right-0 p-8 opacity-5 text-[#528114] pointer-events-none"><Wallet size={120} /></div>
-            
-            <div className="relative z-10 text-center space-y-6">
-               <p className="text-sm font-bold uppercase tracking-widest text-[#528114]">Economia Total</p>
-                <div className="text-6xl sm:text-8xl font-black tracking-tighter text-black">
-                  <CountUp value={stats.moneySaved} prefix="R$ " />
-                </div>
-                
-                <div className="flex flex-wrap items-center justify-center gap-4 text-sm font-bold uppercase tracking-widest text-gray-500">
-                  <div className="flex items-center gap-2 bg-[#F2F2F7] px-5 py-2.5 rounded-full border border-gray-200">
-                    <TrendingDown className="w-4 h-4 text-gray-500" /> 
-                    <span>-{stats.avoidedCount} cigarros não fumados</span>
-                  </div>
-                  <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-gray-300" />
-                  <div className="flex items-center gap-2 bg-[#F2F2F7] px-5 py-2.5 rounded-full border border-gray-200">
-                    <Clock className="w-4 h-4 text-[#528114]" /> 
-                    <span>+{stats.hoursRecovered}h de vida recuperadas</span>
-                  </div>
-                </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+        {/* Main Stats Bento */}
+        <Card className="lg:col-span-8 border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10 overflow-hidden relative">
+          <div className="flex justify-between items-center mb-10">
+            <h2 className="text-2xl font-black text-slate-900">Projeção Monetária</h2>
+            <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100">
+              <TrendingUp className="w-4 h-4 text-primary" />
+              <span className="text-[10px] font-black text-primary uppercase tracking-widest">+R$ {((profile.pack_price || 20) / (profile.cigarettes_per_pack || 20) * profile.cigarettes_per_day).toFixed(2)} / dia</span>
             </div>
-          </section>
-
-          {/* GRAPHS BENTO */}
-          <div className="grid md:grid-cols-3 gap-6">
-             {/* Chart */}
-             <div className="md:col-span-2 bg-white p-6 sm:p-8 rounded-[24px] border border-gray-100 shadow-sm flex flex-col">
-                <div className="flex items-center justify-between mb-8">
-                   <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500">Projeção Monetária em 7 Dias</h3>
-                </div>
-                <div className="h-[220px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                     <AreaChart data={stats.chartData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#528114" stopOpacity={0.2}/>
-                            <stop offset="95%" stopColor="#528114" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <Tooltip 
-                          contentStyle={{ 
-                            backgroundColor: '#fff',
-                            borderRadius: '16px', 
-                            border: '1px solid #f3f4f6', 
-                            color: '#111827', 
-                            fontWeight: 'bold', 
-                            fontSize: '12px',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                          }}
-                          itemStyle={{ color: '#528114', fontSize: '14px' }}
-                          labelStyle={{ color: '#6b7280', marginBottom: '4px' }}
-                        />
-                        <Area type="monotone" dataKey="valor" stroke="#528114" strokeWidth={3} fillOpacity={1} fill="url(#colorVal)" />
-                     </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-             </div>
-             
-             {/* Highlight Card */}
-             <div className="p-6 sm:p-8 rounded-[24px] bg-[#528114] text-white flex flex-col justify-center relative overflow-hidden shadow-sm">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-                <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center mb-6 border border-white/20">
-                  <Sparkles size={24} className="text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold tracking-tight mb-3">Perspectiva Anual</h3>
-                  <p className="text-sm font-medium text-white/80 leading-relaxed mb-6">
-                    Em um ano, você terá economizado um valor estimado de <span className="font-bold underline underline-offset-4 decoration-white/50 text-white">R${Math.round((profile.cigarettes_per_day || 0) * (Number(profile.price_per_cigarette) || 0) * 365)}</span>.
-                  </p>
-                </div>
-                <button 
-                  onClick={() => navigate("/checkout")}
-                  className="mt-auto w-full h-12 rounded-xl bg-white text-[#528114] font-bold text-sm hover:bg-gray-50 transition-colors"
-                >
-                  Ouvir Mentor
-                </button>
-             </div>
+          </div>
+          
+          <div className="h-[350px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={stats.chartData}>
+                <defs>
+                  <linearGradient id="colorEconomy" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22C55E" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#22C55E" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#fff',
+                    borderRadius: '24px', 
+                    border: 'none', 
+                    boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'
+                  }}
+                  itemStyle={{ fontWeight: '900', fontSize: '12px' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="economy" 
+                  stroke="#22C55E" 
+                  strokeWidth={4} 
+                  fillOpacity={1} 
+                  fill="url(#colorEconomy)" 
+                  animationDuration={2000}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
 
-          {/* TIMELINE */}
-          <div className="bg-white rounded-[24px] p-8 sm:p-12 border border-gray-100 shadow-sm relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-black pointer-events-none"><Monitor size={140} /></div>
-             
-             <div className="flex flex-col sm:flex-row items-center justify-between mb-16 relative z-10 gap-4 text-center sm:text-left">
-                <h2 className="text-2xl font-bold tracking-tight text-black">Marcos de Saúde</h2>
-                <div className="flex items-center gap-2 bg-[#F2F2F7] px-4 py-2 rounded-full border border-gray-200">
-                   <div className="w-2 h-2 rounded-full bg-[#528114] animate-pulse" />
-                   <span className="text-xs font-bold uppercase tracking-widest text-[#528114]">Acompanhamento ao Vivo</span>
-                </div>
-             </div>
-
-             <div className="space-y-12 relative max-w-2xl mx-auto sm:mx-0">
-                <div className="absolute left-[27px] top-4 bottom-4 w-[2px] bg-[#F2F2F7] rounded-full" />
-                {healthMilestones.map((m, i) => {
-                  const achieved = stats.totalSeconds / 60 >= m.minutes;
-                  const progress = Math.min(100, (stats.totalSeconds / 60 / m.minutes) * 100);
-
-                  return (
-                    <motion.div
-                      key={m.time}
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.1, duration: 0.4 }}
-                      className={cn("flex gap-6 sm:gap-8 items-start relative z-10 transition-all", !achieved && "opacity-60")}
-                    >
-                      <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border transition-all", 
-                        achieved ? "bg-[#528114] text-white border-[#528114] shadow-md -translate-y-1" : "bg-white text-gray-400 border-gray-200"
-                      )}>
-                         {achieved ? <CheckCircle2 className="w-6 h-6 stroke-[2.5px]" /> : <m.icon className="w-6 h-6 stroke-[2px]" />}
-                      </div>
-                      <div className="flex-1 pt-2">
-                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                            <span className={cn("text-xs font-bold uppercase tracking-widest", achieved ? "text-[#528114]" : "text-gray-400")}>{m.time}</span>
-                            {achieved && <span className="text-[10px] font-bold uppercase tracking-wide bg-[#F2F2F7] text-gray-500 px-2 py-0.5 rounded-md border border-gray-200">Alcançado</span>}
-                         </div>
-                         <h4 className="text-lg font-bold text-black mb-1">{m.benefit}</h4>
-                         <p className="text-xs text-gray-500 font-medium tracking-wide">Fonte: {m.source}</p>
-                         
-                         {!achieved && progress > 2 && (
-                           <div className="w-full h-2 bg-[#F2F2F7] rounded-full mt-4 overflow-hidden">
-                              <motion.div 
-                                 initial={{ width: 0 }}
-                                 whileInView={{ width: `${progress}%` }}
-                                 viewport={{ once: true }}
-                                 transition={{ duration: 1, ease: "easeOut" }}
-                                 className="h-full bg-[#528114] rounded-full"
-                              />
-                           </div>
-                         )}
-                      </div>
-                    </motion.div>
-                  );
-                })}
-             </div>
+          <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-8">
+             <MetricSmall label="Este Mês" value={`R$ ${Math.round(stats.moneySaved)}`} icon={Wallet} color="text-primary" />
+             <MetricSmall label="Projeção Ano" value={`R$ ${Math.round(stats.moneySaved * (365 / Math.max(1, stats.days)))}`} icon={Sparkles} color="text-amber-500" />
+             <MetricSmall label="Evitados" value={stats.avoidedCount} icon={Ban} color="text-sky-500" />
+             <MetricSmall label="Tempo Ganho" value={`${stats.hoursRecovered}h`} icon={Clock} color="text-rose-500" />
           </div>
+        </Card>
+
+        {/* Sidebar Mini-Cards */}
+        <div className="lg:col-span-4 space-y-8">
+           <Card className="border-none shadow-xl shadow-slate-200/50 bg-slate-900 text-white rounded-[2.5rem] p-10 relative overflow-hidden group">
+              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl group-hover:scale-150 transition-transform" />
+              <div className="flex justify-between items-start mb-10">
+                <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-white border border-white/10">
+                  <Shield className="w-6 h-6" />
+                </div>
+                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Saúde Geral</span>
+              </div>
+              <h3 className="text-5xl font-black mb-4">{calculateOverallHealth(stats.totalSeconds)}%</h3>
+              <p className="text-white/60 text-sm font-medium leading-relaxed">
+                Sua regeneração celular está acelerada. Você removeu mais de 4,000 substâncias tóxicas do seu organismo.
+              </p>
+              <Button className="w-full mt-10 bg-white text-slate-900 hover:bg-slate-100 rounded-2xl h-14 font-black uppercase tracking-widest text-xs">
+                Ver Exames IA
+              </Button>
+           </Card>
+
+           <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[2.5rem] p-10">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-10 h-10 bg-sky-50 rounded-xl flex items-center justify-center text-sky-500">
+                  <Droplets className="w-5 h-5" />
+                </div>
+                <h4 className="font-black text-slate-900 tracking-tight">Próximo Marco</h4>
+              </div>
+              <div className="space-y-6">
+                <div className="flex justify-between items-end">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Alcançar 1 Mês</span>
+                  <span className="text-xl font-black text-slate-900">{Math.round((stats.days / 30) * 100)}%</span>
+                </div>
+                <div className="h-4 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(stats.days / 30) * 100}%` }}
+                    className="h-full bg-sky-400 rounded-full"
+                  />
+                </div>
+                <p className="text-xs text-slate-500 font-bold leading-relaxed">
+                  Faltam apenas {30 - stats.days} dias para uma melhora de 30% na sua capacidade respiratória.
+                </p>
+              </div>
+           </Card>
         </div>
       </div>
-    </AppLayout>
-  );
-};
 
-export default Progresso;
+      {/* Comparisons Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <ComparisonCard 
+          title="Equivalência em Compras" 
+          desc="O que você poderia comprar com o que economizou:"
+          items={[
+            { label: "10 Livros novos", icon: "📚", cost: 500, current: stats.moneySaved },
+            { label: "Jantar Especial", icon: "🍱", cost: 200, current: stats.moneySaved },
+            { label: "Viagem Curta", icon: "✈️", cost: 1500, current: stats.moneySaved }
+          ]}
+        />
+        <ComparisonCard 
+          title="Impacto Físico" 
+          desc="Benefícios invisíveis que já ocorreram:"
+          items={[
+            { label: "Oxigenação cerebral normal", icon: "🧠", cost: 1, current: 1 },
+            { label: "Paladar 100% restaurado", icon: "👅", cost: 1, current: stats.days >= 2 ? 1 : 0 },
+            { label: "Coração batendo calmo", icon: "💖", cost: 1, current: 1 }
+          ]}
+        />
+        <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[2.5rem] p-10 flex flex-col justify-between">
+           <div>
+             <div className="flex items-center gap-4 mb-6">
+              <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500">
+                <Info className="w-5 h-5" />
+              </div>
+              <h4 className="font-black text-slate-900 tracking-tight">Dica de Especialista</h4>
+            </div>
+            <p className="text-sm font-bold text-slate-600 leading-relaxed italic">
+              "A economia financeira é satisfatória, mas a liberdade mental de não ser escravo de uma substância é o maior lucro que você terá hoje."
+            </p>
+           </div>
+           <Button variant="ghost" className="w-full mt-10 rounded-2xl h-12 font-black text-primary uppercase tracking-widest text-[10px]">
+              Falar com Consultor
+           </Button>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function MetricSmall({ label, value, icon: Icon, color }: any) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <Icon className={cn("w-3 h-3", color)} />
+        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
+      </div>
+      <p className="text-xl font-black text-slate-900">{value}</p>
+    </div>
+  );
+}
+
+function ComparisonCard({ title, desc, items }: any) {
+  return (
+    <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[2.5rem] p-10">
+      <h4 className="font-black text-slate-900 tracking-tight mb-2">{title}</h4>
+      <p className="text-xs text-slate-400 font-medium mb-8">{desc}</p>
+      <div className="space-y-6">
+        {items.map((item: any, i: number) => {
+          const progress = Math.min(100, (item.current / item.cost) * 100);
+          return (
+            <div key={i} className="space-y-2">
+              <div className="flex justify-between text-xs font-bold text-slate-600">
+                <span className="flex items-center gap-2"><span>{item.icon}</span> {item.label}</span>
+                <span className={cn(progress >= 100 ? "text-primary" : "text-slate-400")}>{Math.round(progress)}%</span>
+              </div>
+              <div className="h-1.5 bg-slate-50 rounded-full overflow-hidden">
+                <div 
+                  className={cn("h-full rounded-full transition-all duration-1000", progress >= 100 ? "bg-primary" : "bg-slate-200")} 
+                  style={{ width: `${progress}%` }} 
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}

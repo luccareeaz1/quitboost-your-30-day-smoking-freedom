@@ -20,14 +20,19 @@ interface Message {
   created_at: string;
 }
 
-const QUICK_ACTIONS = [
-  { label: "Estou com fissura", icon: Flame, color: "text-rose-500 bg-rose-500/10 border-rose-500/20" },
-  { label: "Ansioso/irritado", icon: Brain, color: "text-violet-500 bg-violet-500/10 border-violet-500/20" },
-  { label: "Preciso de motivação", icon: Heart, color: "text-amber-500 bg-amber-500/10 border-amber-500/20" },
-  { label: "Tive uma recaída", icon: AlertTriangle, color: "text-orange-500 bg-orange-500/10 border-orange-500/20" },
-];
+const MESSAGE_TYPES = {
+  INSIGHT: "insight",
+  ACTION_PLAN: "plan",
+  EXERCISE: "exercise",
+  DEFAULT: "default"
+};
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-coach`;
+const getMessageType = (content: string) => {
+  if (content.toLowerCase().includes("plano de ação") || content.toLowerCase().includes("primeiro passo")) return MESSAGE_TYPES.ACTION_PLAN;
+  if (content.toLowerCase().includes("exercício") || content.toLowerCase().includes("respire") || content.toLowerCase().includes("meditação")) return MESSAGE_TYPES.EXERCISE;
+  if (content.length > 200) return MESSAGE_TYPES.INSIGHT;
+  return MESSAGE_TYPES.DEFAULT;
+};
 
 export default function AICoachInterface() {
   const { user } = useAuth();
@@ -36,8 +41,10 @@ export default function AICoachInterface() {
   const [isLoading, setIsLoading] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // ... (keep init logic)
   useEffect(() => {
     const initChat = async () => {
       if (!user) return;
@@ -62,85 +69,63 @@ export default function AICoachInterface() {
 
   const handleSend = async (text: string) => {
     if (!text.trim() || isLoading || !activeConversationId || !user) return;
-
+    setIsLoading(true);
+    setInput("");
+    
+    // UI Update immediately
     try {
-      setIsLoading(true);
-      setInput("");
-      // Save user message to DB
       const userMsg = await coachService.addMessage(activeConversationId, "user", text);
       setMessages(prev => [...prev, userMsg as Message]);
 
-      // Build conversation history for AI
       const historyForAI = [...messages, userMsg].map(m => ({
         role: m.role as string,
         content: m.content as string,
       }));
 
-      // Get session token for authentication
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-      // Stream from edge function
       const resp = await fetch(CHAT_URL, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ messages: historyForAI }),
       });
 
-      if (!resp.ok) {
-        const errData = await resp.json().catch(() => ({}));
-        throw new Error(errData.error || "Erro no serviço de IA");
-      }
-
+      if (!resp.ok) throw new Error("Erro no serviço de IA");
       if (!resp.body) throw new Error("No response body");
 
-      // Stream tokens
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
-      let textBuffer = "";
       let assistantContent = "";
-      let streamDone = false;
       const tempId = crypto.randomUUID();
-
-      // Add placeholder assistant message
       setMessages(prev => [...prev, { id: tempId, role: "assistant", content: "", created_at: new Date().toISOString() }]);
 
-      while (!streamDone) {
+      while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        textBuffer += decoder.decode(value, { stream: true });
-
-        let newlineIndex: number;
-        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, newlineIndex);
-          textBuffer = textBuffer.slice(newlineIndex + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") { streamDone = true; break; }
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content;
-            if (content) {
-              assistantContent += content;
-              setMessages(prev => prev.map(m => m.id === tempId ? { ...m, content: assistantContent } : m));
-            }
-          } catch { /* partial JSON, wait for more */ }
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = line.slice(6);
+            if (data === "[DONE]") break;
+            try {
+              const parsed = JSON.parse(data);
+              const delta = parsed.choices?.[0]?.delta?.content;
+              if (delta) {
+                assistantContent += delta;
+                setMessages(prev => prev.map(m => m.id === tempId ? { ...m, content: assistantContent } : m));
+              }
+            } catch (e) {}
+          }
         }
       }
-
-      // Save final assistant message to DB
+      
       if (assistantContent) {
-        const savedMsg = await coachService.addMessage(activeConversationId, "assistant", assistantContent);
-        setMessages(prev => prev.map(m => m.id === tempId ? { id: savedMsg.id, role: savedMsg.role as "user" | "assistant", content: savedMsg.content, created_at: savedMsg.created_at } : m));
+        await coachService.addMessage(activeConversationId, "assistant", assistantContent);
       }
-    } catch (error) {
-      console.error("Coach error:", error);
-      toast.error(error.message || "Erro ao processar mensagem.");
+    } catch (e) {
+      toast.error("Erro ao falar com o Coach.");
     } finally {
       setIsLoading(false);
     }
@@ -150,108 +135,134 @@ export default function AICoachInterface() {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
         <Loader2 className="w-10 h-10 text-primary animate-spin" />
-        <p className="text-muted-foreground font-medium">Acordando o Coach...</p>
+        <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Sincronizando consciência...</p>
       </div>
     );
   }
 
+  const showQuickActions = !input && !isInputFocused;
+
   return (
-    <div className="container max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col h-[calc(100vh-140px)] animate-fade-in">
+    <div className="max-w-4xl mx-auto px-6 py-10 flex flex-col h-[calc(100vh-100px)] animate-in fade-in duration-700">
       <header className="flex items-center justify-between mb-8 shrink-0">
         <div>
-          <h1 className="text-3xl font-black tracking-tight">Coach <span className="text-primary italic">Neural.</span></h1>
-          <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest mt-1">Powered by AI • OMS/CDC/INCA</p>
+          <h1 className="text-4xl font-black tracking-tighter text-slate-900">
+            Coach <span className="text-primary italic">IA</span>
+          </h1>
+          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Guia Cognitivo Comportamental • Nível 4</p>
         </div>
-        <div className="w-10 h-10 rounded-2xl bg-card border border-border flex items-center justify-center shadow-soft">
-          <Target size={18} className="text-primary" />
+        <div className="flex -space-x-3">
+             <div className="w-10 h-10 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-primary shadow-sm">
+                  <Bot size={20} />
+             </div>
         </div>
       </header>
 
-      <AppleCard className="flex-1 flex flex-col bg-card border-none shadow-elevated overflow-hidden relative rounded-[40px]">
-        <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-8 no-scrollbar">
-          {messages.length === 0 && (
-            <div className="flex flex-col items-center text-center space-y-4 py-20 opacity-60">
-              <div className="w-20 h-20 rounded-[32px] bg-primary/10 flex items-center justify-center text-primary mb-4 border border-primary/10">
-                <MessageCircle size={40} />
-              </div>
-              <h3 className="text-xl font-bold">Inicie sua jornada</h3>
-              <p className="text-sm max-w-xs font-medium">Fale sobre seu dia ou use um dos botões rápidos abaixo.</p>
+      <div className="flex-1 overflow-y-auto pr-2 space-y-10 no-scrollbar pb-32">
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center text-center py-20 opacity-50">
+            <div className="w-24 h-24 rounded-[2.5rem] bg-primary/5 flex items-center justify-center text-primary mb-6 border border-primary/10">
+              <MessageCircle size={48} />
             </div>
-          )}
+            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Como posso te ajudar agora?</h3>
+            <p className="text-sm max-w-sm font-medium text-slate-500 mt-2">Estou aqui para te apoiar em cada passo da sua jornada de liberdade.</p>
+          </div>
+        )}
 
-          {messages.map((msg) => (
+        {messages.map((msg) => {
+          const type = msg.role === "assistant" ? getMessageType(msg.content) : "user";
+          return (
             <motion.div
               key={msg.id}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className={cn("flex w-full", msg.role === "user" ? "justify-end" : "justify-start")}
             >
-              <div className={cn("flex gap-4 max-w-[85%] sm:max-w-[75%]", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
-                <div className={cn("w-10 h-10 rounded-2xl shrink-0 flex items-center justify-center border-2",
-                  msg.role === "assistant" ? "bg-primary border-primary shadow-lg shadow-primary/20 text-white" : "bg-muted border-border text-muted-foreground"
-                )}>
-                  {msg.role === "assistant" ? <Bot size={20} /> : <User size={20} />}
-                </div>
-                <div className={cn("space-y-1", msg.role === "user" ? "items-end" : "items-start")}>
-                  <div className={cn("p-5 rounded-[1.8rem] text-[15px] leading-relaxed shadow-soft",
-                    msg.role === "user" ? "bg-foreground text-background rounded-tr-sm font-medium" : "bg-muted/40 text-foreground rounded-tl-sm border border-border/50"
-                  )}>
-                    {msg.role === "assistant" ? (
-                      <div className="prose prose-sm max-w-none dark:prose-invert">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
-                      </div>
-                    ) : msg.content}
+              <div className={cn("flex flex-col max-w-[85%] sm:max-w-[80%]", msg.role === "user" ? "items-end" : "items-start")}>
+                {msg.role === "assistant" && (
+                  <div className="flex items-center gap-2 mb-2 ml-4">
+                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">Coach Insight</span>
+                    <div className="w-1 h-1 rounded-full bg-slate-200" />
                   </div>
+                )}
+                
+                <div className={cn(
+                  "p-6 rounded-[2rem] text-[16px] leading-relaxed shadow-sm transition-all border",
+                  msg.role === "user" 
+                    ? "bg-slate-900 text-white rounded-tr-none border-transparent" 
+                    : cn(
+                        "bg-white text-slate-800 rounded-tl-none border-slate-100",
+                        type === MESSAGE_TYPES.ACTION_PLAN && "border-l-4 border-l-emerald-400 bg-emerald-50/30",
+                        type === MESSAGE_TYPES.EXERCISE && "border-l-4 border-l-primary bg-blue-50/30",
+                        type === MESSAGE_TYPES.INSIGHT && "border-l-4 border-l-amber-400 bg-amber-50/30"
+                      )
+                )}>
+                  {msg.role === "assistant" ? (
+                    <div className="prose prose-sm max-w-none prose-slate">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      {type === MESSAGE_TYPES.ACTION_PLAN && (
+                        <div className="mt-4 pt-4 border-t border-emerald-100">
+                          <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest">Adicionar às tarefas</Button>
+                        </div>
+                      )}
+                    </div>
+                  ) : msg.content}
                 </div>
               </div>
             </motion.div>
-          ))}
+          );
+        })}
 
-          {messages.length < 2 && (
-            <div className="flex flex-wrap gap-2 justify-center pt-8">
-              {QUICK_ACTIONS.map((action) => (
-                <button
-                  key={action.label}
-                  onClick={() => handleSend(action.label)}
-                  className={cn("flex items-center gap-2 px-6 py-3 rounded-2xl text-base font-medium font-black uppercase tracking-widest border transition-all hover:scale-105 hover:shadow-lg", action.color)}
-                >
-                  <action.icon size={16} />
-                  {action.label}
-                </button>
-              ))}
-            </div>
-          )}
+        <div ref={messagesEndRef} />
+      </div>
 
-          {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
-            <div className="flex justify-start">
-              <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-white shadow-lg animate-pulse"><Bot size={20} /></div>
-                <div className="px-6 py-4 rounded-[1.8rem] bg-muted/40 border border-border/50 flex gap-2">
-                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:0.2s]" />
-                  <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:0.4s]" />
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+      <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#F8FAFC] via-[#F8FAFC] to-transparent pt-20 z-20 pointer-events-none">
+        <div className="max-w-4xl mx-auto pointer-events-auto">
+          <AnimatePresence>
+            {showQuickActions && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                className="flex flex-wrap gap-2 justify-center mb-6"
+              >
+                {QUICK_ACTIONS.map((action) => (
+                  <button
+                    key={action.label}
+                    onClick={() => handleSend(action.label)}
+                    className={cn(
+                        "flex items-center gap-2 px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest border bg-white/50 backdrop-blur-sm transition-all hover:scale-105 hover:bg-white active:scale-95 shadow-sm", 
+                        action.color
+                    )}
+                  >
+                    <action.icon size={14} />
+                    {action.label}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        <div className="p-6 sm:p-10 bg-muted/20 border-t border-border/40">
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-4 items-center bg-white p-3 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
+              onFocus={() => setIsInputFocused(true)}
+              onBlur={() => setTimeout(() => setIsInputFocused(false), 100)}
               onKeyDown={e => e.key === 'Enter' && handleSend(input)}
-              placeholder="Como você está hoje?"
-              className="flex-1 bg-card h-14 sm:h-16 rounded-[24px] px-8 shadow-inner border-2 border-transparent focus:border-primary/20 outline-none transition-all font-bold text-lg"
+              placeholder="Digite sua mensagem aqui..."
+              className="flex-1 bg-transparent h-14 px-6 outline-none font-bold text-slate-900"
             />
-            <Button onClick={() => handleSend(input)} disabled={isLoading || !input.trim()} className="w-14 h-14 sm:w-16 sm:h-16 rounded-[24px] bg-primary shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
-              <Send size={24} />
+            <Button 
+                onClick={() => handleSend(input)} 
+                disabled={isLoading || !input.trim()} 
+                className="w-14 h-14 rounded-full bg-primary shadow-lg shadow-primary/20 hover:scale-110 active:scale-95 transition-all shrink-0"
+            >
+              <Send size={24} className="fill-white" />
             </Button>
           </div>
         </div>
-      </AppleCard>
+      </div>
     </div>
   );
 }

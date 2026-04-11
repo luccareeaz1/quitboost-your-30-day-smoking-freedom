@@ -5,7 +5,8 @@
 
 export interface ProfileStats {
   cigarettes_per_day: number;
-  price_per_cigarette: number;
+  pack_price: number;
+  cigarettes_per_pack: number;
   quit_date: string;
 }
 
@@ -19,6 +20,7 @@ export interface CalculatedStats {
   hoursRecovered: number;
   minutesRecovered: number;
   totalSeconds: number;
+  packsSaved: number;
 }
 
 /**
@@ -35,16 +37,17 @@ export const calculateQuitStats = (profile: ProfileStats, now: Date = new Date()
   const seconds = totalSeconds % 60;
 
   const cigarettesPerDay = profile.cigarettes_per_day || 0;
-  const pricePerCigarette = profile.price_per_cigarette || 0;
+  const packPrice = profile.pack_price || 0;
+  const cigarettesPerPack = profile.cigarettes_per_pack || 20;
 
   // Average avoided count based on time elapsed
-  // (cigarettes per day / 86400 seconds in a day) * seconds elapsed
   const avoidedCount = Math.floor((totalSeconds / 86400) * cigarettesPerDay);
-  const moneySaved = avoidedCount * pricePerCigarette;
+  const packsSaved = avoidedCount / cigarettesPerPack;
+  const moneySaved = packsSaved * packPrice;
 
   // Time of life recovered: ~11 min per cigarette (Source: BMJ/OMS)
   const minutesRecovered = avoidedCount * 11;
-  const hoursRecovered = Math.floor(minutesRecovered / 60);
+  const hoursRecovered = parseFloat((minutesRecovered / 60).toFixed(1));
 
   return {
     days,
@@ -56,30 +59,25 @@ export const calculateQuitStats = (profile: ProfileStats, now: Date = new Date()
     hoursRecovered,
     minutesRecovered,
     totalSeconds,
+    packsSaved: parseFloat(packsSaved.toFixed(1)),
   };
 };
 
 /**
- * Health milestones thresholds (in minutes)
- * Baseado na OMS e documentação científica sobre recuperação pós-tabagismo
+ * Scientific health milestones
  */
 export const HEALTH_MILESTONES = [
-  { minutes: 20, title: "Pulsação", description: "A sua pulsação volta ao normal." },
-  { minutes: 8 * 60, title: "Níveis de oxigénio", description: "Os níveis de oxigénio no sangue voltam ao normal." },
-  { minutes: 24 * 60, title: "Nível de Monóxido de Carbono", description: "Monóxido de carbono escurece no sangue." },
-  { minutes: 48 * 60, title: "Fim da nicotina", description: "A nicotina já não existe no seu corpo." },
-  { minutes: 72 * 60, title: "Paladar e olfato", description: "O seu sentido de paladar e olfato melhoram." },
-  { minutes: 72 * 60 + 1, title: "Respiração", description: "Os tubos brônquicos começam a relaxar." },
-  { minutes: 5 * 24 * 60, title: "Energia", description: "Os níveis de energia aumentam em todo o corpo." },
-  { minutes: 14 * 24 * 60, title: "Circulação", description: "A circulação sanguínea melhora." },
-  { minutes: 30 * 24 * 60, title: "Função pulmonar", description: "A função pulmonar aumenta em até 10%." },
-  { minutes: 90 * 24 * 60, title: "Tosse e fadiga", description: "A tosse e os problemas respiratórios diminuem substancialmente." },
-  { minutes: 180 * 24 * 60, title: "Prevenção infecções", description: "Cílios nos pulmões voltam a nascer, ajudando a combater infecções." },
-  { minutes: 365 * 24 * 60, title: "Risco Cardíaco", description: "O risco de ataque cardíaco cai para metade." },
-  { minutes: 5 * 365 * 24 * 60, title: "Risco de AVC", description: "O risco de AVC reduz-se ao nível de um não-fumador." },
-  { minutes: 10 * 365 * 24 * 60, title: "Prevenção de Cancro 1", description: "O risco de desenvolver cancro do pulmão é reduzido para metade." },
-  { minutes: 12 * 365 * 24 * 60, title: "Prevenção de Cancro 2", description: "Maior proteção contra cancro da boca, garganta, esôfago e bexiga." },
-  { minutes: 15 * 365 * 24 * 60, title: "Saúde Restabelecida", description: "O risco de doenças coronárias é igual ao de um não-fumador." },
+  { timeLabel: "20 minutos", minutes: 20, title: "Pressão Arterial", description: "A pressão arterial e a frequência cardíaca normalizam.", icon: "heart-pulse" },
+  { timeLabel: "8 horas", minutes: 8 * 60, title: "Monóxido de Carbono", description: "O nível de monóxido de carbono no sangue cai pela metade.", icon: "wind" },
+  { timeLabel: "24 horas", minutes: 24 * 60, title: "Risco de Infarto", description: "O risco de infarto começa a diminuir.", icon: "shield-check" },
+  { timeLabel: "48 horas", minutes: 48 * 60, title: "Nicotina Zerada", description: "A nicotina é eliminada; o paladar e o olfato voltam ao normal.", icon: "soup" },
+  { timeLabel: "72 horas", minutes: 72 * 60, title: "Respiração Livre", description: "Os brônquios relaxam; respirar torna-se visivelmente mais fácil.", icon: "activity" },
+  { timeLabel: "2 semanas", minutes: 14 * 24 * 60, title: "Circulação", description: "A circulação e a função pulmonar melhoram significativamente.", icon: "zap" },
+  { timeLabel: "1-9 meses", minutes: 6 * 30 * 24 * 60, title: "Função Pulmonar", description: "A tosse diminui e a função pulmonar aumenta em até 10%.", icon: "stetho" },
+  { timeLabel: "1 ano", minutes: 365 * 24 * 60, title: "Risco Coronário", description: "O risco de doenças coronárias cai pela metade.", icon: "heart" },
+  { timeLabel: "5 anos", minutes: 5 * 365 * 24 * 60, title: "Risco de AVC", description: "O risco de AVC torna-se igual ao de um não-fumante.", icon: "brain" },
+  { timeLabel: "10 anos", minutes: 10 * 365 * 24 * 60, title: "Câncer de Pulmão", description: "O risco de câncer de pulmão é reduzido em 50%.", icon: "lungs" },
+  { timeLabel: "15 anos", minutes: 15 * 365 * 24 * 60, title: "Saúde Plena", description: "O risco de doenças infantis é igual ao de quem nunca fumou.", icon: "trophy" },
 ];
 
 /**
@@ -94,3 +92,14 @@ export const calculateHealthProgress = (totalSeconds: number) => {
     achieved: diffMinutes >= m.minutes,
   }));
 };
+
+/**
+ * Estimates overall health recovery percentage (0-100)
+ */
+export const calculateOverallHealth = (totalSeconds: number): number => {
+  const milestones = calculateHealthProgress(totalSeconds);
+  const achieved = milestones.filter(m => m.achieved).length;
+  // Weighting recent milestones more, but for simplicity:
+  return Math.min(100, Math.round((achieved / milestones.length) * 100));
+};
+

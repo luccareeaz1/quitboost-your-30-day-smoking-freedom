@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService } from "@/lib/services";
 import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+import { Sparkles, ArrowRight, Heart, Wallet, Users, Zap, ShieldCheck, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export default function OnboardingMotivo() {
   const { user } = useAuth();
@@ -19,7 +23,6 @@ export default function OnboardingMotivo() {
     if (!user) return;
     try {
       setIsSubmitting(true);
-      // Fetch current profile to get triggers and append this motivation to it
       const profile = await profileService.get(user.id);
       const existingTriggers = profile?.triggers || [];
       
@@ -27,98 +30,98 @@ export default function OnboardingMotivo() {
         triggers: [...existingTriggers, `Motivo: ${motivation}`]
       });
       
-      // Proceed to checkout
       navigate("/checkout");
     } catch (error) {
       console.error("Erro ao salvar motivo:", error);
-      // Even if it fails, proceed so the user is not stuck
       navigate("/checkout");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleCustomSubmit = () => {
-    if (!customMotivation.trim()) return;
-    handleSelect(customMotivation);
-  };
-
   const options = [
-    "Porque quero viver uma vida longa e feliz",
-    "Porque quero ter mais dinheiro",
-    "Porque quero estar por perto para a minha família",
-    "Porque quero sentir-me livre",
-    "Porque eu prometi que o faria"
+    { label: "Viver uma vida longa e feliz", icon: Heart, color: "text-emerald-500" },
+    { label: "Economizar dinheiro", icon: Wallet, color: "text-sky-500" },
+    { label: "Estar presente para minha família", icon: Users, color: "text-indigo-500" },
+    { label: "Sentir a liberdade total", icon: Zap, color: "text-amber-500" },
+    { label: "Cumprir uma promessa", icon: ShieldCheck, color: "text-slate-500" }
   ];
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans px-6 pt-16 pb-10">
-      <div className="flex-1 max-w-md mx-auto w-full">
-        {/* Header Title */}
-        <h1 className="text-3xl font-light text-black text-center leading-tight mb-8">
-          Qual é o teu motivo para deixar<br />de fumar?
-        </h1>
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 pb-20 relative overflow-hidden">
+      {/* Ambient background */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -mr-48 -mt-48" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-sky-400/5 rounded-full blur-[100px] -ml-40 -mb-40" />
 
-        <p className="text-[15px] text-zinc-600 leading-relaxed mb-6">
-          Lembra-te de qual é a tua principal razão para parar de fumar e os teus desejos serão mais fáceis de vencer. Acrescentaremos isto ao teu painel. Podes editá-la em qualquer altura.
-        </p>
+      <div className="max-w-xl w-full relative z-10">
+        <header className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-100 shadow-sm mb-6">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Personalização Médica</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none mb-6">
+             O que te <span className="text-primary italic">move?</span>
+          </h1>
+          <p className="text-slate-500 font-medium">Recordar sua motivação é o principal fator científico para o sucesso na cessação.</p>
+        </header>
 
-        <p className="text-[15px] text-zinc-800 mb-4">Escolhe a tua</p>
+        <div className="space-y-4">
+           {options.map((opt, i) => (
+             <motion.button
+               key={opt.label}
+               initial={{ opacity: 0, y: 10 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: i * 0.1 }}
+               disabled={isSubmitting}
+               onClick={() => handleSelect(opt.label)}
+               className="w-full group flex items-center gap-6 p-6 bg-white border-2 border-slate-50 rounded-[2.5rem] hover:border-primary/20 hover:bg-slate-50 transition-all text-left shadow-xl shadow-slate-100 hover:shadow-primary/5"
+             >
+               <div className={cn("w-12 h-12 rounded-2xl bg-white shadow-inner flex items-center justify-center shrink-0", opt.color)}>
+                 <opt.icon className="w-6 h-6" />
+               </div>
+               <span className="text-lg font-black text-slate-800 tracking-tight flex-1">{opt.label}</span>
+               <ChevronRight className="w-5 h-5 text-slate-200 group-hover:text-primary transition-colors" />
+             </motion.button>
+           ))}
 
-        {/* Motivation Options List */}
-        <div className="flex flex-col gap-3">
-          {options.map((option) => (
-            <button
-              key={option}
-              disabled={isSubmitting}
-              onClick={() => handleSelect(option)}
-              className="w-full text-left bg-[#F2F2F7] hover:bg-[#E5E5EA] text-black text-[15px] font-medium py-4 px-5 rounded-[18px] transition-colors active:scale-[0.98]"
-            >
-              {option}
-            </button>
-          ))}
-          
-          {!showCustom ? (
-            <button
-              onClick={() => setShowCustom(true)}
-              className="w-full text-left bg-[#F2F2F7] hover:bg-[#E5E5EA] text-black text-[15px] font-medium py-4 px-5 rounded-[18px] transition-colors active:scale-[0.98]"
-            >
-              Escreve a tua própria
-            </button>
-          ) : (
-            <div className="mt-2 flex flex-col gap-3">
-              <input 
-                type="text" 
-                placeholder="Descreva seu motivo" 
-                value={customMotivation}
-                onChange={(e) => setCustomMotivation(e.target.value)}
-                className="w-full bg-[#F2F2F7] text-black text-[15px] font-medium py-4 px-5 rounded-[18px] outline-none border border-transparent focus:border-zinc-300"
-                autoFocus
-              />
-              <button 
-                onClick={handleCustomSubmit}
-                disabled={!customMotivation.trim() || isSubmitting}
-                className="w-full bg-black text-white py-4 rounded-[18px] font-bold tracking-wide disabled:opacity-50"
-              >
-                Salvar Motivo
-              </button>
-            </div>
-          )}
+           {!showCustom ? (
+             <button 
+               onClick={() => setShowCustom(true)}
+               className="w-full p-6 text-center text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-colors"
+             >
+               Escrever motivo personalizado
+             </button>
+           ) : (
+             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4 mt-6">
+                <textarea 
+                  placeholder="Descreva o que te motiva..." 
+                  value={customMotivation}
+                  onChange={(e) => setCustomMotivation(e.target.value)}
+                  className="w-full bg-white border-2 border-slate-100 focus:border-primary/20 rounded-[2.5rem] p-8 text-lg font-bold min-h-[150px] outline-none shadow-xl shadow-slate-200/50 resize-none"
+                  autoFocus
+                />
+                <Button 
+                   onClick={() => handleSelect(customMotivation)}
+                   disabled={!customMotivation.trim() || isSubmitting}
+                   className="w-full h-20 bg-slate-900 hover:bg-black text-white rounded-[2rem] text-lg font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-4"
+                >
+                   Salvar e Continuar <ArrowRight className="w-6 h-6" />
+                </Button>
+             </motion.div>
+           )}
         </div>
+
+        {!showCustom && (
+           <div className="mt-12 text-center">
+             <button 
+               onClick={() => navigate("/checkout")}
+               className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-slate-900 transition-colors"
+             >
+               Ignorar por enquanto
+             </button>
+           </div>
+        )}
       </div>
-
-      {/* Footer / Ignore option */}
-      {!showCustom && (
-        <div className="pt-10 flex justify-center pb-4">
-          <button 
-            disabled={isSubmitting}
-            onClick={() => navigate("/checkout")}
-            className="text-black font-bold text-[13px] tracking-widest uppercase hover:opacity-70 transition-opacity"
-          >
-            {isSubmitting ? "Carregando..." : "Ignorar"}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

@@ -23,6 +23,7 @@ import TermosUso from "./pages/TermosUso";
 import NotFound from "./pages/NotFound";
 import PageTransition from "./components/app/PageTransition";
 import { AuthProvider } from "./hooks/useAuth";
+import { AppLayout } from "./components/layout/AppLayout";
 
 const queryClient = new QueryClient();
 
@@ -73,7 +74,9 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <ScrollToTop />
-              <AnimatedRoutes />
+              <AppLayout>
+                <AnimatedRoutes />
+              </AppLayout>
             </BrowserRouter>
           </TooltipProvider>
         </NotificationProvider>

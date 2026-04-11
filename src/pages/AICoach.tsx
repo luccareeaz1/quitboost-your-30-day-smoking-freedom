@@ -1,6 +1,4 @@
-import { FreeshNavbar } from "@/components/layout/FreeshNavbar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState, useRef, useEffect } from "react";
 import { 
   Plus, 
   Search, 
@@ -8,9 +6,6 @@ import {
   Settings, 
   Mic, 
   Send,
-  Calendar,
-  PlayCircle,
-  Clock,
   Sparkles,
   User,
   Loader2,
@@ -18,13 +13,17 @@ import {
   Gamepad2,
   AlertTriangle,
   Heart,
-  X
+  ChevronLeft,
+  MoreVertical,
+  PanelLeftClose,
+  PanelLeftOpen
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface Message {
   role: "assistant" | "user";
@@ -52,17 +51,6 @@ const INITIAL_SESSIONS: Session[] = [
         insight: "ANÁLISE DE GATILHO"
       }
     ]
-  },
-  {
-    id: "2",
-    title: "Primeira Semana: O que esperar",
-    date: "Ontem",
-    messages: [
-      {
-        role: "assistant",
-        content: "A primeira semana é o maior desafio, mas você já passou por 3 dias! Como está se sentindo fisicamente?",
-      }
-    ]
   }
 ];
 
@@ -72,6 +60,7 @@ export default function AICoach() {
   const [searchQuery, setSearchQuery] = useState("");
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -90,14 +79,7 @@ export default function AICoach() {
 
     const userMessage: Message = { role: "user", content: textToSend };
     
-    // Update local state immediately
-    const updatedSessions = sessions.map(s => {
-      if (s.id === activeSessionId) {
-        return { ...s, messages: [...s.messages, userMessage] };
-      }
-      return s;
-    });
-    setSessions(updatedSessions);
+    setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [...s.messages, userMessage] } : s));
     setInput("");
     setIsLoading(true);
 
@@ -111,49 +93,13 @@ export default function AICoach() {
         },
       });
 
-      if (error) {
-        console.error("Supabase invoke error:", error);
-        throw new Error(error.message || "Falha na chamada à Edge Function");
-      }
+      if (error) throw error;
 
-      // New Edge Function returns { reply: string } — fall back to choices array for compatibility
-      const aiResponseContent = 
-        data?.reply || 
-        data?.choices?.[0]?.message?.content || 
-        "Não consegui processar sua mensagem. Tente novamente!";
+      const aiResponseContent = data?.reply || "Tive um problema. Vamos tentar de novo?";
       
-      const finalSessions = updatedSessions.map(s => {
-        if (s.id === activeSessionId) {
-          return { 
-            ...s, 
-            messages: [...s.messages, { role: "assistant", content: aiResponseContent }] 
-          };
-        }
-        return s;
-      });
-      setSessions(finalSessions);
+      setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [...s.messages, { role: "assistant", content: aiResponseContent }] } : s));
     } catch (err: any) {
-      console.error("Erro no chat:", err);
-      const errMsg = err?.message || "Desconhecido";
-      toast({
-        title: "Erro na conexão",
-        description: `Não consegui falar com o Coach: ${errMsg}`,
-        variant: "destructive",
-      });
-      // Add a graceful fallback directly in the chat
-      const fallbackSessions = sessions.map(s => {
-        if (s.id === activeSessionId) {
-          return { 
-            ...s, 
-            messages: [...s.messages, { 
-              role: "assistant" as const, 
-              content: "⚠️ Tive um problema técnico agora. **Sua jornada continua!** Tente me perguntar novamente em alguns segundos. Cada minuto sem fumar é uma vitória real. 💪" 
-            }] 
-          };
-        }
-        return s;
-      });
-      setSessions(fallbackSessions);
+      toast({ title: "Erro na conexão", description: "O Coach está momentaneamente offline.", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -162,242 +108,203 @@ export default function AICoach() {
   const createNewSession = () => {
     const newId = Date.now().toString();
     const newSession: Session = {
-      id: newId,
-      title: "Nova Conversa Freesh",
-      date: "Agora",
-      messages: [
-        {
-          role: "assistant",
-          content: "Iniciando uma nova sessão. Como posso te apoiar agora?",
-        }
-      ]
+      id: newId, title: "Nova Conversa Freesh", date: "Agora",
+      messages: [{ role: "assistant", content: "Como posso te apoiar nesta jornada?" }]
     };
     setSessions([newSession, ...sessions]);
     setActiveSessionId(newId);
-    toast({ title: "Nova Sessão", description: "Sessão criada com sucesso." });
   };
-
-  const filteredSessions = sessions.filter(s => 
-    s.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const handleQuickAction = (action: string) => {
     let prompt = "";
     switch(action) {
-      case 'respira': prompt = "Preciso de um exercício de respiração rápida 4-7-8 agora para me acalmar."; break;
-      case 'foco': prompt = "Estou com uma fissura forte, me dê um desafio de 2 minutos para mudar meu foco agora."; break;
-      case 'fissura': prompt = "Acabei de sentir uma vontade gigante de fumar. O que devo fazer neste exato segundo?"; break;
-      case 'porque': prompt = "Me lembre por que decidi parar de fumar e qual o benefício que terei em 10 minutos se eu não acender."; break;
+      case 'respira': prompt = "Exercício de respiração 4-7-8."; break;
+      case 'foco': prompt = "Preciso mudar meu foco agora."; break;
+      case 'fissura': prompt = "O que fazer com uma fissura agora?"; break;
+      case 'porque': prompt = "Lembre-me por que parei."; break;
     }
     handleSend(prompt);
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#FDFDFD]">
-      <FreeshNavbar />
-      
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-80 bg-white border-r border-slate-100 flex flex-col p-6 shadow-[4px_0_24px_rgba(0,0,0,0.01)] lg:relative absolute z-10 h-full lg:h-auto translate-x-[-100%] lg:translate-x-0 transition-transform">
-          <Button 
-            onClick={createNewSession}
-            className="w-full bg-[#2D45C1] hover:bg-[#1E30A1] text-white rounded-2xl h-14 font-bold gap-2 mb-6 shadow-lg shadow-blue-100"
+    <div className="flex h-screen bg-white overflow-hidden">
+      {/* Mini History Sidebar */}
+      <AnimatePresence initial={false}>
+        {isSidebarOpen && (
+          <motion.aside 
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 320, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            className="border-r border-slate-100 flex flex-col bg-[#FBFBFE] overflow-hidden"
           >
-            <Plus className="w-5 h-5" />
-            Nova Sessão
-          </Button>
-
-          <div className="relative mb-8">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <Input 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar sessões..." 
-              className="pl-11 h-12 bg-slate-50 border-none rounded-2xl text-sm font-medium focus-visible:ring-1 focus-visible:ring-slate-200"
-            />
-          </div>
-
-          <div className="flex-1 overflow-y-auto space-y-2 -mx-2 px-2">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 px-2">SESSÕES ANTERIORES</p>
-            {filteredSessions.map((session) => (
-              <button
-                key={session.id}
-                onClick={() => setActiveSessionId(session.id)}
-                className={cn(
-                  "w-full text-left px-4 py-3.5 rounded-2xl text-sm font-medium transition-all flex items-center gap-3 group relative",
-                  activeSessionId === session.id 
-                    ? "bg-slate-50 text-[#2D45C1] shadow-sm ring-1 ring-slate-100" 
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                )}
+            <div className="p-8 pb-4">
+              <Button 
+                onClick={createNewSession}
+                className="w-full bg-slate-900 hover:bg-black text-white rounded-[1.5rem] h-14 font-black gap-3 shadow-xl shadow-slate-200"
               >
-                <MessageSquare className={cn(
-                  "w-4 h-4 transition-colors",
-                  activeSessionId === session.id ? "text-[#2D45C1]" : "text-slate-300 group-hover:text-slate-400"
-                )} />
-                <span className="truncate flex-1">{session.title}</span>
-                <span className="text-[10px] text-slate-400 font-bold">{session.date}</span>
-              </button>
-            ))}
-            {filteredSessions.length === 0 && (
-              <p className="text-center py-8 text-xs text-slate-400">Nenhuma sessão encontrada.</p>
-            )}
-          </div>
+                <Plus className="w-5 h-5" />
+                Nova Sessão
+              </Button>
+            </div>
 
-          <div className="pt-6 border-t border-slate-100 mt-6 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-400">
-              U
+            <div className="px-8 mb-6">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                <Input 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Pesquisar..." 
+                  className="pl-12 h-12 bg-white border-slate-100 rounded-2xl text-xs font-bold focus-visible:ring-primary"
+                />
+              </div>
             </div>
-            <div className="flex-1">
-              <p className="text-sm font-bold text-slate-900">Perfil Usuário</p>
-              <p className="text-xs text-slate-500">Nível 4 · 349 XP</p>
+
+            <div className="flex-1 overflow-y-auto px-4 space-y-1">
+              <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-4 px-4">Histórico Recente</p>
+              {sessions.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setActiveSessionId(s.id)}
+                  className={cn(
+                    "w-full text-left px-5 py-4 rounded-2xl text-[13px] font-bold transition-all flex items-center gap-4 group",
+                    activeSessionId === s.id ? "bg-white shadow-md text-primary" : "text-slate-500 hover:text-slate-900"
+                  )}
+                >
+                  <MessageSquare className={cn("w-4 h-4", activeSessionId === s.id ? "text-primary" : "text-slate-200")} />
+                  <span className="truncate flex-1">{s.title}</span>
+                </button>
+              ))}
             </div>
-            <button className="text-slate-400 hover:text-slate-900">
-              <Settings className="w-5 h-5" />
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* Main Chat Area */}
+      <main className="flex-1 flex flex-col relative bg-white">
+        {/* Header */}
+        <header className="h-20 border-b border-slate-50 flex items-center justify-between px-8 bg-white/50 backdrop-blur-xl sticky top-0 z-20">
+          <div className="flex items-center gap-6">
+            <button 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2.5 text-slate-400 hover:text-slate-900 transition-colors"
+            >
+              {isSidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
             </button>
-          </div>
-        </aside>
-
-        {/* Chat Area */}
-        <main className="flex-1 flex flex-col relative bg-white">
-          {/* Active Session Header */}
-          <div className="h-20 border-b border-slate-100 flex items-center justify-between px-8 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-            <div className="flex items-center gap-4">
-              <div className="p-2.5 bg-blue-50 rounded-xl">
-                <Sparkles className="w-5 h-5 text-[#2D45C1]" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary shadow-sm">
+                <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-sm font-bold text-slate-900">{activeSession.title}</h2>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Coach IA Online</span>
+                <h2 className="text-sm font-black text-slate-900 tracking-tight">{activeSession.title}</h2>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">IA Especialista</span>
                 </div>
               </div>
             </div>
           </div>
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <MoreVertical className="w-5 h-5 text-slate-400" />
+          </Button>
+        </header>
 
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-10 max-w-4xl mx-auto w-full pb-48 scroll-smooth">
-            <AnimatePresence>
-              {messages.map((msg, i) => (
-                <motion.div 
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={cn(
-                    "flex gap-5 w-full",
-                    msg.role === "user" ? "flex-row-reverse" : "flex-row"
+        {/* Messages */}
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-12 max-w-4xl mx-auto w-full pb-48">
+          <AnimatePresence>
+            {messages.map((msg, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={cn("flex gap-6", msg.role === "user" ? "flex-row-reverse" : "flex-row")}
+              >
+                <div className={cn(
+                  "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xl",
+                  msg.role === "assistant" ? "bg-white text-primary border border-slate-50" : "bg-slate-900 text-white"
+                )}>
+                  {msg.role === "assistant" ? <Sparkles className="w-6 h-6" /> : <User className="w-6 h-6" />}
+                </div>
+
+                <div className={cn("flex flex-col gap-4 max-w-[80%]", msg.role === "user" ? "items-end" : "items-start")}>
+                  {msg.insight && (
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{msg.insight}</span>
                   )}
-                >
                   <div className={cn(
-                    "w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-sm",
-                    msg.role === "assistant" ? "bg-white border border-slate-100 text-[#2D45C1]" : "bg-slate-900 text-white"
+                    "p-8 rounded-[2.5rem] text-md font-medium leading-[1.8] shadow-2xl shadow-slate-100",
+                    msg.role === "assistant" ? "bg-white border border-slate-50 text-slate-700" : "bg-primary text-white"
                   )}>
-                    {msg.role === "assistant" ? <Sparkles className="w-5 h-5" /> : <User className="w-5 h-5" />}
+                    {msg.content}
                   </div>
-
-                  <div className={cn(
-                    "flex flex-col gap-3 max-w-[85%]",
-                    msg.role === "user" ? "items-end" : "items-start"
-                  )}>
-                    {msg.insight && (
-                      <span className="text-[10px] font-black text-[#2D45C1] uppercase tracking-widest mb-1 flex items-center gap-2">
-                        <div className="w-4 h-px bg-blue-200" /> {msg.insight}
-                      </span>
-                    )}
-                    <div className={cn(
-                      "p-6 rounded-[2rem] text-md leading-relaxed shadow-[0_2px_12px_rgba(0,0,0,0.02)]",
-                      msg.role === "assistant" 
-                        ? "bg-white border border-slate-100 text-slate-700" 
-                        : "bg-[#2D45C1] text-white shadow-lg shadow-blue-100"
-                    )}>
-                      {msg.content}
+                  
+                  {i === messages.length - 1 && msg.role === "assistant" && !isLoading && (
+                    <div className="flex flex-wrap gap-3 mt-4">
+                      <ActionChip icon={Wind} label="Respirar" onClick={() => handleQuickAction('respira')} />
+                      <ActionChip icon={Gamepad2} label="Distração" onClick={() => handleQuickAction('foco')} />
+                      <ActionChip icon={AlertTriangle} label="Fissura" color="text-rose-500" onClick={() => handleQuickAction('fissura')} />
+                      <ActionChip icon={Heart} label="Meu Porquê" color="text-amber-500" onClick={() => handleQuickAction('porque')} />
                     </div>
-                    
-                    {/* Quick Actions at the END of history */}
-                    {i === messages.length - 1 && msg.role === "assistant" && !isLoading && (
-                      <motion.div 
-                        initial={{ opacity: 0, x: -10 }} 
-                        animate={{ opacity: 1, x: 0 }} 
-                        className="flex flex-wrap gap-2 mt-4"
-                      >
-                        <Button 
-                          onClick={() => handleQuickAction('respira')}
-                          variant="outline" 
-                          className="rounded-full bg-white border-slate-100 text-slate-600 font-bold text-xs gap-2 py-5 px-6 shadow-sm hover:border-[#2D45C1] hover:text-[#2D45C1] hover:bg-blue-50/30 transition-all"
-                        >
-                          <Wind className="w-4 h-4" /> Exercício de Respiração
-                        </Button>
-                        <Button 
-                          onClick={() => handleQuickAction('foco')}
-                          variant="outline" 
-                          className="rounded-full bg-white border-slate-100 text-slate-600 font-bold text-xs gap-2 py-5 px-6 shadow-sm hover:border-[#2D45C1] hover:text-[#2D45C1] hover:bg-blue-50/30 transition-all"
-                        >
-                          <Gamepad2 className="w-4 h-4" /> Mudar o Foco
-                        </Button>
-                        <Button 
-                          onClick={() => handleQuickAction('fissura')}
-                          variant="outline" 
-                          className="rounded-full bg-white border-slate-100 text-rose-500 font-bold text-xs gap-2 py-5 px-6 shadow-sm hover:border-rose-500 hover:bg-rose-50/30 transition-all"
-                        >
-                          <AlertTriangle className="w-4 h-4" /> Registrar Fissura
-                        </Button>
-                        <Button 
-                          onClick={() => handleQuickAction('porque')}
-                          variant="outline" 
-                          className="rounded-full bg-white border-slate-100 text-emerald-600 font-bold text-xs gap-2 py-5 px-6 shadow-sm hover:border-emerald-500 hover:bg-emerald-50/30 transition-all"
-                        >
-                          <Heart className="w-4 h-4" /> Ver Meu "Porquê"
-                        </Button>
-                      </motion.div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-              {isLoading && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex gap-5">
-                  <div className="w-10 h-10 rounded-2xl bg-white border border-slate-100 flex items-center justify-center shadow-sm">
-                    <Loader2 className="w-5 h-5 animate-spin text-[#2D45C1]" />
-                  </div>
-                  <div className="p-6 rounded-[2rem] bg-white border border-slate-100 text-slate-400 italic text-sm shadow-sm flex items-center gap-2">
-                    <span className="flex gap-1">
-                      <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce" />
-                      <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce [animation-delay:0.2s]" />
-                      <span className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce [animation-delay:0.4s]" />
-                    </span>
-                    Coach Freesh está digitando...
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div> 
-          
-          {/* Input Bar Overlay */}
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-2xl px-6">
-            <div className="bg-white/70 border border-white/50 rounded-[2.5rem] p-3 shadow-[0_24px_48px_rgba(0,0,0,0.1)] flex items-center gap-3 backdrop-blur-2xl ring-1 ring-slate-100">
-              <button 
-                onClick={() => toast({ title: "Voz", description: "Ouvindo... (Em breve)" })}
-                className="p-4 bg-white/50 rounded-full text-slate-400 hover:text-[#2D45C1] hover:bg-white shadow-sm transition-all"
-              >
-                <Mic className="w-6 h-6" />
-              </button>
-              <Input 
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Fale com o Coach Freesh..." 
-                className="border-none bg-transparent h-14 text-lg focus-visible:ring-0 placeholder:text-slate-400 font-medium"
-              />
-              <button 
-                onClick={() => handleSend()}
-                disabled={isLoading || !input.trim()}
-                className="p-5 bg-slate-900 rounded-full text-white shadow-lg hover:scale-105 active:scale-95 transition-all disabled:opacity-30 disabled:scale-100 disabled:grayscale"
-              >
-                {isLoading ? <Loader2 className="w-7 h-7 animate-spin" /> : <Send className="w-7 h-7" />}
-              </button>
-            </div>
-            <p className="text-[9px] text-center mt-4 text-slate-400 font-bold uppercase tracking-[0.2em]">Sua jornada à inteligência artificial freesh</p>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+            {isLoading && <LoadingMessage />}
+          </AnimatePresence>
+        </div>
+
+        {/* Input Bar */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-3xl px-8">
+          <div className="bg-white/80 border border-slate-100/50 rounded-[3rem] p-4 shadow-2xl flex items-center gap-4 backdrop-blur-3xl ring-1 ring-slate-100/50">
+            <button className="p-4 rounded-full text-slate-300 hover:text-primary transition-colors">
+              <Mic className="w-6 h-6" />
+            </button>
+            <Input 
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+              placeholder="Digite sua mensagem..." 
+              className="border-none bg-transparent h-14 text-lg focus-visible:ring-0 placeholder:text-slate-300 font-bold"
+            />
+            <Button 
+              onClick={() => handleSend()}
+              disabled={isLoading || !input.trim()}
+              className="bg-slate-900 hover:bg-black text-white w-16 h-16 rounded-full shadow-xl transition-all active:scale-90"
+            >
+              {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
+            </Button>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
+  );
+}
+
+function ActionChip({ icon: Icon, label, onClick, color }: any) {
+  return (
+    <Button 
+      variant="outline" 
+      onClick={onClick}
+      className={cn("rounded-2xl bg-white border-slate-100 h-10 px-6 text-[10px] font-black uppercase tracking-widest gap-2 hover:bg-slate-50 transition-all", color)}
+    >
+      <Icon className="w-3.5 h-3.5" />
+      {label}
+    </Button>
+  );
+}
+
+function LoadingMessage() {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-6">
+      <div className="w-12 h-12 rounded-2xl bg-white border border-slate-50 flex items-center justify-center shadow-md">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+      <div className="p-8 rounded-[2.5rem] bg-white border border-slate-50 text-slate-300 font-bold italic text-sm flex items-center gap-3 shadow-xl shadow-slate-50">
+        <div className="flex gap-1.5">
+          <span className="w-1.5 h-1.5 bg-slate-200 rounded-full animate-bounce" />
+          <span className="w-1.5 h-1.5 bg-slate-200 rounded-full animate-bounce [animation-delay:0.2s]" />
+          <span className="w-1.5 h-1.5 bg-slate-200 rounded-full animate-bounce [animation-delay:0.4s]" />
+        </div>
+        Coach QuitBoost está elaborando uma resposta...
+      </div>
+    </motion.div>
   );
 }
