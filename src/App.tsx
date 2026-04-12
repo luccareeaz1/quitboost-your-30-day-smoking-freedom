@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
-// QuitBoost SaaS — Version 2026.1 (Force Rebuild)
+// QuitBoost SaaS - Version 2026.1 (Force Rebuild)
 import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
 import OnboardingMotivo from "./pages/OnboardingMotivo";
