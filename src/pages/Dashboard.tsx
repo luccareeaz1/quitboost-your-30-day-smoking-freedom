@@ -208,7 +208,7 @@ export default function Dashboard() {
           {/* Biological Healing Progress */}
           <Card className="lg:col-span-8 border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10 overflow-hidden relative group">
             <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Lungs className="w-64 h-64 text-primary" />
+              <HeartPulse className="w-64 h-64 text-primary" />
             </div>
             
             <div className="flex justify-between items-end mb-12 relative z-10">
@@ -226,7 +226,7 @@ export default function Dashboard() {
               <HealthMetric 
                 label="Pulmões" 
                 value={Math.min(100, Math.round((stats?.totalSeconds / (15 * 365 * 24 * 3600)) * 100 * 50))} 
-                icon={Lungs} 
+                icon={HeartPulse} 
                 color="stroke-primary" 
               />
               <HealthMetric 
@@ -346,7 +346,7 @@ export default function Dashboard() {
                   { name: "1 Hora", icon: Zap, color: "text-amber-500", bg: "bg-amber-50", unlocked: stats?.totalSeconds >= 3600 },
                   { name: "24 Horas", icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-50", unlocked: stats?.totalSeconds >= 86400 },
                   { name: "S. Livre", icon: Activity, color: "text-sky-500", bg: "bg-sky-50", unlocked: stats?.totalSeconds >= 86400 * 7 },
-                  { name: "P. Puro", icon: Lungs, color: "text-indigo-500", bg: "bg-indigo-50", unlocked: false },
+                  { name: "P. Puro", icon: HeartPulse, color: "text-indigo-500", bg: "bg-indigo-50", unlocked: false },
                   { name: "Economista", icon: Wallet, color: "text-rose-500", bg: "bg-rose-50", unlocked: stats?.moneySaved > 100 },
                   { name: "Mestre SOS", icon: AlertCircle, color: "text-orange-500", bg: "bg-orange-50", unlocked: false },
                 ].map((badge, i) => (
