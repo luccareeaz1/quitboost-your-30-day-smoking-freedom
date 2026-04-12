@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { 
   LayoutDashboard, 
   MessageSquare, 
@@ -12,17 +13,18 @@ import {
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
-const NAV_ITEMS = [
-  { path: "/dashboard", icon: LayoutDashboard, label: "Home" },
-  { path: "/progresso", icon: BarChart3, label: "Stats" },
-  { path: "/coach", icon: Bot, label: "Coach" },
-  { path: "/conquistas", icon: Trophy, label: "Vagas" },
-  { path: "/perfil", icon: User, label: "Perfil" },
-];
-
 export function MobileNav() {
+  const { t } = useTranslation();
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
+
+  const NAV_ITEMS = [
+    { path: "/dashboard", icon: LayoutDashboard, label: t('sidebar.overview') },
+    { path: "/progresso", icon: BarChart3, label: t('sidebar.analysis') },
+    { path: "/coach", icon: Bot, label: t('sidebar.coach') },
+    { path: "/conquistas", icon: Trophy, label: t('sidebar.badges') },
+    { path: "/perfil", icon: User, label: t('sidebar.profile') },
+  ];
 
   return (
     <>

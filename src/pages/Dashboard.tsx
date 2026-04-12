@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
-  Zap, 
-  Lungs, 
+  Zap,
+  Wind, 
   Activity, 
   Brain, 
   ShieldCheck, 
@@ -208,7 +208,7 @@ export default function Dashboard() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <HealthMetric label="Oxigenação" value={100} icon={Lungs} color="stroke-blue-500" delay={0.2} />
+                <HealthMetric label="Oxigenação" value={100} icon={Wind} color="stroke-blue-500" delay={0.2} />
                 <HealthMetric label="Circulação" value={Math.min(100, Math.round((stats?.totalSeconds / (3 * 7 * 24 * 3600)) * 100))} icon={Activity} color="stroke-sky-500" delay={0.3} />
                 <HealthMetric label="Cérebro" value={Math.min(100, Math.round((stats?.totalSeconds / (5 * 365 * 24 * 3600)) * 100))} icon={Brain} color="stroke-amber-500" delay={0.4} />
                 <HealthMetric label="Imunidade" value={Math.min(100, Math.round((stats?.totalSeconds / (30 * 24 * 3600)) * 100))} icon={ShieldCheck} color="stroke-indigo-500" delay={0.5} />

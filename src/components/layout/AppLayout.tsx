@@ -58,9 +58,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               QUIT BOOST — TECNOLOGIA E SAÚDE
             </p>
             <div className="flex gap-8">
-               <FooterLink label="Privacidade" />
-               <FooterLink label="Termos" />
-               <FooterLink label="Suporte" />
+               <FooterLink label="Privacidade" href="/politica-de-privacidade" />
+               <FooterLink label="Termos" href="/termos-de-uso" />
+               <FooterLink label="Suporte" href="mailto:suporte@quitboost.com" />
             </div>
           </div>
         </footer>
@@ -71,9 +71,22 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function FooterLink({ label }: { label: string }) {
+function FooterLink({ label, href }: { label: string; href: string }) {
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    if (href.startsWith('mailto:')) {
+      window.location.href = href;
+    } else {
+      navigate(href);
+    }
+  };
+
   return (
-    <button className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors">
+    <button 
+      onClick={handleClick}
+      className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors"
+    >
       {label}
     </button>
   );
