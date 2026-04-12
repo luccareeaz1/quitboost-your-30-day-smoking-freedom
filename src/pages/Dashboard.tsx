@@ -14,7 +14,6 @@ import {
   ChevronRight,
   ShieldCheck,
   Brain,
-  Lungs,
   Trophy,
   Activity,
   Droplets,
