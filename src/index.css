@@ -6,26 +6,26 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%; /* #F8FAFC */
+    --background: 0 0% 100%; /* Pure White #FFFFFF */
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 142 76% 45%; /* #22C55E - Verde Fresco */
-    --primary-foreground: 142 76% 98%;
-    --secondary: 199 89% 60%; /* #38BDF8 - Azul Celeste */
-    --secondary-foreground: 199 89% 10%;
-    --muted: 210 40% 96.1%; /* #F1F5F9 - Cinza Claro */
+    --primary: 221 83% 53%; /* Modern Blue #2563EB */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%; /* Light Gray #F1F5F9 */
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 38 92% 50%; /* #F59E0B - Amarelo Dourado */
-    --accent-foreground: 38 92% 10%;
-    --destructive: 0 91% 71%; /* #F87171 - Vermelho Suave */
+    --accent: 214.3 31.8% 91.4%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 142 76% 45%;
-    --radius: 1.5rem;
+    --ring: 221 83% 53%;
+    --radius: 1rem;
   }
 }
 
@@ -34,12 +34,12 @@
     @apply border-border;
   }
   body {
-    @apply bg-[#F8FAFC] text-foreground antialiased selection:bg-primary/20;
-    font-family: 'Nunito', 'Inter', sans-serif;
+    @apply bg-white text-foreground antialiased selection:bg-primary/20;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply font-black tracking-tight;
+    @apply font-semibold tracking-tight;
   }
 }
 
@@ -70,5 +70,72 @@
 
 ::-webkit-scrollbar-thumb {
   @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+}
+
+/* Neon Orbs & Premium SaaS Visuals */
+.orb-light {
+  background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+  filter: blur(40px);
+}
+
+.beam-light {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+  transform: translate(-50%, -50%);
+}
+
+@keyframes beam-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.beam-spin-8 { animation: beam-spin 8s linear infinite; }
+.beam-spin-10-reverse { animation: beam-spin 10s linear infinite reverse; }
+.beam-spin-6 { animation: beam-spin 6s linear infinite; }
+.beam-spin-7-reverse { animation: beam-spin 7s linear infinite reverse; }
+
+/* Bento Grid Utilities */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(150px, auto);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bento-item {
+  @apply rounded-2xl bg-white border border-slate-100 shadow-sm transition-all duration-300;
+}
+
+.bento-item:hover {
+  @apply shadow-md border-primary/20;
+}
+
+.bento-item-premium {
+  @apply bg-white border border-slate-100 shadow-sm rounded-2xl transition-all duration-300;
+}
+
+.bento-item-premium:hover {
+  @apply shadow-lg border-primary/20;
+}
+
+/* Remove or simplify orbs for light mode */
+.orb-light {
+  display: none;
 }
 

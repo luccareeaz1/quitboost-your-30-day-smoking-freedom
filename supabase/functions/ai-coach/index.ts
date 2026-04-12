@@ -24,7 +24,20 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages } = await req.json();
+    const { messages, profile } = await req.json();
+    
+    // Customize System Prompt with User Context
+    let personalizedPrompt = SYSTEM_PROMPT;
+    if (profile) {
+      personalizedPrompt += `\n\nContexto do Usuário:
+- Nome: ${profile.name || 'Guerreiro'}
+- Data de Parada: ${profile.quitDate || 'Não definida'}
+- Principal Motivação: ${profile.motivation || 'Saúde e Liberdade'}
+- Cigarros por dia (histórico): ${profile.cigarettesPerDay || 'Desconhecido'}
+
+Sempre se refira ao usuário pelo nome quando apropriado e use os dados acima para personalizar seus conselhos.`;
+    }
+
     const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
     
     if (!OPENAI_API_KEY) {
@@ -44,7 +57,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "gpt-4o",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: personalizedPrompt },
           ...messages,
         ],
         stream: true,

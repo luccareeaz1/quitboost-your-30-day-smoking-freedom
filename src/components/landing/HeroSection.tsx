@@ -2,76 +2,60 @@
 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { ArrowRight, Lock, ShieldCheck } from "lucide-react";
 import { NeonOrbs } from "@/components/ui/neon-orbs";
 
 const HeroSection = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
-    <section className="relative min-h-screen bg-[#050a18] flex items-center justify-center overflow-hidden">
-      {/* Background Orbs */}
-      <div className="absolute inset-0 z-0">
-        <NeonOrbs 
-          title="FREESH" 
-          subtitle="FRESH AIR. NEW LIFE." 
-        />
-      </div>
-
-      <div className="relative z-30 flex flex-col items-center mt-[120px] md:mt-[180px]">
-        {/* CTA Button with matching glow */}
+    <section className="relative min-h-screen bg-white flex items-center justify-center overflow-hidden">
+      <div className="relative z-30 flex flex-col items-center text-center px-6">
         <motion.div
-           initial={{ opacity: 0, scale: 0.95 }}
-           animate={{ opacity: 1, scale: 1 }}
-           transition={{ duration: 0.8, delay: 2.2 }}
-        >
-          <button
-            onClick={() => navigate("/onboarding")}
-            className="group relative overflow-hidden px-14 py-5 rounded-[18px] bg-white text-[#050a18] font-bold text-lg tracking-tight transition-all duration-300 hover:scale-[1.03] active:scale-[0.98]"
-            style={{
-              boxShadow: "0 0 40px rgba(99, 102, 241, 0.4), 0 0 80px rgba(99, 102, 241, 0.2)"
-            }}
-          >
-            <div className="relative z-10 flex items-center gap-2">
-              Começar jornada
-              <motion.span 
-                animate={{ x: [0, 5, 0] }} 
-                transition={{ repeat: Infinity, duration: 2 }}
-              >
-                →
-              </motion.span>
-            </div>
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-gradient-to-r from-indigo-500 to-blue-400" />
-          </button>
-        </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 1 }} 
-          transition={{ delay: 2.8, duration: 1 }}
-          className="mt-8 text-base font-medium font-bold tracking-widest text-white/20 uppercase"
-        >
-          A tecnologia definitiva para parar de fumar
-        </motion.p>
-      </div>
-
-      {/* Social Proof */}
-      <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 3, duration: 1 }}
-          className="flex items-center gap-4 text-white/20 text-sm font-medium tracking-widest font-medium"
+          transition={{ duration: 0.8 }}
+          className="flex flex-col items-center"
         >
-          <span>ESTADO DA ARTE</span>
-          <div className="w-1 h-1 rounded-full bg-white/20" />
-          <span>PROVEN RESULTS</span>
-          <div className="w-1 h-1 rounded-full bg-white/20" />
-          <span>JOIN +87K USERS</span>
+          <div className="inline-flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full text-blue-600 mb-8 border border-blue-100 shadow-sm">
+            <ShieldCheck className="w-4 h-4" />
+            <span className="text-xs font-bold uppercase tracking-widest">{t('hero.socialProof')}</span>
+          </div>
+
+          <h1 className="text-5xl md:text-8xl font-black text-slate-900 tracking-tight leading-[0.9] mb-8 max-w-4xl">
+            {t('hero.title')}
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-slate-500 font-medium max-w-2xl mb-12">
+            {t('hero.subtitle')}
+          </p>
+
+          <div className="flex flex-col items-center gap-6">
+            <button
+              onClick={() => navigate("/onboarding")}
+              className="group relative px-10 py-5 rounded-2xl bg-blue-600 text-white font-bold text-lg tracking-tight transition-all duration-300 hover:bg-blue-700 hover:shadow-2xl shadow-blue-200/50"
+            >
+              <div className="flex items-center gap-2">
+                {t('hero.cta')}
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
+            
+            <div className="flex items-center gap-2 text-slate-400 text-sm font-medium">
+              <Lock className="w-4 h-4" />
+              <span>Privacidade garantida • Seus dados estão seguros</span>
+            </div>
+          </div>
         </motion.div>
       </div>
 
-      {/* Subtle overlay gradients for depth */}
-      <div className="absolute inset-0 pointer-events-none z-10 bg-[radial-gradient(circle_at_50%_50%,transparent_0%,rgba(5,10,24,0.4)_100%)]" />
+      {/* Subtle patterns for a professional look */}
+      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-100/50 blur-[120px] rounded-full" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-50/50 blur-[100px] rounded-full" />
+      </div>
     </section>
   );
 };

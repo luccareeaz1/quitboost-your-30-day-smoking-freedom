@@ -61,6 +61,7 @@ export default function AICoach() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { user, profile } = useAuth();
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -84,8 +85,17 @@ export default function AICoach() {
     setIsLoading(true);
 
     try {
+      // Get profile for context
+      const profileContext = profile ? {
+        name: profile.display_name,
+        quitDate: profile.quit_date,
+        motivation: profile.reason_to_quit || profile.main_motivation,
+        cigarettesPerDay: profile.cigarettes_per_day
+      } : {};
+
       const { data, error } = await supabase.functions.invoke("ai-coach", {
         body: { 
+          profile: profileContext,
           messages: [...activeSession.messages, userMessage].map(m => ({ 
             role: m.role, 
             content: m.content 
@@ -140,7 +150,7 @@ export default function AICoach() {
             <div className="p-8 pb-4">
               <Button 
                 onClick={createNewSession}
-                className="w-full bg-slate-900 hover:bg-black text-white rounded-[1.5rem] h-14 font-black gap-3 shadow-xl shadow-slate-200"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl h-14 font-bold gap-3 shadow-lg shadow-blue-200"
               >
                 <Plus className="w-5 h-5" />
                 Nova Sessão
@@ -154,7 +164,7 @@ export default function AICoach() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Pesquisar..." 
-                  className="pl-12 h-12 bg-white border-slate-100 rounded-2xl text-xs font-bold focus-visible:ring-primary"
+                  className="pl-12 h-12 bg-white border-slate-200 rounded-2xl text-xs font-bold focus-visible:ring-blue-600/20"
                 />
               </div>
             </div>
@@ -167,10 +177,10 @@ export default function AICoach() {
                   onClick={() => setActiveSessionId(s.id)}
                   className={cn(
                     "w-full text-left px-5 py-4 rounded-2xl text-[13px] font-bold transition-all flex items-center gap-4 group",
-                    activeSessionId === s.id ? "bg-white shadow-md text-primary" : "text-slate-500 hover:text-slate-900"
+                    activeSessionId === s.id ? "bg-white shadow-md text-blue-600" : "text-slate-500 hover:text-slate-900"
                   )}
                 >
-                  <MessageSquare className={cn("w-4 h-4", activeSessionId === s.id ? "text-primary" : "text-slate-200")} />
+                  <MessageSquare className={cn("w-4 h-4", activeSessionId === s.id ? "text-blue-600" : "text-slate-200")} />
                   <span className="truncate flex-1">{s.title}</span>
                 </button>
               ))}
@@ -197,8 +207,8 @@ export default function AICoach() {
               <div>
                 <h2 className="text-sm font-black text-slate-900 tracking-tight">{activeSession.title}</h2>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">IA Especialista</span>
+                  <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">IA Especialista</span>
                 </div>
               </div>
             </div>
@@ -220,7 +230,7 @@ export default function AICoach() {
               >
                 <div className={cn(
                   "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xl",
-                  msg.role === "assistant" ? "bg-white text-primary border border-slate-50" : "bg-slate-900 text-white"
+                  msg.role === "assistant" ? "bg-white text-blue-600 border border-slate-100" : "bg-blue-600 text-white shadow-blue-200"
                 )}>
                   {msg.role === "assistant" ? <Sparkles className="w-6 h-6" /> : <User className="w-6 h-6" />}
                 </div>
@@ -230,8 +240,8 @@ export default function AICoach() {
                     <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{msg.insight}</span>
                   )}
                   <div className={cn(
-                    "p-8 rounded-[2.5rem] text-md font-medium leading-[1.8] shadow-2xl shadow-slate-100",
-                    msg.role === "assistant" ? "bg-white border border-slate-50 text-slate-700" : "bg-primary text-white"
+                    "p-8 rounded-[2rem] text-md font-medium leading-[1.8] shadow-sm",
+                    msg.role === "assistant" ? "bg-white border border-slate-100 text-slate-700 shadow-slate-200/20" : "bg-blue-600 text-white shadow-blue-200"
                   )}>
                     {msg.content}
                   </div>
@@ -240,8 +250,8 @@ export default function AICoach() {
                     <div className="flex flex-wrap gap-3 mt-4">
                       <ActionChip icon={Wind} label="Respirar" onClick={() => handleQuickAction('respira')} />
                       <ActionChip icon={Gamepad2} label="Distração" onClick={() => handleQuickAction('foco')} />
-                      <ActionChip icon={AlertTriangle} label="Fissura" color="text-rose-500" onClick={() => handleQuickAction('fissura')} />
-                      <ActionChip icon={Heart} label="Meu Porquê" color="text-amber-500" onClick={() => handleQuickAction('porque')} />
+                      <ActionChip icon={AlertTriangle} label="Fissura" color="text-red-500" onClick={() => handleQuickAction('fissura')} />
+                      <ActionChip icon={Heart} label="Meu Porquê" color="text-blue-500" onClick={() => handleQuickAction('porque')} />
                     </div>
                   )}
                 </div>
@@ -267,7 +277,7 @@ export default function AICoach() {
             <Button 
               onClick={() => handleSend()}
               disabled={isLoading || !input.trim()}
-              className="bg-slate-900 hover:bg-black text-white w-16 h-16 rounded-full shadow-xl transition-all active:scale-90"
+              className="bg-blue-600 hover:bg-blue-700 text-white w-16 h-16 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-90"
             >
               {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
             </Button>

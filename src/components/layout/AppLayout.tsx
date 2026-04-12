@@ -27,11 +27,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900 overflow-x-hidden selection:bg-primary/20 selection:text-primary">
+    <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900 overflow-x-hidden selection:bg-blue-100 selection:text-blue-600">
       {/* Background Orbs */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[10%] right-[10%] w-[40rem] h-[40rem] bg-emerald-100/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[10%] left-[10%] w-[30rem] h-[30rem] bg-sky-100/20 rounded-full blur-[100px]" />
+        <div className="absolute top-[10%] right-[10%] w-[40rem] h-[40rem] bg-blue-100/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[10%] left-[10%] w-[30rem] h-[30rem] bg-sky-100/10 rounded-full blur-[100px]" />
       </div>
 
       <Sidebar />
@@ -54,8 +54,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
         <footer className="py-12 border-t border-slate-100 bg-white/50 backdrop-blur-md hidden lg:block">
           <div className="container mx-auto px-12 flex flex-col md:flex-row justify-between items-center gap-6">
-            <p className="text-[10px] font-black tracking-[0.2em] text-slate-300 uppercase">
-              QUIT BOOST INC — BEYOND LIMITS TECHNOLOGY
+            <p className="text-[10px] font-bold tracking-[0.2em] text-slate-300 uppercase">
+              QUIT BOOST — TECNOLOGIA E SAÚDE
             </p>
             <div className="flex gap-8">
                <FooterLink label="Privacidade" />
@@ -73,7 +73,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
 function FooterLink({ label }: { label: string }) {
   return (
-    <button className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary transition-colors">
+    <button className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-blue-600 transition-colors">
       {label}
     </button>
   );

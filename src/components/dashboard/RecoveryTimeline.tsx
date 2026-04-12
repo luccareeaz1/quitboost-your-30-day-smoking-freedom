@@ -59,27 +59,27 @@ export function RecoveryTimeline({ totalSeconds }: RecoveryTimelineProps) {
               >
                 <div className={cn(
                   "absolute left-2.5 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center z-10 shadow-sm",
-                  isAchieved ? "bg-primary text-white" : "bg-slate-200 text-slate-400"
+                  isAchieved ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-400"
                 )}>
                   <Icon className="w-4 h-4" />
                 </div>
 
                 <div className={cn(
-                  "flex-1 p-6 rounded-[2rem] border transition-all",
+                  "flex-1 p-6 rounded-2xl border transition-all",
                   isAchieved 
-                    ? "bg-white border-primary/20 shadow-lg shadow-primary/5" 
+                    ? "bg-white border-blue-100 shadow-md shadow-blue-50/50" 
                     : "bg-slate-50/50 border-transparent shadow-none"
                 )}>
                   <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-black text-slate-900">{m.title}</h4>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{m.timeLabel}</span>
+                    <h4 className="font-bold text-slate-900">{m.title}</h4>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{m.timeLabel}</span>
                   </div>
                   <p className="text-sm text-slate-500 leading-relaxed">{m.description}</p>
                   
                   {isAchieved && (
                     <div className="mt-4 pt-4 border-t border-slate-50 flex items-center gap-2">
-                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Alcançado</span>
+                      <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+                      <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Alcançado</span>
                     </div>
                   )}
                 </div>

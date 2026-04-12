@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Heart, Shield, MessageSquare, Phone, Play, RefreshCw, Zap, Wind } from "lucide-react";
+import { X, Heart, Shield, MessageSquare, Phone, Play, RefreshCw, Zap, Wind, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -123,41 +123,41 @@ export function SOSMode({ isOpen, onClose, supportContact }: SOSModeProps) {
             <div className="relative w-56 h-56 flex items-center justify-center">
               <AnimatePresence mode="wait">
                 {isActive ? (
-                  <motion.div 
-                    key={breathPhase}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ 
-                      scale: breathPhase === 'inhale' ? 1.4 : breathPhase === 'hold' ? 1.4 : 0.8,
-                      opacity: 1 
-                    }}
-                    transition={{ 
-                      duration: breathPhase === 'inhale' ? 4 : breathPhase === 'hold' ? 7 : 8,
-                      ease: "easeInOut"
-                    }}
-                    className={cn(
-                      "w-32 h-32 rounded-full border-4 flex flex-col items-center justify-center shadow-xl",
-                      breathPhase === 'inhale' ? "border-sky-400 bg-sky-50 text-sky-600" : 
-                      breathPhase === 'hold' ? "border-emerald-400 bg-emerald-50 text-emerald-600" : 
-                      "border-amber-400 bg-amber-50 text-amber-600"
-                    )}
-                  >
+                    <motion.div 
+                      key={breathPhase}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ 
+                        scale: breathPhase === 'inhale' ? 1.4 : breathPhase === 'hold' ? 1.4 : 0.8,
+                        opacity: 1 
+                      }}
+                      transition={{ 
+                        duration: breathPhase === 'inhale' ? 4 : breathPhase === 'hold' ? 7 : 8,
+                        ease: "easeInOut"
+                      }}
+                      className={cn(
+                        "w-32 h-32 rounded-full border-4 flex flex-col items-center justify-center shadow-xl",
+                        breathPhase === 'inhale' ? "border-blue-300 bg-blue-50 text-blue-500" : 
+                        breathPhase === 'hold' ? "border-blue-500 bg-blue-100 text-blue-700" : 
+                        "border-blue-200 bg-slate-50 text-blue-400"
+                      )}
+                    >
                     <Wind className="w-6 h-6 mb-2" />
                     <span className="text-[10px] font-black uppercase tracking-widest">
                       {breathPhase === 'inhale' ? 'Inspire' : breathPhase === 'hold' ? 'Segure' : 'Expire'}
                     </span>
                   </motion.div>
                 ) : (
-                  <motion.button 
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setIsActive(true)}
-                    className="w-36 h-36 rounded-full bg-slate-900 text-white flex flex-col items-center justify-center gap-3 shadow-2xl shadow-slate-400 transition-all group"
-                  >
-                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-primary transition-colors">
-                      <Play className="w-5 h-5 fill-white" />
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest">Iniciar Calmaria</span>
-                  </motion.button>
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setIsActive(true)}
+                      className="w-36 h-36 rounded-full bg-blue-600 text-white flex flex-col items-center justify-center gap-3 shadow-2xl shadow-blue-200 transition-all group"
+                    >
+                      <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                        <Play className="w-5 h-5 fill-white" />
+                      </div>
+                      <span className="text-[10px] font-bold uppercase tracking-widest">Iniciar Calmaria</span>
+                    </motion.button>
                 )}
               </AnimatePresence>
               
@@ -187,7 +187,7 @@ export function SOSMode({ isOpen, onClose, supportContact }: SOSModeProps) {
 
           <div className="p-8 bg-slate-100/50 rounded-[2rem] flex items-start gap-5 mb-10 border border-slate-100">
             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm shrink-0">
-              <MessageSquare className="w-5 h-5 text-primary" />
+              <MessageSquare className="w-5 h-5 text-blue-600" />
             </div>
             <p className="text-sm font-bold text-slate-700 leading-relaxed italic">
               "{MOTIVATIONAL_MESSAGES[messageIndex]}"
@@ -197,14 +197,14 @@ export function SOSMode({ isOpen, onClose, supportContact }: SOSModeProps) {
           <div className="flex gap-4">
             <Button 
               onClick={() => onClose('resisted')}
-              variant="outline" 
-              className="flex-1 rounded-[1.5rem] h-16 font-black text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 active:scale-95 transition-all text-sm uppercase tracking-widest"
+              className="flex-1 rounded-2xl h-16 font-bold bg-blue-600 hover:bg-blue-700 text-white active:scale-95 transition-all text-sm uppercase tracking-widest shadow-lg shadow-blue-200"
             >
               Venci a Fissura!
             </Button>
             <Button 
               onClick={() => onClose('relapsed')}
-              className="flex-1 bg-rose-500 hover:bg-rose-600 text-white rounded-[1.5rem] h-16 font-black active:scale-95 transition-all text-sm uppercase tracking-widest shadow-lg shadow-rose-200"
+              variant="outline"
+              className="flex-1 border-slate-200 hover:border-red-200 hover:bg-red-50 text-slate-500 hover:text-red-600 rounded-2xl h-16 font-bold active:scale-95 transition-all text-sm uppercase tracking-widest"
             >
               Tive uma Recaída
             </Button>
