@@ -135,6 +135,7 @@ export default function Conquistas() {
 
       <div className="max-w-7xl mx-auto p-6 md:p-10 space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Main Achievement List */}
           <div className="lg:col-span-8 space-y-8">
             <div className="flex flex-wrap gap-2 mb-6">
               {[
@@ -157,62 +158,42 @@ export default function Conquistas() {
               ))}
             </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Main Achievement List */}
-        <div className="lg:col-span-8 space-y-8">
-          <div className="flex gap-4 mb-8">
-            {['all', 'unlocked', 'locked'].map(f => (
-              <button
-                key={f}
-                onClick={() => setFilter(f as 'all' | 'unlocked' | 'locked')}
-                className={cn(
-                  "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all",
-                  filter === f 
-                  ? "bg-slate-900 text-white shadow-xl shadow-slate-200" 
-                  : "bg-white text-slate-400 hover:bg-slate-50 border border-slate-100"
-                )}
-              >
-                {f === 'all' ? "Toda a Coleção" : f === 'unlocked' ? "Desbloqueadas" : "Por Alcançar"}
-              </button>
-            ))}
-          </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-               {filteredList.map((badge, i) => {
-                 const unlocked = unlockedIds.has(badge.id);
-                 const rarity = RARITY_MAP[badge.rarity] || RARITY_MAP.comum;
-                 
-                 return (
-                   <motion.div
-                     key={badge.id}
-                     initial={{ opacity: 0, scale: 0.98 }}
-                     animate={{ opacity: 1, scale: 1 }}
-                     transition={{ delay: i * 0.03 }}
-                     onClick={() => unlocked && setSelectedAchievement(badge)}
-                     className={cn(
-                       "p-4 rounded-xl border transition-all flex items-center gap-4 bg-white",
-                       unlocked ? "cursor-pointer border-slate-200 hover:border-blue-300 hover:shadow-sm" : "opacity-30 border-slate-100 bg-slate-50/50 grayscale"
-                     )}
-                   >
-                     <div className={cn(
-                       "w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0",
-                       unlocked ? "bg-blue-50 text-blue-600" : "bg-slate-200"
-                     )}>
-                        {badge.emoji || badge.icon || "🏅"}
-                     </div>
-                     
-                     <div className="flex-1 min-w-0">
-                       <h4 className="text-sm font-bold text-slate-900 truncate tracking-tight">{badge.title}</h4>
-                       <p className="text-[10px] text-slate-400 font-semibold mt-0.5 uppercase tracking-wider">+{badge.points} Pontos</p>
-                     </div>
+              {filteredList.map((badge, i) => {
+                const unlocked = unlockedIds.has(badge.id);
+                return (
+                  <motion.div
+                    key={badge.id}
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.03 }}
+                    onClick={() => unlocked && setSelectedAchievement(badge)}
+                    className={cn(
+                      "p-4 rounded-xl border transition-all flex items-center gap-4 bg-white",
+                      unlocked ? "cursor-pointer border-slate-200 hover:border-blue-300 hover:shadow-sm" : "opacity-30 border-slate-100 bg-slate-50/50 grayscale"
+                    )}
+                  >
+                    <div className={cn(
+                      "w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0",
+                      unlocked ? "bg-blue-50 text-blue-600" : "bg-slate-200"
+                    )}>
+                      {badge.emoji || badge.icon || "🏅"}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-slate-900 truncate tracking-tight">{badge.title}</h4>
+                      <p className="text-[10px] text-slate-400 font-semibold mt-0.5 uppercase tracking-wider">+{badge.points} Pontos</p>
+                    </div>
 
-                     {!unlocked && <Lock className="w-3.5 h-3.5 text-slate-300" />}
-                   </motion.div>
-                 );
-               })}
+                    {!unlocked && <Lock className="w-3.5 h-3.5 text-slate-300" />}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
-             <div className="lg:col-span-4 space-y-6">
+
+          {/* Sidebar */}
+          <div className="lg:col-span-4 space-y-6">
             <div className="p-6 md:p-8 border border-slate-200 bg-white rounded-2xl shadow-sm">
                <div className="flex justify-between items-center mb-6">
                  <h3 className="text-lg font-bold text-slate-900">Próxima Meta</h3>
@@ -236,7 +217,7 @@ export default function Conquistas() {
                    <div className="space-y-3">
                       <div className="flex justify-between text-[9px] font-bold text-blue-600 uppercase tracking-widest">
                          <span>Progresso</span>
-                         <span>{Math.round(stats.progress)}%</span>
+                         <span>{Math.round(stats.progress)}{"%"}</span>
                       </div>
                       <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <motion.div 
@@ -248,7 +229,7 @@ export default function Conquistas() {
                    </div>
                    
                    <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
-                     No dia {stats.nextAchievement.required_days}, sua capacidade pulmonar terá uma melhora definitiva de 15%.
+                     No dia {stats.nextAchievement.required_days}, sua capacidade pulmonar terá uma melhora definitiva de {"15%"}.
                    </p>
                  </div>
                ) : (

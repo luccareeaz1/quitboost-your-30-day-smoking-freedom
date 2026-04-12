@@ -168,7 +168,8 @@ export default function Desafios() {
                    </div>
                  </motion.div>
                ))}
-             </div>
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-4 space-y-6">
@@ -191,7 +192,7 @@ export default function Desafios() {
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-3xl font-bold text-slate-900">{Math.round((completedCount/totalCount) * 100)}%</span>
+                  <span className="text-3xl font-bold text-slate-900">{Math.round((completedCount/totalCount) * 100)}{"%"}</span>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Geral</span>
                 </div>
               </div>
@@ -202,7 +203,7 @@ export default function Desafios() {
                 </p>
                 <div className="flex items-center justify-center gap-2">
                   <Flame className="w-3.5 h-3.5 text-blue-600" />
-                  <span className="text-[10px] font-bold text-slate-900 uppercase">Top 5% Resiliência</span>
+                  <span className="text-[10px] font-bold text-slate-900 uppercase">Top {"5%"} Resiliência</span>
                 </div>
               </div>
            </div>

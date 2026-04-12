@@ -185,17 +185,3 @@ function CardOption({ icon: Icon, title, desc, color, onClick }: any) {
     </button>
   );
 }
-
-function CardOption({ icon: Icon, title, desc, color, onClick }: any) {
-  return (
-    <button onClick={onClick} className="flex items-center gap-5 p-6 rounded-[2rem] bg-white border border-slate-100 hover:border-primary/20 hover:shadow-xl hover:shadow-slate-100 transition-all text-left group">
-      <div className={cn("w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 group-hover:rotate-12 transition-transform", color)}>
-        <Icon className="w-6 h-6" />
-      </div>
-      <div className="overflow-hidden">
-        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{title}</p>
-        <p className="text-sm font-black text-slate-900 truncate">{desc}</p>
-      </div>
-    </button>
-  );
-}

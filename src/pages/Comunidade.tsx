@@ -153,7 +153,7 @@ export default function Comunidade() {
                   </div>
                 ))}
               </div>
-              <Button className="w-full mt-10 variant-ghost text-[10px] font-bold uppercase tracking-widest text-slate-400 border-none">Ver Todos</Button>
+              <Button variant="ghost" className="w-full mt-10 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-none">Ver Todos</Button>
            </Card>
         </aside>
       </div>

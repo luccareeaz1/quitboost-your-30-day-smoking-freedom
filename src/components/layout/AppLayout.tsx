@@ -1,6 +1,6 @@
 import { Sidebar } from "./Sidebar";
 import { MobileNav } from "./MobileNav";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {

@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QuitBoost | Protocolo de Liberdade Premium</title>
+    <script type="module">
+      import { injectIntoGlobalHook } from "/@react-refresh";
+      injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+    </script>
     
     <!-- SEO & Identity -->
     <meta name="description" content="Domine o vício. Recupere sua órbita. O QuitBoost é o protocolo definitivo de 30 dias para liberdade do fumo, movido por IA e gamificação de alta performance.">

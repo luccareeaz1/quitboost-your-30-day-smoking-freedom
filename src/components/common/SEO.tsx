@@ -8,7 +8,7 @@ interface SEOProps {
   ogUrl?: string;
 }
 
-const SEO = ({ 
+export const SEO = ({ 
   title = "QuitBoost | Protocolo de Liberdade Premium",
   description = "Domine o vício. Recupere sua órbita. O QuitBoost é o protocolo definitivo de 30 dias para liberdade do fumo.",
   keywords = "pare de fumar, app parar de fumar, quit smoking app, economia cigarro",

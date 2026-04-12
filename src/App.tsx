@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 // QuitBoost SaaS - Version 2026.1 (Force Rebuild)
 import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
@@ -76,12 +76,23 @@ const App = () => (
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <BrowserRouter>
-              <ScrollToTop />
-              <AppLayout>
-                <AnimatedRoutes />
-              </AppLayout>
-            </BrowserRouter>
+            <Suspense fallback={
+              <div className="min-h-screen bg-white flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl animate-pulse">
+                     <span className="text-white font-black">Q</span>
+                  </div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">Carregando Protocolo...</p>
+                </div>
+              </div>
+            }>
+              <BrowserRouter>
+                <ScrollToTop />
+                <AppLayout>
+                  <AnimatedRoutes />
+                </AppLayout>
+              </BrowserRouter>
+            </Suspense>
           </TooltipProvider>
         </NotificationProvider>
       </AuthProvider>
