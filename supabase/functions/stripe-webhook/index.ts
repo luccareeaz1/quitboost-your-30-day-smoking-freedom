@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
-import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 const TIERS: Record<string, string> = {
-  "price_1TDaiH2N0nzreyfm7NzaopPG": "standard", // Replace with your actual Price IDs
+  "price_1TDaiH2N0nzreyfm7NzaopPG": "standard",
   "price_1TDaj82N0nzreyfmstYsVMTI": "elite",
 };
 
@@ -29,21 +29,19 @@ serve(async (req) => {
     const body = await req.text();
     const event = signature 
       ? stripe.webhooks.constructEvent(body, signature, Deno.env.get("STRIPE_WEBHOOK_SECRET") || "")
-      : JSON.parse(body); // Fallback for testing if secret not set
+      : JSON.parse(body);
 
     console.log(`Processing event: ${event.type}`);
 
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
-        const customerEmail = session.customer_email || session.customer_details?.email;
         const subscriptionId = session.subscription as string;
         
-        // Get user by email
-        const { data: userData, error: userError } = await supabaseClient
+        const { data: userData } = await supabaseClient
           .from("profiles")
           .select("id")
-          .eq("id", session.client_reference_id || (await getUserByEmail(supabaseClient, customerEmail)))
+          .eq("id", session.client_reference_id)
           .single();
 
         if (userData) {
@@ -100,18 +98,12 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
-  } catch (err) {
-    console.error(`Webhook Error: ${err.message}`);
-    return new Response(JSON.stringify({ error: err.message }), {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`Webhook Error: ${message}`);
+    return new Response(JSON.stringify({ error: message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,
     });
   }
 });
-
-async function getUserByEmail(supabase: SupabaseClient, email: string) {
-  // This requires a custom RPC or a way to search auth.users which is restricted
-  // Usually, we pass client_reference_id in Checkout Session
-  console.log(`Searching user by email: ${email}`);
-  return null;
-}

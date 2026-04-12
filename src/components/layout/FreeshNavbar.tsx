@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, MessageSquare, Users, Trophy, Flame } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -11,8 +12,6 @@ const NAV_ITEMS = [
 
 export function FreeshNavbar() {
   const location = useLocation();
-
-  // Highlight logic
   const isActive = (path: string) => location.pathname === path;
 
   return (

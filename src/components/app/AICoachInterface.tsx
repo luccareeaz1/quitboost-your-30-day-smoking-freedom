@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { AppleCard } from "@/components/ui/apple-card";
 import { Button } from "@/components/ui/button";
 import {
   Send, Bot, User, Target, Heart,
   Brain, Flame, MessageCircle, AlertTriangle, Loader2
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { coachService } from "@/lib/services";
@@ -19,6 +18,15 @@ interface Message {
   content: string;
   created_at: string;
 }
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-coach`;
+
+const QUICK_ACTIONS = [
+  { label: "Estou com fissura agora", icon: Flame, color: "text-rose-500 border-rose-100" },
+  { label: "Preciso de motivação", icon: Heart, color: "text-blue-600 border-blue-100" },
+  { label: "Me dê uma técnica de TCC", icon: Brain, color: "text-indigo-500 border-indigo-100" },
+  { label: "Como lidar com gatilhos?", icon: Target, color: "text-amber-500 border-amber-100" },
+];
 
 const MESSAGE_TYPES = {
   INSIGHT: "insight",
@@ -44,7 +52,6 @@ export default function AICoachInterface() {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // ... (keep init logic)
   useEffect(() => {
     const initChat = async () => {
       if (!user) return;
@@ -72,7 +79,6 @@ export default function AICoachInterface() {
     setIsLoading(true);
     setInput("");
     
-    // UI Update immediately
     try {
       const userMsg = await coachService.addMessage(activeConversationId, "user", text);
       setMessages(prev => [...prev, userMsg as Message]);
@@ -134,7 +140,7 @@ export default function AICoachInterface() {
   if (initLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+        <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
         <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Sincronizando consciência...</p>
       </div>
     );
@@ -146,13 +152,13 @@ export default function AICoachInterface() {
     <div className="max-w-4xl mx-auto px-6 py-10 flex flex-col h-[calc(100vh-100px)] animate-in fade-in duration-700">
       <header className="flex items-center justify-between mb-8 shrink-0">
         <div>
-          <h1 className="text-4xl font-black tracking-tighter text-slate-900">
-            Coach <span className="text-primary italic">IA</span>
+          <h1 className="text-4xl font-bold tracking-tighter text-slate-900 leading-none">
+            Coach <span className="text-blue-600 italic">IA</span>
           </h1>
-          <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Guia Cognitivo Comportamental • Nível 4</p>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-2">Guia Cognitivo Comportamental • Nível 4</p>
         </div>
         <div className="flex -space-x-3">
-             <div className="w-10 h-10 rounded-full border-2 border-white bg-blue-100 flex items-center justify-center text-primary shadow-sm">
+             <div className="w-10 h-10 rounded-full border-2 border-white bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm">
                   <Bot size={20} />
              </div>
         </div>
@@ -161,10 +167,10 @@ export default function AICoachInterface() {
       <div className="flex-1 overflow-y-auto pr-2 space-y-10 no-scrollbar pb-32">
         {messages.length === 0 && (
           <div className="flex flex-col items-center text-center py-20 opacity-50">
-            <div className="w-24 h-24 rounded-[2.5rem] bg-primary/5 flex items-center justify-center text-primary mb-6 border border-primary/10">
+            <div className="w-24 h-24 rounded-[2.5rem] bg-blue-50 flex items-center justify-center text-blue-600 mb-6 border border-blue-100">
               <MessageCircle size={48} />
             </div>
-            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Como posso te ajudar agora?</h3>
+            <h3 className="text-2xl font-bold text-slate-900 tracking-tight">Como posso te ajudar agora?</h3>
             <p className="text-sm max-w-sm font-medium text-slate-500 mt-2">Estou aqui para te apoiar em cada passo da sua jornada de liberdade.</p>
           </div>
         )}
@@ -181,7 +187,7 @@ export default function AICoachInterface() {
               <div className={cn("flex flex-col max-w-[85%] sm:max-w-[80%]", msg.role === "user" ? "items-end" : "items-start")}>
                 {msg.role === "assistant" && (
                   <div className="flex items-center gap-2 mb-2 ml-4">
-                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">Coach Insight</span>
+                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Coach Insight</span>
                     <div className="w-1 h-1 rounded-full bg-slate-200" />
                   </div>
                 )}
@@ -189,20 +195,20 @@ export default function AICoachInterface() {
                 <div className={cn(
                   "p-6 rounded-[2rem] text-[16px] leading-relaxed shadow-sm transition-all border",
                   msg.role === "user" 
-                    ? "bg-slate-900 text-white rounded-tr-none border-transparent" 
+                    ? "bg-slate-900 text-white rounded-tr-none border-transparent shadow-lg shadow-slate-200/20" 
                     : cn(
                         "bg-white text-slate-800 rounded-tl-none border-slate-100",
-                        type === MESSAGE_TYPES.ACTION_PLAN && "border-l-4 border-l-emerald-400 bg-emerald-50/30",
-                        type === MESSAGE_TYPES.EXERCISE && "border-l-4 border-l-primary bg-blue-50/30",
-                        type === MESSAGE_TYPES.INSIGHT && "border-l-4 border-l-amber-400 bg-amber-50/30"
+                        type === MESSAGE_TYPES.ACTION_PLAN && "border-l-4 border-l-blue-400 bg-blue-50/20",
+                        type === MESSAGE_TYPES.EXERCISE && "border-l-4 border-l-blue-600 bg-blue-50/30",
+                        type === MESSAGE_TYPES.INSIGHT && "border-l-4 border-l-indigo-400 bg-indigo-50/20"
                       )
                 )}>
                   {msg.role === "assistant" ? (
                     <div className="prose prose-sm max-w-none prose-slate">
                       <ReactMarkdown>{msg.content}</ReactMarkdown>
                       {type === MESSAGE_TYPES.ACTION_PLAN && (
-                        <div className="mt-4 pt-4 border-t border-emerald-100">
-                          <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 rounded-full h-8 px-4 text-[10px] font-black uppercase tracking-widest">Adicionar às tarefas</Button>
+                        <div className="mt-4 pt-4 border-t border-slate-100">
+                          <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white rounded-full h-8 px-4 text-[10px] font-bold uppercase tracking-widest border-none">Adicionar às tarefas</Button>
                         </div>
                       )}
                     </div>
@@ -256,7 +262,7 @@ export default function AICoachInterface() {
             <Button 
                 onClick={() => handleSend(input)} 
                 disabled={isLoading || !input.trim()} 
-                className="w-14 h-14 rounded-full bg-primary shadow-lg shadow-primary/20 hover:scale-110 active:scale-95 transition-all shrink-0"
+                className="w-14 h-14 rounded-full bg-blue-600 shadow-lg shadow-blue-200 hover:scale-110 active:scale-95 transition-all shrink-0 border-none"
             >
               <Send size={24} className="fill-white" />
             </Button>

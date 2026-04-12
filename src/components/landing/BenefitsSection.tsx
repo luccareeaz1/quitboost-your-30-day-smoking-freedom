@@ -6,66 +6,66 @@ const AppContentSection = () => {
   const content = [
     {
       icon: Brain,
-      title: "IA Coach Neural",
-      desc: "Um cérebro digital que aprende seus gatilhos e te guia nos momentos de crise 24/7.",
-      className: "md:col-span-2 md:row-span-2 bg-primary/5 border-primary/20",
-      iconColor: "text-primary",
+      title: "IA Coach Inteligente",
+      desc: "Um assistente que aprende seus gatilhos e te guia nos momentos de crise 24h por dia.",
+      className: "md:col-span-2 md:row-span-2 bg-blue-50 border-blue-100 shadow-xl shadow-blue-50/50",
+      iconColor: "text-blue-600",
       badge: "Inovação"
     },
     {
       icon: LayoutDashboard,
       title: "Dashboard de Liberdade",
-      desc: "Acompanhe cada segundo, cada centavo e cada respiração recuperada em tempo real.",
-      className: "md:col-span-1 md:row-span-1 bg-secondary/30",
+      desc: "Acompanhe cada segundo e cada centavo economizado em tempo real.",
+      className: "md:col-span-1 md:row-span-1 bg-white border-slate-100 shadow-lg shadow-slate-200/50",
       iconColor: "text-blue-500"
     },
     {
       icon: Users,
       title: "Comunidade VIP",
-      desc: "Conecte-on com pessoas que entendem sua dor e celebram suas vitórias.",
-      className: "md:col-span-1 md:row-span-1 bg-violet-500/5 border-violet-500/10",
-      iconColor: "text-violet-500"
+      desc: "Conecte-se com pessoas que celebram suas vitórias e compartilham a jornada.",
+      className: "md:col-span-1 md:row-span-1 bg-white border-slate-100 shadow-lg shadow-slate-200/50",
+      iconColor: "text-indigo-500"
     },
     {
       icon: Trophy,
-      title: "Sistema de Desafios",
-      desc: "Gamificação aplicada para manter seu cérebro focado no que importa.",
-      className: "md:col-span-1 md:row-span-1 bg-amber-500/5 border-amber-500/10",
-      iconColor: "text-amber-500"
+      title: "Sistema de Conquistas",
+      desc: "Gamificação aplicada para manter seu cérebro focado na sua evolução.",
+      className: "md:col-span-1 md:row-span-1 bg-white border-slate-100 shadow-lg shadow-slate-200/50",
+      iconColor: "text-blue-400"
     },
     {
       icon: Wallet,
       title: "Gestão Financeira",
-      desc: "Veja seu dinheiro voltando para o seu bolso automaticamente.",
-      className: "md:col-span-2 md:row-span-1 bg-emerald-500/5 border-emerald-500/10",
-      iconColor: "text-emerald-500",
-      badge: "Fator Chave"
+      desc: "Veja seu dinheiro voltando para o seu bolso de forma clara e visual.",
+      className: "md:col-span-2 md:row-span-1 bg-blue-50/50 border-blue-100 shadow-lg shadow-blue-50/20",
+      iconColor: "text-blue-600",
+      badge: "Economia"
     }
   ];
 
   return (
-    <section id="funcionalidades" className="py-32 bg-background overflow-hidden stars-bg">
+    <section id="funcionalidades" className="py-32 bg-white relative overflow-hidden">
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
         <div className="flex flex-col items-center text-center mb-20">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 mb-6 backdrop-blur-md"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-600 border border-blue-100 mb-6"
           >
-            <Sparkles size={12} fill="currentColor" />
-            <span className="text-sm font-medium font-black uppercase tracking-widest leading-none">Ecossistema Completo</span>
+            <Sparkles size={14} fill="currentColor" />
+            <span className="text-[10px] font-bold uppercase tracking-widest leading-none">Ecossistema Completo</span>
           </motion.div>
           
-          <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-6 text-white leading-none">
-            O que você encontra no <span className="text-primary italic">freesh</span>
+          <h2 className="text-4xl md:text-7xl font-bold tracking-tight mb-6 text-slate-900 leading-[1.1]">
+            Ferramentas para sua <span className="text-blue-600 italic">Libertação</span>
           </h2>
-          <p className="text-muted-foreground text-xl max-w-3xl font-medium italic leading-relaxed">
-            Nós não construímos apenas um aplicativo. Criamos um <span className="text-white font-bold">arsenal tecnológico</span> de elite para a sua libertação definitiva.
+          <p className="text-slate-500 text-xl max-w-3xl font-medium leading-relaxed">
+            Criamos uma infraestrutura de suporte completa com base em dados científicos para garantir que você nunca mais volte a fumar.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 auto-rows-[280px]">
           {content.map((item, i) => (
             <motion.div
               key={item.title}
@@ -73,37 +73,32 @@ const AppContentSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.6 }}
-              className={item.className}
+              className={`rounded-[2.5rem] border p-10 flex flex-col items-start relative overflow-hidden transition-all duration-500 hover:-translate-y-2 ${item.className}`}
             >
-              <AppleCard className="h-full group hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 flex flex-col p-8 bg-card/40 backdrop-blur-xl border-border/40 overflow-hidden relative">
-                {item.badge && (
-                  <div className="absolute top-6 right-6 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium font-black text-primary uppercase tracking-widest italic leading-none">
-                    {item.badge}
-                  </div>
-                )}
-                
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 bg-black/40 border border-border/50 shadow-2xl ${item.iconColor}`}>
-                  <item.icon size={28} strokeWidth={2.5} />
+              {item.badge && (
+                <div className="absolute top-8 right-8 px-3 py-1 rounded-full bg-blue-600/10 border border-blue-600/20 text-[9px] font-bold text-blue-600 uppercase tracking-widest italic leading-none">
+                  {item.badge}
                 </div>
-                
-                <div className="mt-auto relative z-10">
-                  <h3 className="text-2xl font-black tracking-tighter mb-3 text-white italic group-hover:text-primary transition-colors">{item.title}</h3>
-                  <p className="text-muted-foreground text-sm font-medium leading-relaxed max-w-xs">{item.desc}</p>
-                </div>
-
-                {/* Nebula individual glow */}
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/10 blur-[60px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              </AppleCard>
+              )}
+              
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-8 bg-white shadow-sm border border-slate-100 transition-transform duration-500 ${item.iconColor}`}>
+                <item.icon size={28} strokeWidth={2} />
+              </div>
+              
+              <div className="mt-auto">
+                <h3 className="text-2xl font-bold tracking-tight mb-3 text-slate-900 italic">{item.title}</h3>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed max-w-xs">{item.desc}</p>
+              </div>
             </motion.div>
           ))}
         </div>
 
         <div className="mt-20 grid md:grid-cols-4 gap-8">
            {[
-             { title: "Nota 5.0", sub: "Avaliação Global" },
-             { title: "+12k", sub: "Novos Sopros de Vida" },
-             { title: "Militar", sub: "Estandard de Segurança" },
-             { title: "Neural", sub: "Aprendizado em Tempo Real" }
+             { title: "Nota 5.0", sub: "Satisfação total" },
+             { title: "+12k", sub: "Vidas transformadas" },
+             { title: "Seguro", sub: "Privacidade absoluta" },
+             { title: "Neural", sub: "Tecnologia de ponta" }
            ].map((stat, i) => (
              <motion.div 
                key={i} 
@@ -111,10 +106,10 @@ const AppContentSection = () => {
                whileInView={{ opacity: 1, y: 0 }}
                viewport={{ once: true }}
                transition={{ delay: 0.4 + (i * 0.1) }}
-               className="text-center p-8 rounded-[2.5rem] bg-card/20 border border-border/20 backdrop-blur-sm group hover:border-primary/30 transition-all"
+               className="text-center p-8 rounded-[2rem] bg-slate-50 border border-slate-100 group hover:border-blue-200 transition-all hover:bg-white hover:shadow-xl hover:shadow-blue-50"
              >
-               <p className="text-3xl font-black tracking-tighter text-white italic group-hover:scale-110 transition-transform">{stat.title}</p>
-               <p className="text-sm font-medium font-black uppercase tracking-widest text-muted-foreground mt-2">{stat.sub}</p>
+               <p className="text-3xl font-bold tracking-tighter text-slate-900 group-hover:text-blue-600 transition-colors">{stat.title}</p>
+               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-2">{stat.sub}</p>
              </motion.div>
            ))}
         </div>

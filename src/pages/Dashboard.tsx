@@ -7,22 +7,18 @@ import {
   ShieldCheck, 
   Droplets,
   Coins,
-  History,
-  Trophy,
   ArrowUpRight,
   ChevronDown,
   Clock,
-  Wallet,
   AlertCircle,
   TrendingUp,
   Heart,
-  ChevronRight
+  Trophy
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { SOSMode } from "@/components/dashboard/SOSMode";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -140,7 +136,7 @@ export default function Dashboard() {
           <div className="flex flex-wrap gap-4">
             <Button 
               onClick={() => setIsSOSOpen(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl h-14 px-8 font-bold gap-3 shadow-lg shadow-blue-200 uppercase tracking-widest text-[11px]"
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl h-14 px-8 font-bold gap-3 shadow-lg shadow-blue-200 uppercase tracking-widest text-[11px] border-none"
             >
               <AlertCircle className="w-5 h-5" />
               {t('dashboard.sos')}
@@ -185,11 +181,10 @@ export default function Dashboard() {
         </div>
 
         {/* Major Bento Grid */}
-        <div className="bento-grid bento-grid-entrance">
+        <div className="bento-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
           {/* Life Quality Timeline - Large Item */}
           <div 
-            className="md:col-span-2 lg:col-span-4 bento-item-premium p-10 flex flex-col justify-between group overflow-hidden relative min-h-[500px]"
-            style={{ animationDelay: '0.1s' }}
+            className="md:col-span-2 lg:col-span-4 bento-item bg-white p-10 flex flex-col justify-between group overflow-hidden relative min-h-[500px] rounded-[3rem] border border-slate-100 shadow-sm"
           >
             <div className="absolute top-0 right-0 p-12 opacity-5 translate-x-8 -translate-y-8 group-hover:translate-x-4 group-hover:-translate-y-4 transition-transform duration-700">
               <Heart className="w-64 h-64 text-blue-600" />
@@ -221,14 +216,14 @@ export default function Dashboard() {
                     <TrendingUp className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="font-black text-slate-900 leading-none mb-1">LINHA DO TEMPO</h3>
+                    <h3 className="font-black text-slate-900 leading-none mb-1 uppercase text-xs">Linha do Tempo</h3>
                     <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Impacto Bio-Celular</p>
                   </div>
                 </div>
                 <Button 
                   variant="ghost" 
                   onClick={() => setIsRecoveryExpanded(!isRecoveryExpanded)}
-                  className="rounded-full h-8 gap-2 text-slate-500 hover:text-primary font-black text-[10px] uppercase tracking-widest px-4 border border-slate-100 hover:bg-slate-50"
+                  className="rounded-full h-8 gap-2 text-slate-500 hover:text-blue-600 font-black text-[10px] uppercase tracking-widest px-4 border border-slate-100 hover:bg-slate-50"
                 >
                   {isRecoveryExpanded ? "Ocultar" : "Expandir"}
                   <ChevronDown className={cn("w-3.5 h-3.5 transition-transform", isRecoveryExpanded && "rotate-180")} />
@@ -252,8 +247,7 @@ export default function Dashboard() {
 
           {/* Money Saved - Small Item */}
           <div 
-            className="bento-item p-8 flex flex-col justify-between group h-full"
-            style={{ animationDelay: '0.2s' }}
+            className="bento-item bg-white p-8 flex flex-col justify-between group h-full rounded-[3rem] border border-slate-100 shadow-sm"
           >
             <div className="flex justify-between items-start">
               <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 group-hover:rotate-6 transition-transform shadow-sm border border-blue-100">
@@ -266,7 +260,7 @@ export default function Dashboard() {
               <div className="flex items-baseline gap-2">
                 <span className="text-sm font-black text-slate-400 uppercase tracking-tighter">R$</span>
                 <span className="text-4xl font-black text-slate-900 tracking-tighter leading-none tabular-nums">
-                  {stats?.moneySaved.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {stats?.moneySaved.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0,00"}
                 </span>
               </div>
               <div className="mt-4 flex items-center gap-2">
@@ -277,8 +271,7 @@ export default function Dashboard() {
 
           {/* Cigarettes Avoided - Small Item */}
           <div 
-            className="bento-item p-8 flex flex-col justify-between group h-full"
-            style={{ animationDelay: '0.3s' }}
+            className="bento-item bg-white p-8 flex flex-col justify-between group h-full rounded-[3rem] border border-slate-100 shadow-sm"
           >
             <div className="flex justify-between items-start">
               <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 group-hover:-rotate-6 transition-transform shadow-sm border border-blue-100">
@@ -295,15 +288,14 @@ export default function Dashboard() {
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">unid.</span>
               </div>
               <div className="mt-4 h-1 w-full bg-slate-50 rounded-full overflow-hidden">
-                <div className="h-full bg-rose-500 w-3/4 rounded-full" />
+                <div className="h-full bg-blue-500 w-3/4 rounded-full" />
               </div>
             </div>
           </div>
 
           {/* Achievement Box - Medium Item */}
           <div 
-            className="md:col-span-2 bento-item p-8 bg-blue-600 !text-white border-none group relative overflow-hidden h-full flex flex-col justify-between shadow-xl shadow-blue-200/50"
-            style={{ animationDelay: '0.4s' }}
+            className="md:col-span-2 bento-item p-8 bg-blue-600 !text-white border-none group relative overflow-hidden h-full flex flex-col justify-between shadow-xl shadow-blue-200/50 rounded-[3rem]"
           >
             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
               <Trophy className="w-48 h-48" />
