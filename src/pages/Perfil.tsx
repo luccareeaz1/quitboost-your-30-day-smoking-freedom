@@ -100,138 +100,130 @@ export default function Perfil() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] pb-32">
-      {/* Premium Hero Header */}
-      <header className="bg-slate-900 pt-20 pb-40 px-6 lg:px-12 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
-          <div className="absolute top-20 right-20 w-96 h-96 bg-primary/20 rounded-full blur-[100px]" />
-          <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-sky-400/10 rounded-full blur-[100px]" />
-        </div>
-
-        <div className="max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row items-center gap-10">
+    <div className="min-h-screen bg-white">
+      {/* Header Minimalista */}
+      <header className="pt-20 pb-16 px-6 lg:px-12 border-b border-slate-100">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10">
           <div className="relative group">
-            <div className="w-40 h-40 rounded-[3rem] bg-white p-1.5 shadow-2xl relative">
-              <div className="w-full h-full rounded-[2.5rem] bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-100">
+            <div className="w-32 h-32 rounded-2xl bg-white p-1 border border-slate-200 shadow-sm relative overflow-hidden">
+              <div className="w-full h-full rounded-xl bg-slate-50 flex items-center justify-center overflow-hidden">
                 {profile.avatar_url ? (
                   <img src={profile.avatar_url} className="w-full h-full object-cover" alt="Profile" />
                 ) : (
-                  <User className="w-16 h-16 text-slate-200" />
+                  <User className="w-12 h-12 text-slate-200" />
                 )}
               </div>
-              <button 
-                onClick={() => setIsEditing(true)}
-                className="absolute -bottom-2 -right-2 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl border-4 border-slate-900 group-hover:scale-110 transition-transform"
-              >
-                <Edit3 className="w-5 h-5" />
-              </button>
             </div>
             {subscription === 'elite' && (
-              <div className="absolute -top-4 -right-4 w-12 h-12 bg-amber-400 rounded-full flex items-center justify-center shadow-lg border-4 border-slate-900">
-                <Crown className="w-6 h-6 text-white" />
+              <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                <Crown className="w-4 h-4 text-white" />
               </div>
             )}
+            <button 
+              onClick={() => setIsEditing(true)}
+              className="absolute -bottom-2 -right-2 w-10 h-10 bg-white text-slate-400 rounded-xl flex items-center justify-center shadow-md border border-slate-200 hover:text-blue-600 transition-colors"
+            >
+              <Edit3 className="w-4 h-4" />
+            </button>
           </div>
 
           <div className="text-center md:text-left flex-1">
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-2">
               {profile.display_name || "Guerreiro"}
             </h1>
-            <p className="text-white/40 font-bold uppercase tracking-widest text-xs mb-6">
-              Iniciado em {stats.quitDate.toLocaleDateString("pt-BR")}
+            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mb-6 flex items-center justify-center md:justify-start gap-2">
+              <Clock className="w-3 h-3" /> Iniciado em {stats.quitDate.toLocaleDateString("pt-BR")}
             </p>
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-              <BadgeBox label="Nível 04" color="bg-primary/20 text-primary border-primary/20" />
-              <BadgeBox label={subscription?.toUpperCase() || 'FREE'} color="bg-amber-400/20 text-amber-400 border-amber-400/20" />
-              <BadgeBox label="São Paulo, BR" color="bg-white/5 text-white/40 border-white/10" icon={MapPin} />
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+              <BadgeBox label="Nível 04" color="bg-blue-50 text-blue-600 border-blue-100" />
+              <BadgeBox label={subscription?.toUpperCase() || 'FREE'} color="bg-amber-50 text-amber-600 border-amber-100" icon={Crown} />
+              <BadgeBox label="Brasil" color="bg-slate-50 text-slate-500 border-slate-200" icon={MapPin} />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-             <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2rem] text-center min-w-[140px]">
-                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Dias Livres</p>
-                <p className="text-4xl font-black text-white">{stats.diffDays}</p>
+          <div className="flex gap-4">
+             <div className="bg-white border border-slate-200 p-4 rounded-2xl text-center min-w-[120px] shadow-sm">
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Dias Livres</p>
+                <p className="text-3xl font-bold text-slate-900 tracking-tight">{stats.diffDays}</p>
              </div>
-             <div className="bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-[2rem] text-center min-w-[140px]">
-                <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Economia</p>
-                <p className="text-4xl font-black text-white">R${Math.round(stats.economia)}</p>
+             <div className="bg-white border border-slate-200 p-4 rounded-2xl text-center min-w-[120px] shadow-sm">
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Economia</p>
+                <p className="text-3xl font-bold text-slate-900 tracking-tight">R${Math.round(stats.economia)}</p>
              </div>
           </div>
         </div>
       </header>
 
       {/* Main Content Sections */}
-      <div className="max-w-5xl mx-auto px-6 -mt-24 relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-8 space-y-10">
+      <div className="max-w-5xl mx-auto px-6 py-12 relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="lg:col-span-8 space-y-8">
           {/* Conquistas Bar */}
-          <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10">
-             <div className="flex justify-between items-center mb-10">
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Galeria de Troféus</h3>
-                <Button variant="ghost" className="text-xs font-black text-primary uppercase tracking-widest" onClick={() => navigate("/conquistas")}>Ver Galeria</Button>
+          <div className="border border-slate-200 bg-white rounded-2xl p-8">
+             <div className="flex justify-between items-center mb-8">
+                <h3 className="text-lg font-bold text-slate-900">Galeria de Troféus</h3>
+                <Button variant="ghost" className="text-[10px] font-bold text-blue-600 uppercase tracking-widest hover:bg-blue-50" onClick={() => navigate("/conquistas")}>Ver Galeria</Button>
              </div>
-             <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
                 {userAchievements.map((badge, i) => (
                   <motion.div
                     key={i}
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    className="w-20 h-20 rounded-[1.5rem] bg-slate-50 flex items-center justify-center text-4xl shrink-0 group hover:bg-primary/5 transition-colors border border-slate-100"
+                    whileHover={{ scale: 1.05 }}
+                    className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center text-3xl shrink-0 group border border-slate-100"
                   >
-                    <span className="group-hover:scale-125 transition-transform">{badge.emoji || "🏅"}</span>
+                    <span>{badge.emoji || "🏅"}</span>
                   </motion.div>
                 ))}
                 {userAchievements.length === 0 && (
-                  <div className="py-10 text-center w-full bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-100">
-                    <p className="text-sm font-bold text-slate-400">Suas vitórias aparecerão aqui em breve.</p>
+                  <div className="py-8 text-center w-full bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                    <p className="text-xs font-bold text-slate-400">Suas vitórias aparecerão aqui.</p>
                   </div>
                 )}
              </div>
-          </Card>
+          </div>
 
-          {/* Account Settings Bento */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <SettingsCard icon={ShieldCheck} title="Privacidade" desc="Gerencie visibilidade e dados." color="text-sky-500" />
-            <SettingsCard icon={CreditCard} title="Assinatura" desc="Upgrade para Elite Pro." color="text-amber-500" />
-            <SettingsCard icon={Bell} title="Notificações" desc="Alertas de fissura e saúde." color="text-primary" />
-            <SettingsCard icon={LogOut} title="Desconectar" desc="Sair da conta atual." color="text-slate-400" onClick={signOut} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SettingsCard icon={ShieldCheck} title="Privacidade" desc="Visibilidade de dados." color="text-slate-600" />
+            <SettingsCard icon={CreditCard} title="Assinatura" desc="Upgrade para Elite." color="text-blue-600" />
+            <SettingsCard icon={Bell} title="Notificações" desc="Alertas e gatilhos." color="text-slate-600" />
+            <SettingsCard icon={LogOut} title="Desconectar" desc="Sair da conta." color="text-rose-500" onClick={signOut} />
           </div>
           
           <Button 
-            variant="destructive" 
+            variant="ghost" 
             onClick={() => setShowDeleteConfirm(true)}
-            className="w-full h-16 rounded-[2rem] bg-rose-50 text-rose-500 hover:bg-rose-100 border border-rose-100 font-black uppercase tracking-widest text-[11px] gap-3"
+            className="w-full h-12 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 border border-slate-200 font-bold uppercase tracking-widest text-[9px] gap-2"
           >
-            <Trash2 className="w-4 h-4" /> Resetar Histórico Físico
+            <Trash2 className="w-3.5 h-3.5" /> Resetar Histórico de Saúde
           </Button>
         </div>
 
-        {/* Sidebar Mini Profile Info */}
-        <aside className="lg:col-span-4 space-y-10">
-           <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10">
-             <h3 className="text-2xl font-black text-slate-900 tracking-tight mb-8">Bio Médica</h3>
-             <div className="space-y-6">
-               <InfoRow label="Cigarros/Dia" value={profile.cigarettes_per_day} icon={Flame} />
-               <InfoRow label="Fuma há" value={`${profile.years_smoking} Anos`} icon={Clock} />
-               <InfoRow label="Status" value="Regenerando" icon={Heart} />
+        <aside className="lg:col-span-4 space-y-6">
+           <div className="border border-slate-200 bg-white rounded-2xl p-8 shadow-sm">
+             <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-8">Bio Médica</h3>
+             <div className="space-y-5">
+               <InfoRow label="Cigarros Diários" value={profile.cigarettes_per_day} icon={Flame} />
+               <InfoRow label="Tempo de Hábito" value={`${profile.years_smoking} Anos`} icon={Clock} />
+               <InfoRow label="Status Biota" value="Regenerando..." icon={Heart} />
              </div>
              
-             <div className="mt-10 pt-10 border-t border-slate-50">
-               <p className="text-xs font-bold text-slate-400 leading-relaxed italic">
-                 "Sua capacidade pulmonar aumentou 22% desde o início desta jornada."
+             <div className="mt-8 pt-8 border-t border-slate-100">
+               <p className="text-[11px] font-semibold text-slate-400 leading-relaxed italic">
+                 Sua capacidade pulmonar aumentou consideravelmente nos últimos dias.
                </p>
              </div>
-           </Card>
+           </div>
 
-           <Card className="border-none shadow-xl shadow-slate-100 bg-primary/5 rounded-[3rem] p-10 border border-primary/10">
-             <h4 className="text-lg font-black text-primary mb-4 flex items-center gap-2">
-               <Sparkles className="w-5 h-5" /> Apoio do Coach
+           <div className="bg-blue-600 text-white rounded-2xl p-8 shadow-lg shadow-blue-100">
+             <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
+               <Bot className="w-5 h-5" /> Apoio do Coach
              </h4>
-             <p className="text-sm font-bold text-primary/70 leading-relaxed mb-8">
-               O seu plano atual cobre mensagens ilimitadas de texto com o Coach IA especializado em cessação do tabagismo.
+             <p className="text-white/80 font-medium text-xs leading-relaxed mb-8">
+               Personalização completa da sua IA de cessação inclusa no seu plano atual.
              </p>
-             <Button className="w-full bg-primary text-white hover:bg-emerald-600 rounded-2xl h-12 font-black uppercase tracking-widest text-[10px]" onClick={() => navigate('/coach')}>
-               Falar com Coach
+             <Button className="w-full bg-white text-blue-600 hover:bg-slate-50 rounded-xl h-11 font-bold uppercase tracking-widest text-[10px]" onClick={() => navigate('/coach')}>
+               Abrir Chat IA
              </Button>
-           </Card>
+           </div>
         </aside>
       </div>
 
@@ -239,27 +231,26 @@ export default function Perfil() {
       <AnimatePresence>
         {isEditing && (
           <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/60 backdrop-blur-xl" onClick={() => setIsEditing(false)} />
-            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="bg-white w-full max-w-xl rounded-[3rem] p-12 shadow-2xl relative z-10">
-               <div className="flex justify-between items-center mb-10">
-                 <h3 className="text-3xl font-black text-slate-900">Editar Perfil</h3>
-                 <button onClick={() => setIsEditing(false)} className="text-slate-300 hover:text-slate-900"><ChevronLeft className="w-8 h-8" /></button>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={() => setIsEditing(false)} />
+            <motion.div initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 10 }} className="bg-white w-full max-w-lg rounded-2xl p-8 md:p-10 shadow-xl relative z-10 border border-slate-200">
+               <div className="flex justify-between items-center mb-8">
+                 <h3 className="text-xl font-bold text-slate-900">Editar Perfil</h3>
+                 <button onClick={() => setIsEditing(false)} className="text-slate-400 hover:text-slate-900 transition-colors"><ChevronLeft className="w-6 h-6" /></button>
                </div>
                
-               <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 no-scrollbar">
-                  <InputGroup label="Nome de Exibição" value={editData.nome} onChange={v => setEditData({...editData, nome: v})} />
-                  <InputGroup label="Bio / Motivação" value={editData.bio} onChange={v => setEditData({...editData, bio: v})} isTextArea />
-                  <div className="grid grid-cols-2 gap-8">
-                    <InputGroup label="Cigarros Diários" value={editData.cigarrosPorDia} onChange={v => setEditData({...editData, cigarrosPorDia: Number(v)})} type="number" />
-                    <InputGroup label="Anos de Hábito" value={editData.anosFumando} onChange={v => setEditData({...editData, anosFumando: Number(v)})} type="number" />
+               <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2 no-scrollbar">
+                  <InputGroup label="Seu Nome" value={editData.nome} onChange={v => setEditData({...editData, nome: v})} />
+                  <InputGroup label="Sua Bio" value={editData.bio} onChange={v => setEditData({...editData, bio: v})} isTextArea />
+                  <div className="grid grid-cols-2 gap-4">
+                    <InputGroup label="Cigs/Dia" value={editData.cigarrosPorDia} onChange={v => setEditData({...editData, cigarrosPorDia: Number(v)})} type="number" />
+                    <InputGroup label="Anos Fumando" value={editData.anosFumando} onChange={v => setEditData({...editData, anosFumando: Number(v)})} type="number" />
                   </div>
-                  <InputGroup label="Preço Médio do Maço" value={editData.custoPorCigarro} onChange={v => setEditData({...editData, custoPorCigarro: Number(v)})} type="number" />
                </div>
 
-               <div className="flex gap-4 mt-12">
-                  <Button variant="ghost" className="flex-1 rounded-2xl h-16 font-black uppercase tracking-widest text-xs" onClick={() => setIsEditing(false)}>Cancelar</Button>
-                  <Button className="flex-1 bg-slate-900 text-white hover:bg-black rounded-2xl h-16 font-black uppercase tracking-widest text-xs shadow-xl shadow-slate-200" onClick={handleSaveProfile} disabled={saving}>
-                    {saving ? <Loader2 className="animate-spin w-5 h-5" /> : "Salvar Alterações"}
+               <div className="flex gap-3 mt-10">
+                  <Button variant="ghost" className="flex-1 rounded-xl h-12 font-bold uppercase tracking-widest text-[10px]" onClick={() => setIsEditing(false)}>Cancelar</Button>
+                  <Button className="flex-1 bg-blue-600 text-white hover:bg-blue-700 rounded-xl h-12 font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-blue-100" onClick={handleSaveProfile} disabled={saving}>
+                    {saving ? <Loader2 className="animate-spin w-4 h-4" /> : "Salvar"}
                   </Button>
                </div>
             </motion.div>
@@ -272,17 +263,17 @@ export default function Perfil() {
         {showDeleteConfirm && (
           <div className="fixed inset-0 z-[130] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={() => setShowDeleteConfirm(false)} />
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center relative z-10 shadow-2xl">
-               <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
-                 <Trash2 className="w-10 h-10" />
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-white w-full max-w-sm rounded-2xl p-10 text-center relative z-10 border border-slate-100 shadow-xl">
+               <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                 <Trash2 className="w-8 h-8" />
                </div>
-               <h3 className="text-2xl font-black text-slate-900 mb-4">Resetar Progresso?</h3>
-               <p className="text-slate-500 font-medium mb-10 leading-relaxed">
-                 Isso apagará seu histórico de saúde atual, mas manterá suas conquistas ganhas. Tem certeza que deseja recomeçar?
+               <h3 className="text-xl font-bold text-slate-900 mb-2">Resetar Progresso?</h3>
+               <p className="text-slate-500 font-medium mb-8 text-sm leading-relaxed">
+                 Isso apagará seu histórico de saúde atual. Tem certeza que deseja recomeçar?
                </p>
-               <div className="flex flex-col gap-3">
-                 <Button className="bg-rose-500 text-white rounded-2xl h-14 font-black uppercase tracking-widest text-xs shadow-xl shadow-rose-200">Sim, Reiniciar</Button>
-                 <Button variant="ghost" className="h-14 font-black uppercase tracking-widest text-slate-400" onClick={() => setShowDeleteConfirm(false)}>Agora não</Button>
+               <div className="flex flex-col gap-2">
+                 <Button className="bg-rose-500 text-white hover:bg-rose-600 rounded-xl h-12 font-bold uppercase tracking-widest text-[10px]">Sim, Reiniciar</Button>
+                 <Button variant="ghost" className="h-12 font-bold uppercase tracking-widest text-[10px] text-slate-400 hover:text-slate-900" onClick={() => setShowDeleteConfirm(false)}>Agora não</Button>
                </div>
             </motion.div>
           </div>
@@ -294,7 +285,7 @@ export default function Perfil() {
 
 function BadgeBox({ label, color, icon: Icon }: any) {
   return (
-    <div className={cn("px-4 py-2 rounded-xl border font-black text-[10px] uppercase tracking-widest flex items-center gap-2", color)}>
+    <div className={cn("px-3 py-1.5 rounded-lg border font-bold text-[9px] uppercase tracking-widest flex items-center gap-1.5 shadow-sm", color)}>
       {Icon && <Icon className="w-3 h-3" />}
       {label}
     </div>
@@ -303,30 +294,31 @@ function BadgeBox({ label, color, icon: Icon }: any) {
 
 function SettingsCard({ icon: Icon, title, desc, color, onClick }: any) {
   return (
-    <Card 
+    <div 
       onClick={onClick}
-      className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[2.5rem] p-8 flex items-center gap-6 cursor-pointer hover:-translate-y-1 transition-all group"
+      className="p-6 border border-slate-200 bg-white rounded-2xl flex items-center gap-5 cursor-pointer hover:border-blue-300 transition-all group"
     >
-      <div className={cn("w-14 h-14 rounded-2xl bg-white shadow-inner flex items-center justify-center scale-100 group-hover:scale-110 transition-transform", color)}>
-        <Icon className="w-6 h-6" />
+      <div className={cn("w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center transition-transform group-hover:scale-110", color)}>
+        <Icon className="w-5 h-5" />
       </div>
       <div className="flex-1">
-        <h4 className="font-black text-slate-900 tracking-tight">{title}</h4>
+        <h4 className="font-bold text-slate-900 text-sm tracking-tight">{title}</h4>
         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{desc}</p>
       </div>
-    </Card>
+      <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-600 transition-colors" />
+    </div>
   );
 }
 
 function InfoRow({ label, value, icon: Icon }: any) {
   return (
     <div className="flex items-center gap-4">
-      <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
+      <div className="w-10 h-10 bg-blue-50/50 rounded-xl flex items-center justify-center text-blue-600 border border-blue-50">
         <Icon className="w-4 h-4" />
       </div>
       <div className="flex-1">
-        <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{label}</p>
-        <p className="text-sm font-black text-slate-900">{value}</p>
+        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{label}</p>
+        <p className="text-[13px] font-bold text-slate-900">{value}</p>
       </div>
     </div>
   );
@@ -334,20 +326,20 @@ function InfoRow({ label, value, icon: Icon }: any) {
 
 function InputGroup({ label, value, onChange, type = "text", isTextArea = false }: any) {
   return (
-    <div className="space-y-3">
-      <label className="text-[10px] font-black text-primary uppercase tracking-[0.2em] ml-2">{label}</label>
+    <div className="space-y-2">
+      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">{label}</label>
       {isTextArea ? (
         <textarea 
           value={value} 
           onChange={e => onChange(e.target.value)}
-          className="w-full bg-slate-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-[1.5rem] p-6 text-sm font-bold min-h-[120px] outline-none transition-all placeholder:text-slate-200"
+          className="w-full bg-slate-50 border border-slate-200 focus:border-blue-400 focus:bg-white rounded-xl p-4 text-[13px] font-bold min-h-[100px] outline-none transition-all placeholder:text-slate-300"
         />
       ) : (
         <input 
           type={type}
           value={value} 
           onChange={e => onChange(e.target.value)}
-          className="w-full h-14 bg-slate-50 border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl px-6 text-sm font-bold outline-none transition-all placeholder:text-slate-200"
+          className="w-full h-12 bg-slate-50 border border-slate-200 focus:border-blue-400 focus:bg-white rounded-xl px-4 text-[13px] font-bold outline-none transition-all placeholder:text-slate-300"
         />
       )}
     </div>

@@ -88,144 +88,140 @@ export default function Desafios() {
   const totalCount = checklist.length + MISSÕES.length;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] p-6 lg:p-12 pb-32">
-      <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary shadow-sm">
-              <Sparkles className="w-4 h-4" />
+    <div className="min-h-screen bg-white">
+      <header className="px-6 py-8 md:px-10 md:py-12 border-b border-slate-100">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                <Sparkles className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em]">Desafios e Gamificação</span>
             </div>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Centro de Treinamento</span>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Suas <span className="text-blue-600">Missões Ativas</span></h1>
+            <p className="text-slate-500 mt-2 text-sm">Fortaleça sua resiliência mental completando objetivos diários.</p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Suas <span className="text-primary italic">Missões Ativas</span></h1>
-          <p className="text-slate-500 mt-2 font-medium">Complete desafios para fortalecer sua mente e subir de nível.</p>
-        </div>
 
-        <div className="flex items-center gap-6">
-           <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status de XP</p>
-              <p className="text-2xl font-black text-slate-900 tracking-tight">12.450 <span className="text-primary">XP</span></p>
-           </div>
-           <Button className="bg-slate-900 text-white rounded-2xl h-16 px-8 gap-3 shadow-xl shadow-slate-200">
-             <Trophy className="w-5 h-5 text-amber-400" />
-             <div className="text-left">
-                <p className="text-[9px] font-black text-white/40 uppercase tracking-widest leading-none mb-1">Ranking</p>
-                <p className="text-sm font-black tracking-tight">Elite II</p>
+          <div className="flex items-center gap-4">
+             <div className="text-right hidden sm:block">
+                <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Pontuação Total</p>
+                <p className="text-xl font-bold text-slate-900 tracking-tight">12.450 <span className="text-blue-600">XP</span></p>
              </div>
-           </Button>
+             <div className="p-4 border border-slate-200 bg-white rounded-2xl flex items-center gap-4 shadow-sm h-14">
+               <Trophy className="w-5 h-5 text-blue-600" />
+               <div className="text-left">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Ranking</p>
+                  <p className="text-sm font-bold tracking-tight text-slate-900">Elite II</p>
+               </div>
+             </div>
+          </div>
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* Main Quests */}
-        <div className="lg:col-span-8 space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="max-w-7xl mx-auto p-6 md:p-10 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-8 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {MISSÕES.map((mission) => (
               <QuestCard key={mission.id} mission={mission} />
             ))}
           </div>
 
-          <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10 mt-10">
-             <div className="flex justify-between items-center mb-10">
-               <h3 className="text-2xl font-black text-slate-900 tracking-tight">Checklist de Resiliência</h3>
-               <div className="w-10 h-10 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400">
-                 <Target className="w-5 h-5" />
+          <div className="p-6 md:p-8 border border-slate-200 bg-white rounded-2xl shadow-sm mt-8">
+             <div className="flex justify-between items-center mb-8">
+               <h3 className="text-lg font-bold text-slate-900">Checklist Diário</h3>
+               <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                 <Target className="w-4 h-4" />
                </div>
              </div>
 
-             <div className="space-y-4">
+             <div className="space-y-3">
                {checklist.map((item) => (
                  <motion.div 
                    key={item.id} 
                    onClick={() => toggleCheck(item.id)}
-                   whileHover={{ x: 4 }}
+                   whileHover={{ x: 2 }}
                    className={cn(
-                     "group flex items-center gap-6 p-6 rounded-[2rem] transition-all border border-transparent cursor-pointer relative overflow-hidden",
+                     "group flex items-center gap-4 p-4 rounded-xl transition-all border cursor-pointer",
                      item.completed 
-                       ? "bg-slate-50/50 border-slate-100" 
-                       : "bg-white shadow-sm hover:shadow-xl hover:shadow-slate-100 border-slate-100"
+                       ? "bg-slate-50/50 border-slate-100 opacity-60" 
+                       : "bg-white border-slate-200 hover:border-blue-300"
                    )}
                  >
                    <div className={cn(
-                     "w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-inner",
+                     "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
                      item.completed 
-                       ? "bg-primary text-white scale-90" 
+                       ? "bg-blue-600 text-white" 
                        : "bg-slate-50 text-slate-300 border border-slate-100"
                    )}>
-                     {item.completed ? <CheckCircle2 className="w-6 h-6" /> : <div className="w-3 h-3 rounded-full bg-slate-200" />}
+                     {item.completed ? <CheckCircle2 className="w-5 h-5" /> : <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />}
                    </div>
                    
                    <div className="flex-1">
                      <h4 className={cn(
-                       "text-md font-black transition-all",
+                       "text-[13px] font-bold transition-all",
                        item.completed ? "text-slate-400 line-through" : "text-slate-800"
                      )}>
                        {item.label}
                      </h4>
-                     <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-1">+{item.xp} XP</p>
+                     <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-0.5">+{item.xp} XP</p>
                    </div>
-
-                   <ArrowUpRight className={cn(
-                     "w-10 h-10 absolute -right-2 -bottom-2 opacity-5 transition-opacity",
-                     item.completed ? "opacity-0" : "group-hover:opacity-10"
-                   )} />
                  </motion.div>
                ))}
              </div>
-          </Card>
-        </div>
+          </div>
 
-        {/* Global Stats/Sidebar */}
-        <div className="lg:col-span-4 space-y-10">
-           <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10 flex flex-col h-fit">
-              <div className="flex justify-between items-center mb-10">
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Progresso Total</h3>
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{completedCount}/{totalCount}</span>
+          <div className="lg:col-span-4 space-y-6">
+           <div className="p-8 border border-slate-200 bg-white rounded-2xl shadow-sm flex flex-col items-center text-center">
+              <div className="flex justify-between w-full items-center mb-8">
+                <h3 className="text-sm font-bold text-slate-900 uppercase tracking-widest">Progresso</h3>
+                <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{completedCount}/{totalCount}</span>
               </div>
               
-              <div className="relative w-48 h-48 mx-auto mb-10">
+              <div className="relative w-40 h-40 mx-auto mb-8">
                 <svg className="w-full h-full transform -rotate-90">
-                  <circle cx="96" cy="96" r="80" stroke="#f1f5f9" strokeWidth="16" fill="transparent" />
+                  <circle cx="80" cy="80" r="70" stroke="#f1f5f9" strokeWidth="12" fill="transparent" />
                   <motion.circle 
-                    cx="96" cy="96" r="80" stroke="currentColor" strokeWidth="16" fill="transparent" 
-                    strokeDasharray={2 * Math.PI * 80}
-                    initial={{ strokeDashoffset: 2 * Math.PI * 80 }}
-                    animate={{ strokeDashoffset: (2 * Math.PI * 80) * (1 - completedCount/totalCount) }}
-                    transition={{ duration: 2, ease: "circOut" }}
-                    className="text-primary"
+                    cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="12" fill="transparent" 
+                    strokeDasharray={2 * Math.PI * 70}
+                    initial={{ strokeDashoffset: 2 * Math.PI * 70 }}
+                    animate={{ strokeDashoffset: (2 * Math.PI * 70) * (1 - completedCount/totalCount) }}
+                    transition={{ duration: 1.5, ease: "circOut" }}
+                    className="text-blue-600"
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-4xl font-black text-slate-900">{Math.round((completedCount/totalCount) * 100)}%</span>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Concluído</span>
+                  <span className="text-3xl font-bold text-slate-900">{Math.round((completedCount/totalCount) * 100)}%</span>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Geral</span>
                 </div>
               </div>
 
-              <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
-                <p className="text-sm font-bold text-slate-600 leading-relaxed mb-4 text-center">
-                  "Você é um dos 5% de usuários que mantêm o foco total nas missões diárias."
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 w-full">
+                <p className="text-[11px] font-semibold text-slate-600 leading-relaxed mb-3">
+                  "Você está entre os mais resilientes da comunidade hoje."
                 </p>
                 <div className="flex items-center justify-center gap-2">
-                  <Flame className="w-4 h-4 text-orange-500 fill-orange-500" />
-                  <span className="text-xs font-black text-slate-900">Top 5% Resiliência</span>
+                  <Flame className="w-3.5 h-3.5 text-blue-600" />
+                  <span className="text-[10px] font-bold text-slate-900 uppercase">Top 5% Resiliência</span>
                 </div>
               </div>
-           </Card>
+           </div>
 
-           <Card className="border-none shadow-xl shadow-slate-200/50 bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-[3rem] p-10">
-              <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-8 border border-white/10">
-                <Lock className="w-6 h-6" />
+           <div className="p-8 bg-slate-900 text-white rounded-2xl shadow-lg">
+              <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mb-6 border border-white/10">
+                <Lock className="w-5 h-5" />
               </div>
-              <h4 className="text-2xl font-black mb-4">Missões de Elite</h4>
-              <p className="text-white/60 font-medium text-sm leading-relaxed mb-10">
-                Desbloqueie missões personalizadas por profissionais de saúde ao atingir o Nível 15.
+              <h4 className="text-xl font-bold mb-2">Missões de Elite</h4>
+              <p className="text-white/50 font-medium text-[11px] leading-relaxed mb-6">
+                Desbloqueie missões personalizadas por profissionais ao atingir o Nível 15.
               </p>
-              <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white/40">
+              <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-white/30">
                 <span>Trancado</span>
                 <span>Nv. 15 Necessário</span>
               </div>
-           </Card>
+           </div>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -233,45 +229,36 @@ export default function Desafios() {
 
 function QuestCard({ mission }: any) {
   return (
-    <Card className={cn(
-      "border-none shadow-xl shadow-slate-100 bg-white rounded-[2.5rem] p-8 h-full flex flex-col relative overflow-hidden group",
-      mission.status === "locked" && "opacity-60"
+    <div className={cn(
+      "p-6 border border-slate-200 bg-white rounded-2xl flex flex-col h-full relative transition-all hover:border-blue-300 hover:shadow-sm",
+      mission.status === "locked" && "opacity-40 grayscale"
     )}>
       {mission.status === "completed" && (
-        <div className="absolute top-6 right-6">
-          <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-full border border-emerald-100 shadow-sm">
-            <CheckCircle2 className="w-3 h-3" />
-            <span className="text-[9px] font-black uppercase tracking-widest">Sucesso</span>
-          </div>
+        <div className="absolute top-4 right-4">
+          <CheckCircle2 className="w-4 h-4 text-blue-600" />
         </div>
       )}
       
       <div className={cn(
-        "w-16 h-16 rounded-[1.5rem] flex items-center justify-center mb-8 transition-transform group-hover:scale-110",
-        mission.bg, mission.color
+        "w-12 h-12 rounded-xl flex items-center justify-center mb-6 bg-blue-50 text-blue-600 border border-blue-100"
       )}>
-        <mission.icon className="w-8 h-8" />
+        <mission.icon className="w-6 h-6" />
       </div>
 
-      <div className="mb-6 flex-1">
-        <h3 className="text-xl font-black text-slate-900 mb-2 leading-tight tracking-tight">{mission.title}</h3>
-        <p className="text-xs text-slate-500 font-bold leading-relaxed">{mission.desc}</p>
+      <div className="mb-4 flex-1">
+        <h3 className="text-sm font-bold text-slate-900 mb-1 leading-tight tracking-tight">{mission.title}</h3>
+        <p className="text-[11px] text-slate-400 font-medium leading-relaxed">{mission.desc}</p>
       </div>
 
-      <div className="pt-6 border-t border-slate-50 flex justify-between items-center mt-auto">
-        <div className="flex items-center gap-2">
-          <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
-          <span className="text-[10px] font-black text-slate-900">+{mission.xp} XP</span>
+      <div className="pt-4 border-t border-slate-100 flex justify-between items-center mt-auto">
+        <div className="flex items-center gap-1.5">
+          <Zap className="w-3 h-3 text-blue-600" />
+          <span className="text-[9px] font-bold text-slate-900">+{mission.xp} XP</span>
         </div>
-        <span className={cn(
-          "text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-md",
-          mission.difficulty === "FÁCIL" && "bg-emerald-50 text-emerald-600",
-          mission.difficulty === "MÉDIO" && "bg-sky-50 text-sky-600",
-          mission.difficulty === "DIFÍCIL" && "bg-indigo-50 text-indigo-600",
-        )}>
+        <span className="text-[8px] font-bold uppercase tracking-widest bg-slate-50 text-slate-500 px-2 py-0.5 rounded-md">
           {mission.difficulty}
         </span>
       </div>
-    </Card>
+    </div>
   );
 }

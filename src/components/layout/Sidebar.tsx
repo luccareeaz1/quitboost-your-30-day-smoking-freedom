@@ -40,21 +40,21 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-80 bg-white border-r border-slate-100 hidden lg:flex flex-col z-[100] px-8 py-12 overflow-y-auto">
+    <aside className="fixed left-0 top-0 bottom-0 w-60 bg-white border-r border-slate-100 hidden lg:flex flex-col z-[100] px-4 py-8 overflow-y-auto">
       <div 
         onClick={() => navigate("/")}
-        className="flex items-center gap-4 mb-20 cursor-pointer group"
+        className="flex items-center gap-3 mb-10 px-4 cursor-pointer group"
       >
-        <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200 group-hover:scale-105 transition-transform">
-          <Zap className="w-6 h-6 fill-white/20" />
+        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-sm transition-transform">
+          <Zap className="w-4 h-4 fill-white/20" />
         </div>
-        <span className="text-xl font-bold text-slate-900 tracking-tighter uppercase">
+        <span className="text-sm font-black text-slate-900 tracking-tighter uppercase">
           Quit<span className="text-blue-600">Boost</span>
         </span>
       </div>
 
-      <nav className="flex-1 space-y-2">
-        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em] mb-6 px-6">{t('sidebar.commandCenter')}</p>
+      <nav className="flex-1 space-y-1">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 px-4">{t('sidebar.commandCenter')}</p>
         {NAV_ITEMS.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
@@ -63,68 +63,55 @@ export function Sidebar() {
               key={item.id}
               onClick={() => navigate(item.path)}
               className={cn(
-                "w-full flex items-center gap-5 px-6 py-5 rounded-2xl transition-all duration-300 group",
+                "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group text-sm font-medium",
                 isActive 
-                  ? "bg-blue-600 text-white shadow-xl shadow-blue-200" 
-                  : "text-slate-400 hover:text-slate-900 hover:bg-slate-50"
+                  ? "bg-blue-50 text-blue-600" 
+                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
               )}
             >
-              <div className={cn(
-                "w-8 h-8 rounded-xl flex items-center justify-center transition-colors",
-                isActive ? "bg-white/10 text-white" : "bg-slate-50 text-slate-300 group-hover:text-slate-500"
-              )}>
-                <Icon className="w-4 h-4" />
-              </div>
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] flex-1 text-left">{item.label}</span>
-              {isActive ? (
-                <motion.div layoutId="sidebar-active" className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_10px_white]" />
-              ) : (
-                <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Icon className={cn("w-4 h-4", isActive ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600")} />
+              <span className="flex-1 text-left">{item.label}</span>
+              {isActive && (
+                <div className="w-1 h-4 bg-blue-600 rounded-full" />
               )}
             </button>
           );
         })}
       </nav>
 
-      <div className="pt-12 border-t border-slate-50 space-y-4">
-        {/* Language Switcher */}
+      <div className="pt-8 border-t border-slate-50 space-y-2">
         <button 
           onClick={toggleLanguage}
-          className="w-full flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-900"
+          className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-all text-slate-500 hover:text-slate-900 text-xs font-medium"
         >
-          <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
-             <Languages className="w-5 h-5" />
-          </div>
-          <div className="text-left flex-1">
-             <p className="text-[10px] font-black uppercase tracking-widest leading-none mb-1">Idioma / Language</p>
-             <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{i18n.language.startsWith('pt') ? 'Português (BR)' : 'English (US)'}</p>
-          </div>
+          <Languages className="w-4 h-4 text-slate-400" />
+          <span className="flex-1 text-left">{i18n.language.startsWith('pt') ? 'Português' : 'English'}</span>
         </button>
 
         <button 
           onClick={() => navigate("/perfil")}
           className={cn(
-             "w-full flex items-center gap-4 p-4 rounded-2xl transition-all",
-             location.pathname === "/perfil" ? "bg-slate-50 border border-slate-100" : "hover:bg-slate-50"
+             "w-full flex items-center gap-3 p-3 rounded-xl transition-all",
+             location.pathname === "/perfil" ? "bg-slate-50" : "hover:bg-slate-50"
           )}
         >
-           <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-300 shadow-sm overflow-hidden">
+           <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 shadow-sm overflow-hidden border border-slate-200">
               {profile?.avatar_url ? (
                 <img src={profile.avatar_url} className="w-full h-full object-cover" />
               ) : (
-                <User className="w-5 h-5" />
+                <User className="w-4 h-4" />
               )}
            </div>
            <div className="text-left flex-1 min-w-0">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-900 truncate">{profile?.display_name || "Guerreiro"}</p>
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate">{t('sidebar.profile')}</p>
+              <p className="text-xs font-bold text-slate-900 truncate">{profile?.display_name || "Guerreiro"}</p>
+              <p className="text-[10px] text-slate-400 truncate tracking-tight">{t('sidebar.profile')}</p>
            </div>
            <Settings className="w-4 h-4 text-slate-300" />
         </button>
         
         <button 
           onClick={signOut}
-          className="w-full flex items-center gap-4 p-4 rounded-2xl text-rose-400 hover:bg-rose-50 hover:text-rose-500 transition-all font-black text-[10px] uppercase tracking-widest"
+          className="w-full flex items-center gap-3 p-3 rounded-xl text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-all text-xs font-medium"
         >
            <LogOut className="w-4 h-4" /> {t('sidebar.logout')}
         </button>

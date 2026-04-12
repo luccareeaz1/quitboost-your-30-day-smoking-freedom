@@ -155,45 +155,45 @@ export default function AICoach() {
         {isSidebarOpen && (
           <motion.aside 
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 320, opacity: 1 }}
+            animate={{ width: 240, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="border-r border-slate-100 flex flex-col bg-[#FBFBFE] overflow-hidden"
+            className="border-r border-slate-100 flex flex-col bg-slate-50/50 overflow-hidden"
           >
-            <div className="p-8 pb-4">
+            <div className="p-4">
               <Button 
                 onClick={createNewSession}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl h-14 font-bold gap-3 shadow-lg shadow-blue-200"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-10 text-xs font-bold gap-2"
               >
-                <Plus className="w-5 h-5" />
-                Nova Sessão
+                <Plus className="w-4 h-4" />
+                Nova Conversa
               </Button>
             </div>
 
-            <div className="px-8 mb-6">
+            <div className="px-4 mb-4">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                 <Input 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Pesquisar..." 
-                  className="pl-12 h-12 bg-white border-slate-200 rounded-2xl text-xs font-bold focus-visible:ring-blue-600/20"
+                  className="pl-9 h-9 bg-white border-slate-200 rounded-lg text-xs"
                 />
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 space-y-1">
-              <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-4 px-4">Histórico Recente</p>
+            <div className="flex-1 overflow-y-auto px-2 space-y-0.5">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 px-3">Histórico</p>
               {sessions.map((s) => (
                 <button
                   key={s.id}
                   onClick={() => setActiveSessionId(s.id)}
                   className={cn(
-                    "w-full text-left px-5 py-4 rounded-2xl text-[13px] font-bold transition-all flex items-center gap-4 group",
-                    activeSessionId === s.id ? "bg-white shadow-md text-blue-600" : "text-slate-500 hover:text-slate-900"
+                    "w-full text-left px-3 py-2.5 rounded-lg text-[13px] transition-all flex items-center gap-3 group",
+                    activeSessionId === s.id ? "bg-white border border-slate-200 text-blue-600 shadow-sm" : "text-slate-500 hover:bg-slate-100"
                   )}
                 >
-                  <MessageSquare className={cn("w-4 h-4", activeSessionId === s.id ? "text-blue-600" : "text-slate-200")} />
-                  <span className="truncate flex-1">{s.title}</span>
+                  <MessageSquare className={cn("w-3.5 h-3.5", activeSessionId === s.id ? "text-blue-600" : "text-slate-300")} />
+                  <span className="truncate flex-1 font-medium">{s.title}</span>
                 </button>
               ))}
             </div>
@@ -231,39 +231,35 @@ export default function AICoach() {
         </header>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-12 max-w-4xl mx-auto w-full pb-48">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 max-w-4xl mx-auto w-full pb-32">
           <AnimatePresence>
             {messages.map((msg, i) => (
               <motion.div 
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn("flex gap-6", msg.role === "user" ? "flex-row-reverse" : "flex-row")}
+                className={cn("flex items-start gap-4", msg.role === "user" ? "flex-row-reverse" : "flex-row")}
               >
                 <div className={cn(
-                  "w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-xl",
-                  msg.role === "assistant" ? "bg-white text-blue-600 border border-slate-100" : "bg-blue-600 text-white shadow-blue-200"
+                  "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border",
+                  msg.role === "assistant" ? "bg-white border-slate-200 text-blue-600" : "bg-blue-600 border-blue-600 text-white"
                 )}>
-                  {msg.role === "assistant" ? <Sparkles className="w-6 h-6" /> : <User className="w-6 h-6" />}
+                  {msg.role === "assistant" ? <Sparkles className="w-4 h-4" /> : <User className="w-4 h-4" />}
                 </div>
 
-                <div className={cn("flex flex-col gap-4 max-w-[80%]", msg.role === "user" ? "items-end" : "items-start")}>
-                  {msg.insight && (
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">{msg.insight}</span>
-                  )}
+                <div className={cn("flex flex-col gap-2 max-w-[85%]", msg.role === "user" ? "items-end" : "items-start")}>
                   <div className={cn(
-                    "p-8 rounded-[2rem] text-md font-medium leading-[1.8] shadow-sm",
-                    msg.role === "assistant" ? "bg-white border border-slate-100 text-slate-700 shadow-slate-200/20" : "bg-blue-600 text-white shadow-blue-200"
+                    "p-4 rounded-2xl text-[15px] leading-relaxed",
+                    msg.role === "assistant" ? "bg-slate-100 text-slate-800" : "bg-blue-50 text-blue-700"
                   )}>
                     {msg.content}
                   </div>
                   
                   {i === messages.length - 1 && msg.role === "assistant" && !isLoading && (
-                    <div className="flex flex-wrap gap-3 mt-4">
+                    <div className="flex flex-wrap gap-2 mt-2">
                       <ActionChip icon={Wind} label="Respirar" onClick={() => handleQuickAction('respira')} />
-                      <ActionChip icon={Gamepad2} label="Distração" onClick={() => handleQuickAction('foco')} />
-                      <ActionChip icon={AlertTriangle} label="Fissura" color="text-red-500" onClick={() => handleQuickAction('fissura')} />
-                      <ActionChip icon={Heart} label="Meu Porquê" color="text-blue-500" onClick={() => handleQuickAction('porque')} />
+                      <ActionChip icon={Gamepad2} label="Foco" onClick={() => handleQuickAction('foco')} />
+                      <ActionChip icon={AlertTriangle} label="Fissura" onClick={() => handleQuickAction('fissura')} />
                     </div>
                   )}
                 </div>
@@ -274,26 +270,27 @@ export default function AICoach() {
         </div>
 
         {/* Input Bar */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-3xl px-8">
-          <div className="bg-white/80 border border-slate-100/50 rounded-[3rem] p-4 shadow-2xl flex items-center gap-4 backdrop-blur-3xl ring-1 ring-slate-100/50">
-            <button className="p-4 rounded-full text-slate-300 hover:text-primary transition-colors">
-              <Mic className="w-6 h-6" />
+        <div className="p-4 border-t border-slate-100 bg-white">
+          <div className="max-w-4xl mx-auto flex gap-3 items-center">
+            <button className="p-2 text-slate-400 hover:text-blue-600">
+               <Mic className="w-5 h-5" />
             </button>
             <Input 
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Digite sua mensagem..." 
-              className="border-none bg-transparent h-14 text-lg focus-visible:ring-0 placeholder:text-slate-300 font-bold"
+              placeholder="Como posso te ajudar agora?" 
+              className="flex-1 bg-slate-50 border-slate-100 h-11 focus-visible:ring-blue-600/20"
             />
             <Button 
               onClick={() => handleSend()}
               disabled={isLoading || !input.trim()}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-16 h-16 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-90"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 rounded-lg h-11 shadow-sm"
             >
-              {isLoading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Send className="w-6 h-6" />}
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             </Button>
           </div>
+          <p className="text-[10px] text-center text-slate-400 mt-2">Coach AI pode cometer erros. Verifique informações importantes.</p>
         </div>
       </main>
     </div>

@@ -106,30 +106,56 @@ export default function Conquistas() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] p-6 lg:p-12 pb-32">
-      <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 text-left">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 shadow-sm">
-              <Trophy className="w-4 h-4" />
+    <div className="min-h-screen bg-white">
+      <header className="px-6 py-8 md:px-10 md:py-12 border-b border-slate-100">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                <Trophy className="w-3.5 h-3.5" />
+              </div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em]">Galeria de Conquistas</span>
             </div>
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Galeria de Honra</span>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Suas <span className="text-blue-600">Grandes Vitórias</span></h1>
+            <p className="text-slate-500 mt-2 text-sm">Acompanhe cada marco alcançado na sua nova jornada.</p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">Suas <span className="text-primary italic">Maiores Vitórias</span></h1>
-          <p className="text-slate-500 mt-2 font-medium">Cada conquista é um marco na sua nova vida livre de fumo.</p>
-        </div>
 
-        <Card className="bg-slate-900 p-8 rounded-[2.5rem] flex items-center gap-6 shadow-2xl shadow-slate-200">
-           <div className={cn("w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10 shadow-lg", stats.currentLevel.color)}>
-             <stats.currentLevel.icon className="w-8 h-8" />
-           </div>
-           <div>
-             <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Nível {stats.currentLevel.level}</p>
-             <h3 className="text-2xl font-black text-white">{stats.currentLevel.name}</h3>
-             <p className="text-xs font-bold text-primary">{stats.totalPoints} Pontos de Honra</p>
-           </div>
-        </Card>
+          <div className="p-4 md:p-6 border border-slate-200 bg-white rounded-2xl flex items-center gap-4 shadow-sm">
+             <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100">
+               <stats.currentLevel.icon className="w-6 h-6" />
+             </div>
+             <div>
+               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Nível {stats.currentLevel.level}</p>
+               <h3 className="text-lg font-bold text-slate-900 leading-tight">{stats.currentLevel.name}</h3>
+               <p className="text-[11px] font-semibold text-blue-600">{stats.totalPoints} Pontos</p>
+             </div>
+          </div>
+        </div>
       </header>
+
+      <div className="max-w-7xl mx-auto p-6 md:p-10 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-8 space-y-8">
+            <div className="flex flex-wrap gap-2 mb-6">
+              {[
+                { id: 'all', label: 'Toda a Coleção' },
+                { id: 'unlocked', label: 'Desbloqueadas' },
+                { id: 'locked', label: 'Por Alcançar' }
+              ].map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => setFilter(f.id as any)}
+                  className={cn(
+                    "px-5 py-2 rounded-lg text-xs font-semibold transition-all border",
+                    filter === f.id 
+                    ? "bg-blue-600 border-blue-600 text-white shadow-sm" 
+                    : "bg-white border-slate-200 text-slate-500 hover:bg-slate-50"
+                  )}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         {/* Main Achievement List */}
@@ -151,105 +177,96 @@ export default function Conquistas() {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-             {filteredList.map((badge, i) => {
-               const unlocked = unlockedIds.has(badge.id);
-               const rarity = RARITY_MAP[badge.rarity] || RARITY_MAP.comum;
-               
-               return (
-                 <motion.div
-                   key={badge.id}
-                   initial={{ opacity: 0, scale: 0.95 }}
-                   animate={{ opacity: 1, scale: 1 }}
-                   transition={{ delay: i * 0.05 }}
-                   onClick={() => unlocked && setSelectedAchievement(badge)}
-                   className={cn(
-                     "p-6 rounded-[2.5rem] bg-white border border-slate-100 transition-all group relative overflow-hidden",
-                     unlocked ? "cursor-pointer hover:shadow-xl hover:shadow-slate-100 hover:-translate-y-1" : "opacity-40 grayscale-0 bg-slate-50/50"
-                   )}
-                 >
-                   {!unlocked && <Lock className="absolute top-6 right-6 w-4 h-4 text-slate-300" />}
-                   
-                   <div className="flex items-center gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+               {filteredList.map((badge, i) => {
+                 const unlocked = unlockedIds.has(badge.id);
+                 const rarity = RARITY_MAP[badge.rarity] || RARITY_MAP.comum;
+                 
+                 return (
+                   <motion.div
+                     key={badge.id}
+                     initial={{ opacity: 0, scale: 0.98 }}
+                     animate={{ opacity: 1, scale: 1 }}
+                     transition={{ delay: i * 0.03 }}
+                     onClick={() => unlocked && setSelectedAchievement(badge)}
+                     className={cn(
+                       "p-4 rounded-xl border transition-all flex items-center gap-4 bg-white",
+                       unlocked ? "cursor-pointer border-slate-200 hover:border-blue-300 hover:shadow-sm" : "opacity-30 border-slate-100 bg-slate-50/50 grayscale"
+                     )}
+                   >
                      <div className={cn(
-                       "w-20 h-20 rounded-[2rem] flex items-center justify-center text-4xl shadow-inner transition-transform group-hover:rotate-6",
-                       unlocked ? rarity.bg : "bg-slate-200"
+                       "w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0",
+                       unlocked ? "bg-blue-50 text-blue-600" : "bg-slate-200"
                      )}>
                         {badge.emoji || badge.icon || "🏅"}
                      </div>
                      
                      <div className="flex-1 min-w-0">
-                       <span className={cn("text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg mb-2 inline-block", rarity.bg, rarity.color)}>
-                         {rarity.label}
-                       </span>
-                       <h4 className="text-lg font-black text-slate-900 truncate tracking-tight">{badge.title}</h4>
-                       <p className="text-xs text-slate-500 font-bold mt-1">+{badge.points} Honor Points</p>
+                       <h4 className="text-sm font-bold text-slate-900 truncate tracking-tight">{badge.title}</h4>
+                       <p className="text-[10px] text-slate-400 font-semibold mt-0.5 uppercase tracking-wider">+{badge.points} Pontos</p>
+                     </div>
+
+                     {!unlocked && <Lock className="w-3.5 h-3.5 text-slate-300" />}
+                   </motion.div>
+                 );
+               })}
+            </div>
+          </div>
+             <div className="lg:col-span-4 space-y-6">
+            <div className="p-6 md:p-8 border border-slate-200 bg-white rounded-2xl shadow-sm">
+               <div className="flex justify-between items-center mb-6">
+                 <h3 className="text-lg font-bold text-slate-900">Próxima Meta</h3>
+                 <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                    <Target className="w-4 h-4" />
+                 </div>
+               </div>
+
+               {stats.nextAchievement ? (
+                 <div className="space-y-6">
+                   <div className="flex items-center gap-4">
+                     <div className="w-14 h-14 bg-slate-50 rounded-xl flex items-center justify-center text-2xl grayscale opacity-30 border border-slate-100">
+                       {stats.nextAchievement.emoji || "🏅"}
+                     </div>
+                     <div>
+                       <h4 className="font-bold text-sm text-slate-900">{stats.nextAchievement.title}</h4>
+                       <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Faltam {Math.max(0, (stats.nextAchievement.required_days || 0) - stats.diffDays)} dias</p>
                      </div>
                    </div>
-                 </motion.div>
-               );
-             })}
+
+                   <div className="space-y-3">
+                      <div className="flex justify-between text-[9px] font-bold text-blue-600 uppercase tracking-widest">
+                         <span>Progresso</span>
+                         <span>{Math.round(stats.progress)}%</span>
+                      </div>
+                      <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${stats.progress}%` }}
+                          className="h-full bg-blue-600 rounded-full"
+                        />
+                      </div>
+                   </div>
+                   
+                   <p className="text-[11px] text-slate-500 leading-relaxed font-medium">
+                     No dia {stats.nextAchievement.required_days}, sua capacidade pulmonar terá uma melhora definitiva de 15%.
+                   </p>
+                 </div>
+               ) : (
+                 <div className="text-center py-10">
+                   <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Coleção Completa!</p>
+                 </div>
+               )}
+            </div>
+
+            <div className="p-8 bg-blue-600 rounded-2xl text-white shadow-lg shadow-blue-100">
+               <h3 className="text-lg font-bold mb-2">Compartilhar</h3>
+               <p className="text-white/80 text-xs font-medium mb-8 leading-relaxed">Inspire outras pessoas com suas conquistas na comunidade.</p>
+               <Button className="w-full bg-white text-blue-600 hover:bg-slate-50 rounded-lg h-10 text-xs font-bold uppercase tracking-widest gap-2">
+                 <Share2 className="w-3.5 h-3.5" />
+                 Postar no Clube
+               </Button>
+            </div>
           </div>
-        </div>
-
-        {/* Next Goal Area */}
-        <div className="lg:col-span-4 flex flex-col gap-10">
-          <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10 relative overflow-hidden">
-             <div className="flex justify-between items-center mb-10">
-               <h3 className="text-2xl font-black text-slate-900 tracking-tight">Próxima Meta</h3>
-               <div className="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-500">
-                 <Target className="w-5 h-5" />
-               </div>
-             </div>
-
-             {stats.nextAchievement ? (
-               <div className="space-y-10">
-                 <div className="flex items-center gap-4">
-                   <div className="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center text-4xl grayscale opacity-50">
-                     {stats.nextAchievement.emoji || "🏅"}
-                   </div>
-                   <div>
-                     <h4 className="font-black text-lg text-slate-900">{stats.nextAchievement.title}</h4>
-                     <p className="text-xs text-slate-400 font-bold">Faltam {Math.max(0, (stats.nextAchievement.required_days || 0) - stats.diffDays)} dias</p>
-                   </div>
-                 </div>
-
-                 <div className="space-y-4">
-                    <div className="flex justify-between text-[10px] font-black text-primary uppercase tracking-widest">
-                       <span>Progresso da Missão</span>
-                       <span>{Math.round(stats.progress)}%</span>
-                    </div>
-                    <div className="h-4 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${stats.progress}%` }}
-                        className="h-full bg-primary rounded-full"
-                      />
-                    </div>
-                 </div>
-                 
-                 <div className="p-6 bg-emerald-50 rounded-[2rem] border border-emerald-100 flex items-start gap-4">
-                    <TrendingUp className="w-5 h-5 text-primary mt-1 shrink-0" />
-                    <p className="text-sm font-bold text-emerald-800 leading-relaxed">
-                      Continue firme! No dia {stats.nextAchievement.required_days}, seu corpo terá removido quase todo o alcatrão acumulado.
-                    </p>
-                 </div>
-               </div>
-             ) : (
-               <div className="text-center py-20">
-                 <p className="text-slate-400 font-bold">Você alcançou todas as metas!</p>
-               </div>
-             )}
-          </Card>
-
-          <Card className="border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10 bg-gradient-to-br from-primary to-emerald-600 text-white">
-             <h3 className="text-2xl font-black mb-4">Compartilhar Sucesso</h3>
-             <p className="text-white/80 font-medium mb-10 leading-relaxed">Mostre ao mundo quanto você é forte. Inspire outras pessoas a também serem livres.</p>
-             <Button className="w-full bg-white text-primary hover:bg-white/90 rounded-2xl h-14 font-black uppercase tracking-widest text-xs gap-3">
-               <Share2 className="w-4 h-4" />
-               Postar no Clube
-             </Button>
-          </Card>
         </div>
       </div>
 
@@ -262,44 +279,39 @@ export default function Conquistas() {
               onClick={() => setSelectedAchievement(null)}
             />
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="bg-white w-full max-w-lg rounded-[3rem] p-12 shadow-2xl relative z-10 text-center"
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="bg-white w-full max-w-md rounded-2xl p-8 md:p-10 shadow-lg relative z-10 text-center border border-slate-200"
             >
-              <div className="w-24 h-24 rounded-3xl bg-slate-50 flex items-center justify-center text-6xl mx-auto mb-10 shadow-inner">
+              <div className="w-20 h-20 rounded-2xl bg-blue-50 flex items-center justify-center text-4xl mx-auto mb-6 border border-blue-100">
                 {selectedAchievement.emoji || selectedAchievement.icon || "🏅"}
               </div>
               
-              <h3 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">{selectedAchievement.title}</h3>
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-6">Emblema de Honra Desbloqueado</p>
+              <h3 className="text-2xl font-bold text-slate-900 mb-1 tracking-tight">{selectedAchievement.title}</h3>
+              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-6">Emblema Desbloqueado</p>
               
-              <p className="text-slate-500 font-medium mb-10 leading-relaxed text-lg">
+              <p className="text-slate-500 font-medium mb-8 leading-relaxed text-sm">
                 {selectedAchievement.description}
               </p>
 
               {selectedAchievement.medical_fact && (
-                <div className="bg-emerald-50 rounded-[2.5rem] p-8 mb-10 border border-emerald-100 text-left relative overflow-hidden">
-                   <div className="absolute top-0 right-0 p-8 opacity-5">
-                      <Shield className="w-20 h-20 text-primary" />
+                <div className="bg-slate-50 rounded-xl p-6 mb-8 border border-slate-100 text-left">
+                   <div className="flex items-center gap-2 mb-3">
+                      <Shield className="w-3.5 h-3.5 text-blue-600" />
+                      <h4 className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Impacto na sua Saúde</h4>
                    </div>
-                   <div className="flex items-center gap-3 mb-4">
-                      <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center text-primary shadow-sm">
-                        <Shield className="w-4 h-4" />
-                      </div>
-                      <h4 className="text-[10px] font-black uppercase tracking-widest text-primary">Fato Médico Protegido</h4>
-                   </div>
-                   <p className="text-sm text-emerald-900 font-bold leading-relaxed relative z-10">
+                   <p className="text-xs text-slate-700 font-semibold leading-relaxed">
                      {selectedAchievement.medical_fact}
                    </p>
                 </div>
               )}
 
               <Button 
-                className="w-full bg-slate-900 text-white font-black h-16 rounded-2xl uppercase tracking-widest text-xs active:scale-95 transition-all shadow-xl shadow-slate-200" 
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 rounded-lg uppercase tracking-widest text-xs" 
                 onClick={() => setSelectedAchievement(null)}
               >
-                 Confirmar
+                 Continuar
               </Button>
             </motion.div>
           </div>
