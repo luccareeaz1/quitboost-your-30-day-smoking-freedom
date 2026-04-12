@@ -3,7 +3,6 @@ import {
   Plus, 
   Search, 
   MessageSquare, 
-  Settings, 
   Mic, 
   Send,
   Sparkles,
@@ -13,7 +12,6 @@ import {
   Gamepad2,
   AlertTriangle,
   Heart,
-  ChevronLeft,
   MoreVertical,
   PanelLeftClose,
   PanelLeftOpen
@@ -22,6 +20,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -103,13 +102,26 @@ export default function AICoach() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('ai-coach error:', error);
+        throw error;
+      }
 
-      const aiResponseContent = data?.reply || "Tive um problema. Vamos tentar de novo?";
+      const aiResponseContent = 
+        data?.reply || 
+        data?.message ||
+        "Não consegui processar agora. Tente novamente em instantes.";
       
-      setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: [...s.messages, { role: "assistant", content: aiResponseContent }] } : s));
+      setSessions(prev => prev.map(s => s.id === activeSessionId 
+        ? { ...s, messages: [...s.messages, { role: "assistant", content: aiResponseContent }] } 
+        : s
+      ));
     } catch (err: any) {
-      toast({ title: "Erro na conexão", description: "O Coach está momentaneamente offline.", variant: "destructive" });
+      console.error('Coach request failed:', err);
+      const errorMsg = err?.message?.includes('429')
+        ? "Muitas mensagens em pouco tempo. Aguarde alguns segundos."
+        : "O Coach está momentaneamente offline. Tente novamente."
+      toast({ title: "Erro na conexão", description: errorMsg, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }

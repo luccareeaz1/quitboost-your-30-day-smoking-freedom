@@ -71,7 +71,13 @@ export default function Dashboard() {
     try {
       const { error } = await supabase
         .from('cravings')
-        .insert([{ user_id: user?.id, intensity: 5 }]);
+        .insert([{ 
+          user_id: user?.id, 
+          trigger_type: 'manual',
+          resisted: true,
+          duration_minutes: 5,
+          notes: 'Registrado pelo botão Venci Fissura'
+        }]);
 
       if (error) throw error;
       toast({ title: "Fissura registrada!", description: "Mais um passo rumo à liberdade.", variant: "default" });
