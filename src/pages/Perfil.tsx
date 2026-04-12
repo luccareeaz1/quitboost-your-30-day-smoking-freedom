@@ -5,7 +5,7 @@ import {
   User, Trophy, Heart, Settings, Target, Shield, Users, Bot,
   Sparkles, Crown, Loader2, LogOut, Trash2, Edit3, ChevronRight,
   CreditCard, Bell, Key, ShieldCheck, Mail, MapPin, ExternalLink,
-  ChevronLeft
+  ChevronLeft, Flame, Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";

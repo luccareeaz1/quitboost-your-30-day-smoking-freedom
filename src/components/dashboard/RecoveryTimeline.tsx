@@ -11,7 +11,6 @@ import {
   Stethoscope, 
   Heart, 
   Brain, 
-  Lungs, 
   Trophy 
 } from "lucide-react";
 
@@ -29,7 +28,7 @@ const ICON_MAP: Record<string, any> = {
   "stetho": Stethoscope,
   "heart": Heart,
   "brain": Brain,
-  "lungs": Lungs,
+  "lungs": Activity,
   "trophy": Trophy,
 };
 

@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ArrowRight, Heart, Wallet, Users, Zap, ShieldCheck, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export default function OnboardingMotivo() {
   const { user } = useAuth();
@@ -49,7 +50,6 @@ export default function OnboardingMotivo() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 pb-20 relative overflow-hidden">
-      {/* Ambient background */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] -mr-48 -mt-48" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-sky-400/5 rounded-full blur-[100px] -ml-40 -mb-40" />
 

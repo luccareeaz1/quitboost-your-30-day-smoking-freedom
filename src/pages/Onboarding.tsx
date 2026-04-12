@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check, ArrowRight, Sparkles, Cigarette, Wallet, Clock, User, ShieldCheck } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Cigarette, Wallet, Clock, User, ShieldCheck, Package, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService } from "@/lib/services";
@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function Onboarding() {
   const { user } = useAuth();

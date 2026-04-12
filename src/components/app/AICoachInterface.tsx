@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { AppleCard } from "@/components/ui/apple-card";
 import { Button } from "@/components/ui/button";
 import {
   Send, Bot, User, Target, Heart,
   Brain, Flame, MessageCircle, AlertTriangle, Loader2
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { coachService } from "@/lib/services";
@@ -19,6 +18,15 @@ interface Message {
   content: string;
   created_at: string;
 }
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-coach`;
+
+const QUICK_ACTIONS = [
+  { label: "Estou com fissura agora", icon: Flame, color: "text-rose-500 border-rose-100" },
+  { label: "Preciso de motivação", icon: Heart, color: "text-primary border-emerald-100" },
+  { label: "Me dê uma técnica de TCC", icon: Brain, color: "text-indigo-500 border-indigo-100" },
+  { label: "Como lidar com gatilhos?", icon: Target, color: "text-amber-500 border-amber-100" },
+];
 
 const MESSAGE_TYPES = {
   INSIGHT: "insight",
@@ -44,7 +52,6 @@ export default function AICoachInterface() {
   const [isInputFocused, setIsInputFocused] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // ... (keep init logic)
   useEffect(() => {
     const initChat = async () => {
       if (!user) return;
@@ -72,7 +79,6 @@ export default function AICoachInterface() {
     setIsLoading(true);
     setInput("");
     
-    // UI Update immediately
     try {
       const userMsg = await coachService.addMessage(activeConversationId, "user", text);
       setMessages(prev => [...prev, userMsg as Message]);

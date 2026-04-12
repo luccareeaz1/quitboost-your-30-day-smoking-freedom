@@ -4,7 +4,7 @@ import {
   Heart, Wind, Activity, Target,
   Shield, CheckCircle2, Wallet,
   TrendingDown, Zap, Droplets, Clock, Loader2, Sparkles, Monitor,
-  TrendingUp, ArrowUpRight, ArrowDownRight, Info
+  TrendingUp, ArrowUpRight, ArrowDownRight, Info, Ban
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { ResponsiveContainer, AreaChart, Area, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
@@ -25,10 +25,16 @@ export default function Progresso() {
   const stats = useMemo(() => {
     if (!profile) return null;
 
+    const cigarettesPerDay = profile.cigarettes_per_day || 0;
+    const pricePerCig = Number(profile.price_per_cigarette) || 1;
+    const cigarettesPerPack = 20;
+    const packPrice = pricePerCig * cigarettesPerPack;
+
     const quitStats = calculateQuitStats({
       quit_date: profile.quit_date || new Date().toISOString(),
-      cigarettes_per_day: profile.cigarettes_per_day || 0,
-      pack_price: profile.pack_price || profile.price_per_cigarette * (profile.cigarettes_per_pack || 20) || 20,
+      cigarettes_per_day: cigarettesPerDay,
+      pack_price: packPrice,
+      cigarettes_per_pack: cigarettesPerPack,
     }, now);
 
     const chartData = Array.from({ length: 14 }, (_, i) => ({
@@ -37,7 +43,7 @@ export default function Progresso() {
       health: Math.min(100, Math.round(calculateOverallHealth(quitStats.totalSeconds) * ((i + 1) / 14)))
     }));
 
-    return { ...quitStats, chartData };
+    return { ...quitStats, chartData, packPrice, cigarettesPerPack };
   }, [profile, now]);
 
   if (loading || !profile || !stats) {
@@ -50,6 +56,8 @@ export default function Progresso() {
       </div>
     );
   }
+
+  const dailySaving = (stats.packPrice / stats.cigarettesPerPack) * (profile.cigarettes_per_day || 0);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-24 lg:p-12 p-6">
@@ -65,13 +73,12 @@ export default function Progresso() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-        {/* Main Stats Bento */}
         <Card className="lg:col-span-8 border-none shadow-xl shadow-slate-200/50 bg-white rounded-[3rem] p-10 overflow-hidden relative">
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-2xl font-black text-slate-900">Projeção Monetária</h2>
             <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-2xl border border-emerald-100">
               <TrendingUp className="w-4 h-4 text-primary" />
-              <span className="text-[10px] font-black text-primary uppercase tracking-widest">+R$ {((profile.pack_price || 20) / (profile.cigarettes_per_pack || 20) * profile.cigarettes_per_day).toFixed(2)} / dia</span>
+              <span className="text-[10px] font-black text-primary uppercase tracking-widest">+R$ {dailySaving.toFixed(2)} / dia</span>
             </div>
           </div>
           
@@ -85,23 +92,10 @@ export default function Progresso() {
                   </linearGradient>
                 </defs>
                 <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#fff',
-                    borderRadius: '24px', 
-                    border: 'none', 
-                    boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'
-                  }}
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '24px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
                   itemStyle={{ fontWeight: '900', fontSize: '12px' }}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="economy" 
-                  stroke="#22C55E" 
-                  strokeWidth={4} 
-                  fillOpacity={1} 
-                  fill="url(#colorEconomy)" 
-                  animationDuration={2000}
-                />
+                <Area type="monotone" dataKey="economy" stroke="#22C55E" strokeWidth={4} fillOpacity={1} fill="url(#colorEconomy)" animationDuration={2000} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -114,7 +108,6 @@ export default function Progresso() {
           </div>
         </Card>
 
-        {/* Sidebar Mini-Cards */}
         <div className="lg:col-span-4 space-y-8">
            <Card className="border-none shadow-xl shadow-slate-200/50 bg-slate-900 text-white rounded-[2.5rem] p-10 relative overflow-hidden group">
               <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl group-hover:scale-150 transition-transform" />
@@ -146,11 +139,7 @@ export default function Progresso() {
                   <span className="text-xl font-black text-slate-900">{Math.round((stats.days / 30) * 100)}%</span>
                 </div>
                 <div className="h-4 bg-slate-50 rounded-full overflow-hidden border border-slate-100">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${(stats.days / 30) * 100}%` }}
-                    className="h-full bg-sky-400 rounded-full"
-                  />
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${(stats.days / 30) * 100}%` }} className="h-full bg-sky-400 rounded-full" />
                 </div>
                 <p className="text-xs text-slate-500 font-bold leading-relaxed">
                   Faltam apenas {30 - stats.days} dias para uma melhora de 30% na sua capacidade respiratória.
@@ -160,7 +149,6 @@ export default function Progresso() {
         </div>
       </div>
 
-      {/* Comparisons Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <ComparisonCard 
           title="Equivalência em Compras" 
@@ -228,10 +216,7 @@ function ComparisonCard({ title, desc, items }: any) {
                 <span className={cn(progress >= 100 ? "text-primary" : "text-slate-400")}>{Math.round(progress)}%</span>
               </div>
               <div className="h-1.5 bg-slate-50 rounded-full overflow-hidden">
-                <div 
-                  className={cn("h-full rounded-full transition-all duration-1000", progress >= 100 ? "bg-primary" : "bg-slate-200")} 
-                  style={{ width: `${progress}%` }} 
-                />
+                <div className={cn("h-full rounded-full transition-all duration-1000", progress >= 100 ? "bg-primary" : "bg-slate-200")} style={{ width: `${progress}%` }} />
               </div>
             </div>
           );
