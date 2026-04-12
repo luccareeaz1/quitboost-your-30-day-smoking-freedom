@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Check, ArrowRight, Sparkles, Cigarette, Wallet, Clock, User, ShieldCheck, Package, Loader2 } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Cigarette, Wallet, Clock, ShieldCheck, Package, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { profileService } from "@/lib/services";
@@ -237,19 +237,7 @@ export default function Onboarding() {
   );
 }
 
-function OnboardingSection({ title, icon: Icon, children }: any) {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shadow-sm border border-blue-100">
-          <Icon className="w-5 h-5" />
-        </div>
-        <h3 className="text-xl font-bold text-slate-800 tracking-tight">{title}</h3>
-      </div>
-      {children}
-    </div>
-  );
-}
+
 
 function OptionButton({ label, active, onClick }: any) {
   return (
