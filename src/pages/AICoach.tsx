@@ -88,7 +88,7 @@ export default function AICoach() {
       const profileContext = profile ? {
         name: profile.display_name,
         quitDate: profile.quit_date,
-        motivation: profile.reason_to_quit || profile.main_motivation,
+        motivation: profile.bio,
         cigarettesPerDay: profile.cigarettes_per_day
       } : {};
 
