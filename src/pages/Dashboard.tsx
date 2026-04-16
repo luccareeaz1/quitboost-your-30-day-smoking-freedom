@@ -70,12 +70,11 @@ export default function Dashboard() {
   const handleRegisterCrave = async () => {
     try {
       const { error } = await supabase
-        .from('cravings')
+        .from('progress_logs')
         .insert([{ 
-          user_id: user?.id, 
-          trigger_type: 'manual',
-          resisted: true,
-          duration_minutes: 5,
+          user_id: user?.id!, 
+          craving_count: 1,
+          craving_max_intensity: 5,
           notes: 'Registrado pelo botão Venci Fissura'
         }]);
 
@@ -254,7 +253,7 @@ const MilestoneCalendar = ({ currentDay }: { currentDay: number }) => (
                   <h2 className="text-[20px] font-bold text-slate-900 mb-1">Recuperação Corporal</h2>
                   <p className="text-[14px] text-slate-500">Progresso biológico da sua cura</p>
                 </div>
-                <Users className="w-5 h-5 text-slate-300" />
+                <HeartPulse className="w-5 h-5 text-slate-300" />
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-12 mb-12">
@@ -360,8 +359,8 @@ const MilestoneCalendar = ({ currentDay }: { currentDay: number }) => (
           }
         }} 
         supportContact={{
-          name: profile.support_contact_name || "Amigo de Apoio",
-          phone: profile.support_contact_phone || ""
+          name: "Amigo de Apoio",
+          phone: ""
         }}
       />
     </div>
